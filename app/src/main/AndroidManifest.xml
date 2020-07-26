@@ -4,12 +4,13 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/dtf_logo_2"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/dtf_logo_2"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.FriendsActivity"></activity>
+        <activity android:name=".activities.SignUpActivity"></activity>
+        <activity android:name=".activities.FriendsActivity" />
         <activity android:name=".activities.QuestionsActivity" />
         <activity android:name=".activities.PatientInfoActivity" />
         <activity android:name=".activities.ListPatientsActivity" />
