@@ -1,11 +1,20 @@
 package com.kirsh.doc2family.activities;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.kirsh.doc2family.Constants;
@@ -22,7 +31,7 @@ public class SignUpActivity extends AppCompatActivity {
     private EditText mEmailEditText;
     private EditText mNicknameEditText;
     private EditText mPasswordEditText;
-    private EditText mRepeatPasswordEditText;
+    private EditText mVerifyPasswordEditText;
     private Button mSignUpButton;
 
     @Override
@@ -33,17 +42,21 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     private void initViews(){
-        // email EditText
+        // email EditText + info button
         mEmailEditText = findViewById(R.id.edit_text_set_email);
+        addPopupOnClick((ImageButton) findViewById(R.id.image_button_email_info), Constants.EMAIL_INFO_MESSAGE);
 
-        // nickname EditText
+        // nickname EditText + info button
         mNicknameEditText = findViewById(R.id.edit_text_set_nickname);
+        addPopupOnClick((ImageButton) findViewById(R.id.image_button_nickname_info), Constants.NICKNAME_INFO_MESSAGE);
 
-        // password EditText
+        // password EditText + info button
         mPasswordEditText = findViewById(R.id.edit_text_set_password);
+        addPopupOnClick((ImageButton) findViewById(R.id.image_button_password_info), Constants.PASSWORD_INFO_MESSAGE);
 
-        // repeat password EditText
-        mRepeatPasswordEditText = findViewById(R.id.edit_text_repeat_password);
+        // repeat password EditText + info button
+        mVerifyPasswordEditText = findViewById(R.id.edit_text_verify_password);
+        addPopupOnClick((ImageButton) findViewById(R.id.image_button_verify_password_info), Constants.VERIFY_PASSWORD_INFO_MESSAGE);
 
         // sign up button
         mSignUpButton = findViewById(R.id.button_sign_up);
@@ -53,6 +66,19 @@ public class SignUpActivity extends AppCompatActivity {
                 attemptSignUp(v);
             }
         });
+    }
+
+    private void addPopupOnClick(final ImageButton button, final String message){
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this);
+                builder.setMessage(message);
+                AlertDialog alert = builder.create();
+                alert.show();
+            }
+        });
+
     }
 
     private void attemptSignUp(View v){
@@ -67,7 +93,7 @@ public class SignUpActivity extends AppCompatActivity {
         String email = mEmailEditText.getText().toString();
         String nickname = mNicknameEditText.getText().toString();
         String password = mPasswordEditText.getText().toString();
-        String repeatPassword = mRepeatPasswordEditText.getText().toString();
+        String repeatPassword = mVerifyPasswordEditText.getText().toString();
 
         // check if email is legal
         if (!Constants.isLegalEmail(email)){
@@ -96,6 +122,5 @@ public class SignUpActivity extends AppCompatActivity {
         return true;
     }
 
-
-
+    
 }
