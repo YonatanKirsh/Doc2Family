@@ -3,21 +3,14 @@ package com.kirsh.doc2family.activities;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.PopupWindow;
-import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.kirsh.doc2family.Constants;
+import com.kirsh.doc2family.logic.Constants;
 import com.kirsh.doc2family.R;
 
 
@@ -122,5 +115,5 @@ public class SignUpActivity extends AppCompatActivity {
         return true;
     }
 
-    
+
 }

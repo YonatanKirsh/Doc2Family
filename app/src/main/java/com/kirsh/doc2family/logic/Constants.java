@@ -1,4 +1,4 @@
-package com.kirsh.doc2family;
+package com.kirsh.doc2family.logic;
 
 public class Constants {
 

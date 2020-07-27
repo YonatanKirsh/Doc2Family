@@ -6,4 +6,29 @@
     android:layout_height="match_parent"
     tools:context=".activities.ListPatientsActivity">
 
+    <TextView
+        android:id="@+id/text_view_patient_title"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:text="My Patients"
+        android:textSize="40sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"/>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_patients"
+        android:scrollbars="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_view_patient_title"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

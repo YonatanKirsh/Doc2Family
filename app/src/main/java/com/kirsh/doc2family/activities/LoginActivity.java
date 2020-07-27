@@ -10,6 +10,7 @@ import android.widget.EditText;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.kirsh.doc2family.R;
+import com.kirsh.doc2family.logic.User;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -53,10 +54,18 @@ public class LoginActivity extends AppCompatActivity {
 
     private void attemptLogin(){
         Snackbar.make(findViewById(android.R.id.content), "Login attempt!", Snackbar.LENGTH_SHORT).show();
+        openActivityListPatients();
     }
 
     private void openActivitySignUp(){
         Intent intent = new Intent(this, SignUpActivity.class);
+        startActivity(intent);
+    }
+
+    private void openActivityListPatients(){
+        // todo
+        User thisUser = new User();
+        Intent intent = new Intent(this, ListPatientsActivity.class);
         startActivity(intent);
     }
 }
