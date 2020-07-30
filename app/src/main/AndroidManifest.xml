@@ -9,7 +9,8 @@
         android:roundIcon="@mipmap/dtf_logo_2"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.SignUpActivity"></activity>
+        <activity android:name=".activities.AddPatientActivity"></activity>
+        <activity android:name=".activities.SignUpActivity" />
         <activity android:name=".activities.FriendsActivity" />
         <activity android:name=".activities.QuestionsActivity" />
         <activity android:name=".activities.PatientInfoActivity" />

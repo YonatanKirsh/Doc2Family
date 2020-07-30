@@ -14,10 +14,10 @@ import com.kirsh.doc2family.logic.User;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private EditText mEmailEditText;
-    private EditText mPasswordEditText;
-    private Button mLoginButton;
-    private Button mSignUpButton;
+    private EditText emailEditText;
+    private EditText passwordEditText;
+    private Button loginButton;
+    private Button signUpButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,14 +28,14 @@ public class LoginActivity extends AppCompatActivity {
 
     private void initViews(){
         // email EditText
-        mEmailEditText = findViewById(R.id.edit_text_email);
+        emailEditText = findViewById(R.id.edit_text_email);
 
         // password EditText
-        mPasswordEditText = findViewById(R.id.edit_text_password);
+        passwordEditText = findViewById(R.id.edit_text_password);
 
         // login button
-        mLoginButton = findViewById(R.id.button_login);
-        mLoginButton.setOnClickListener(new View.OnClickListener() {
+        loginButton = findViewById(R.id.button_login);
+        loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 attemptLogin();
@@ -43,8 +43,8 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         // sign up button
-        mSignUpButton = findViewById(R.id.button_goto_sign_up);
-        mSignUpButton.setOnClickListener(new View.OnClickListener() {
+        signUpButton = findViewById(R.id.button_goto_sign_up);
+        signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openActivitySignUp();
@@ -54,6 +54,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void attemptLogin(){
         Snackbar.make(findViewById(android.R.id.content), "Login attempt!", Snackbar.LENGTH_SHORT).show();
+        // todo login
         openActivityListPatients();
     }
 
@@ -64,7 +65,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void openActivityListPatients(){
         // todo
-        User thisUser = new User();
+//        User thisUser = new User();
         Intent intent = new Intent(this, ListPatientsActivity.class);
         startActivity(intent);
     }
