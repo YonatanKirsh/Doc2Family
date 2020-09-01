@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "965406514927",
+    "firebase_url": "https://doc2family.firebaseio.com",
+    "project_id": "doc2family",
+    "storage_bucket": "doc2family.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:965406514927:android:0a8f0a6cf4b7878c31451a",
+        "android_client_info": {
+          "package_name": "com.kirsh.doc2family"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "965406514927-p4vgvbs6l75cam7umdosqo7g92m68p40.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAb-Lb3_9ghljCKvDHDzmGqw8kv4b6ql7I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "965406514927-p4vgvbs6l75cam7umdosqo7g92m68p40.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
