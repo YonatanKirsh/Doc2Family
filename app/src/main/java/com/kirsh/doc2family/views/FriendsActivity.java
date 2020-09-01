@@ -1,4 +1,4 @@
-package com.kirsh.doc2family.activities;
+package com.kirsh.doc2family.views;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,7 +12,6 @@ import android.widget.LinearLayout;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.kirsh.doc2family.R;
-import com.kirsh.doc2family.logic.Friend;
 
 public class FriendsActivity extends AppCompatActivity {
 

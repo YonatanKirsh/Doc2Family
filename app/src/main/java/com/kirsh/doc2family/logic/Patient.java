@@ -4,16 +4,24 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class Patient {
-    String firstName;
-    String lastName;
-    String id;
-    ArrayList<Update> updates;
+    private String mFirstName;
+    private String mLastName;
+    private String mId;
+    private ArrayList<PatientUpdate> mUpdates;
 
+    public Patient(String firstName, String lastName, String id, ArrayList<PatientUpdate> updates){
+        this.mFirstName = firstName;
+        this.mLastName = lastName;
+        this.mId = id;
+        this.mUpdates = updates;
+    }
 
-    public class Update {
-        Date date;
-        String message;
-        Doctor givenByDoctor;
+    public String getId() {
+        return mId;
+    }
+
+    public String getFullName(){
+        return mFirstName + " " + mLastName;
     }
 }
 
