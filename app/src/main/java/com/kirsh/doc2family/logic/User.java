@@ -6,6 +6,7 @@ public class User {
     String firstName;
     String lastName;
     String id;
+    String namee;
     ArrayList<Patient> patients = new ArrayList<>();
 
     public User(){}
@@ -14,4 +15,5 @@ public class User {
         this.firstName = firstName;
         this.lastName = lastName;
     }
+
 }
