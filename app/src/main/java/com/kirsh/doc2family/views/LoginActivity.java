@@ -1,4 +1,4 @@
-package com.kirsh.doc2family.activities;
+package com.kirsh.doc2family.views;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -10,7 +10,6 @@ import android.widget.EditText;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.kirsh.doc2family.R;
-import com.kirsh.doc2family.logic.User;
 
 public class LoginActivity extends AppCompatActivity {
 

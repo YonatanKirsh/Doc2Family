@@ -9,14 +9,14 @@
         android:roundIcon="@mipmap/dtf_logo_2"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.AddPatientActivity"></activity>
-        <activity android:name=".activities.SignUpActivity" />
-        <activity android:name=".activities.FriendsActivity" />
-        <activity android:name=".activities.QuestionsActivity" />
-        <activity android:name=".activities.PatientInfoActivity" />
-        <activity android:name=".activities.ListPatientsActivity" />
-        <activity android:name=".activities.LoginActivity" />
-        <activity android:name=".activities.MainActivity">
+        <activity android:name=".views.AddPatientActivity"></activity>
+        <activity android:name=".views.SignUpActivity" />
+        <activity android:name=".views.FriendsActivity" />
+        <activity android:name=".views.QuestionsActivity" />
+        <activity android:name=".views.PatientInfoActivity" />
+        <activity android:name=".views.ListPatientsActivity" />
+        <activity android:name=".views.LoginActivity" />
+        <activity android:name=".views.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

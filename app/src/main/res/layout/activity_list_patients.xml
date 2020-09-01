@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.ListPatientsActivity">
+    tools:context=".views.ListPatientsActivity">
 
     <TextView
         android:id="@+id/text_view_list_patients_title"
@@ -18,25 +18,17 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"/>
 
-    <TextView
-        android:id="@+id/text_view_patient_demo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="patient demo - CLICK ME"
-        android:textSize="20sp"
-        app:layout_constraintTop_toBottomOf="@+id/text_view_list_patients_title"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"/>
-
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_patients"
-        android:scrollbars="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/text_view_list_patients_title"
+        android:scrollbars="vertical"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"/>
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/button_goto_add_patient"
+        app:layout_constraintTop_toBottomOf="@+id/text_view_list_patients_title"
+        app:layout_constraintVertical_bias="0.05" />
 
     <Button
         android:id="@+id/button_goto_add_patient"
