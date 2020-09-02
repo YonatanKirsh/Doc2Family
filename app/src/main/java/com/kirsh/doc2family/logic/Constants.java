@@ -44,6 +44,7 @@ public class Constants {
         LocalDateTime firstTime = LocalDateTime.now().minusDays(10);
         ArrayList<Update> updates = new ArrayList<>();
         updates.add(new Update("patient just admitted. has severe fomo.", firstTime, doctor));
+        updates.add(new Update("second update!!", firstTime.plusMinutes(1), doctor));
         updates.add(new Update("started treating patient with hourly whiskey shots.", updates.get(updates.size()-1).getDate().plusHours(3), doctor));
         updates.add(new Update("patient is being a lil' bish- says he doesn't like whiskey.. wtf?", updates.get(updates.size()-1).getDate().plusMinutes(15), doctor));
         updates.add(new Update("patient stopped complaining, now loves whiskey", updates.get(updates.size()-1).getDate().plusHours(3), doctor));

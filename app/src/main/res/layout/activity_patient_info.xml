@@ -32,8 +32,9 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_updates"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="100dp"
+        android:layout_marginBottom="80dp"
         android:scrollbars="vertical"
         app:layout_constraintBottom_toTopOf="@+id/button_goto_questions"
         app:layout_constraintLeft_toLeftOf="parent"
