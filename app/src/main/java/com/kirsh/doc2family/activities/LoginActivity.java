@@ -82,7 +82,7 @@ public class LoginActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             if (mAuth.getCurrentUser().isEmailVerified()){
-                                Log.d("SIGN_IN_SUCCESS", "signInWithEmail:success");
+                                Log.d("SIGN_IN_SUCCESS", "signInWithEmail: success");
                                 openActivityListPatients();
                             }
                             else{
