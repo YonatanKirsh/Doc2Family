@@ -1,4 +1,4 @@
-package com.kirsh.doc2family.activities;
+package com.kirsh.doc2family.views;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,7 +18,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.kirsh.doc2family.R;
-import com.kirsh.doc2family.logic.User;
 
 public class LoginActivity extends AppCompatActivity {
 

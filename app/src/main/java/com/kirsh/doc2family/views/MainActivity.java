@@ -1,4 +1,4 @@
-package com.kirsh.doc2family.activities;
+package com.kirsh.doc2family.views;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;

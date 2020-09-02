@@ -1,4 +1,4 @@
-package com.kirsh.doc2family.activities;
+package com.kirsh.doc2family.views;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -6,11 +6,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.kirsh.doc2family.R;
+import com.kirsh.doc2family.logic.Communicator;
+import com.kirsh.doc2family.logic.Patient;
+
+import com.kirsh.doc2family.logic.Constants;
 
 public class PatientInfoActivity extends AppCompatActivity {
 
+    private Patient mPatient;
+    TextView patientNameTextView;
     Button questionsButton;
     Button friendsButton;
 
@@ -18,11 +25,22 @@ public class PatientInfoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_patient_info);
+        String patientId = getIntent().getStringExtra(Constants.PATIENT_ID_KEY);
+        mPatient = Communicator.getPatientById(patientId);
         initViews();
     }
 
 
     public void initViews(){
+        // patient name view
+        patientNameTextView = findViewById(R.id.text_view_name_in_adapter);
+        if (mPatient != null){
+            patientNameTextView.setText(mPatient.getFullName());
+        }
+        else {
+            patientNameTextView.setText(R.string.no_patient);
+        }
+
         // questions button
         questionsButton = findViewById(R.id.button_goto_questions);
         questionsButton.setOnClickListener(new View.OnClickListener() {

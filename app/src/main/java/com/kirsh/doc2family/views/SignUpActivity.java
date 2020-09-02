@@ -1,4 +1,4 @@
-package com.kirsh.doc2family.activities;
+package com.kirsh.doc2family.views;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;

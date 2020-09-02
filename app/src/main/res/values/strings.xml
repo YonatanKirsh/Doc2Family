@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Doc2Family</string>
+    <string name="no_patient">No patient :(</string>
 </resources>
