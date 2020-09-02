@@ -16,7 +16,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.kirsh.doc2family.R;
 
 public class LoginActivity extends AppCompatActivity {
@@ -25,8 +24,9 @@ public class LoginActivity extends AppCompatActivity {
     private EditText passwordEditText;
     private Button loginButton;
     private Button signUpButton;
+    private Button forgotP;
 
-    private FirebaseAuth mAuth;
+    private FirebaseAuth Auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +35,7 @@ public class LoginActivity extends AppCompatActivity {
         initViews();
 
         // Initialize Firebase Auth
-        mAuth = FirebaseAuth.getInstance();
+        Auth = FirebaseAuth.getInstance();
     }
 
     private void initViews(){
@@ -62,6 +62,15 @@ public class LoginActivity extends AppCompatActivity {
                 openActivitySignUp();
             }
         });
+
+        //forgot pass button
+        forgotP = findViewById(R.id.forgotP);
+        forgotP.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openActivityForgotPassword();
+            }
+        });
     }
 
     private void attemptLogin(){
@@ -74,13 +83,13 @@ public class LoginActivity extends AppCompatActivity {
         String email = emailEditText.getText().toString();
         String password = passwordEditText.getText().toString();
 
-        mAuth.signInWithEmailAndPassword(email, password)
+        Auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            if (mAuth.getCurrentUser().isEmailVerified()){
+                            if (Auth.getCurrentUser().isEmailVerified()){
                                 Log.d("SIGN_IN_SUCCESS", "signInWithEmail: success");
                                 openActivityListPatients();
                             }
@@ -100,6 +109,7 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
     }
+
     private void openActivitySignUp(){
         Intent intent = new Intent(this, SignUpActivity.class);
         startActivity(intent);
@@ -109,6 +119,11 @@ public class LoginActivity extends AppCompatActivity {
         // todo
 //        User thisUser = new User();
         Intent intent = new Intent(this, ListPatientsActivity.class);
+        startActivity(intent);
+    }
+
+    private void openActivityForgotPassword(){
+        Intent intent = new Intent(this, ForgotPasswordActivity.class);
         startActivity(intent);
     }
 }

@@ -2,64 +2,106 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/colorBackground"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".views.LoginActivity">
 
-    <EditText
-        android:id="@+id/edit_text_email"
-        android:layout_width="200dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="200dp"
-        android:hint="Enter email:"
-        android:textSize="15dp"
-        android:textAppearance="@color/colorAccent"
+    <TextView
+        android:id="@+id/signTIitle"
+        android:text="Sign In"
+        android:textSize="50dp"
+        android:textColor="@color/navy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="130dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
+
     <EditText
-        android:id="@+id/edit_text_password"
-        android:inputType="textPassword"
-        android:layout_width="200dp"
+        android:id="@+id/edit_text_email"
+        android:layout_width="300dp"
         android:layout_height="50dp"
         android:layout_marginTop="20dp"
-        android:hint="Enter password:"
+        android:drawableStart="@drawable/ic_email"
+        android:drawableLeft="@drawable/ic_email"
+        android:drawablePadding="5dp"
+        android:hint="Email Address"
         android:textSize="15dp"
-        android:textAppearance="@color/colorAccent"
+        android:background="@color/white"
+        android:textAppearance="@color/navy"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/signTIitle"/>
+
+    <EditText
+        android:id="@+id/edit_text_password"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp"
+        android:hint="Password"
+        android:textSize="15dp"
+        android:drawableStart="@drawable/ic_password"
+        android:drawableLeft="@drawable/ic_password"
+        android:drawablePadding="5dp"
+        android:inputType="textPassword"
+        android:textAppearance="@color/navy"
+        android:background="@color/white"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edit_text_email" />
 
     <Button
         android:id="@+id/button_login"
-        android:layout_width="wrap_content"
+        android:layout_width="310dp"
         android:layout_height="50dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="20dp"
         android:text="Login"
+        app:cornerRadius="8dp"
+        android:background="@color/navy"
+        android:textColor="@color/white"
         app:layout_constraintTop_toBottomOf="@id/edit_text_password"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"/>
 
     <Button
-        android:id="@+id/button_goto_sign_up"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:layout_margin="20dp"
-        android:text="Sign Up"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintRight_toRightOf="parent"/>
-
-    <ImageView
+        android:id="@+id/forgotP"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_login"
+        android:layout_marginTop="40dp"
+        android:text="FORGOT PASSWORD ?"
+        android:textColor="@color/green"
+        android:background="@null"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:srcCompat="@drawable/app_name"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/button_login"/>
+
+    <TextView
+        android:id="@+id/dont"
+        android:layout_width="wrap_content"
+        android:gravity="center_vertical"
+        android:layout_height="55dp"
+        android:layout_marginLeft="60dp"
+        android:text="Don't have an account ? "
+        android:textSize="15dp"
+        android:textColor="@color/navy"
+        app:layout_constraintTop_toBottomOf="@+id/forgotP"
+        android:layout_marginTop="40dp"
+        app:layout_constraintLeft_toLeftOf="parent"/>
+
+    <Button
+        android:id="@+id/button_goto_sign_up"
+        android:layout_width="wrap_content"
+        android:layout_height="55dp"
+        android:layout_marginTop="40dp"
+        android:text="Sign Up"
+        android:textColor="@color/green"
+        android:background="@null"
+        app:layout_constraintLeft_toRightOf="@+id/dont"
+        app:layout_constraintTop_toBottomOf="@+id/forgotP"/>
+
 
 
 

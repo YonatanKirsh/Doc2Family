@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -37,6 +38,7 @@ public class SignUpActivity extends AppCompatActivity {
     private EditText mNicknameEditText;
     private EditText mPasswordEditText;
     private EditText mVerifyPasswordEditText;
+    private boolean mIsDoctor;
     private Button mSignUpButton;
 
     private FirebaseAuth mAuth;
@@ -81,7 +83,7 @@ public class SignUpActivity extends AppCompatActivity {
                                                            }
                                     );
                             FirebaseUser user_auth = mAuth.getCurrentUser();
-                            User newUser = new User(user_auth.getEmail(), name, user_auth.getUid());
+                            User newUser = new User(user_auth.getEmail(), name, user_auth.getUid(), mIsDoctor);
                             FirebaseFirestore firestore = FirebaseFirestore.getInstance();
                             DocumentReference document = firestore.collection("Users").document();
                             document.set(newUser);
@@ -119,6 +121,24 @@ public class SignUpActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 attemptSignUp(v);
+            }
+        });
+
+        // checkBox doctor and friend
+        CheckBox checkDoctor = (CheckBox) findViewById(R.id.checkDoc);
+        CheckBox checkFriend = (CheckBox) findViewById(R.id.checkFriend);
+
+        checkDoctor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mIsDoctor = ((CheckBox) v).isChecked();
+            }
+        });
+
+        checkFriend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mIsDoctor = !((CheckBox) v).isChecked();
             }
         });
     }

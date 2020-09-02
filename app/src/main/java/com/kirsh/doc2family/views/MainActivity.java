@@ -3,6 +3,8 @@ package com.kirsh.doc2family.views;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -23,14 +25,9 @@ public class MainActivity extends AppCompatActivity {
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
 
-        openActivityLogin();
 
-        //testForTheFirebase todo to remove
-//        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-//        DocumentReference document = firestore.collection("projectTest").document();
-//        Map<String, Object> user = new HashMap<>();
-//        user.put("second", "maayane");
-//        document.set(user);
+
+
         // check for user info
         //  if none: login activity
         //  if yes: list patients activity
@@ -40,11 +37,21 @@ public class MainActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
+
         //updateUI(currentUser);
-        if(currentUser == null) {
-            openActivityLogin();
-        }
+
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable(){
+            @Override
+            public void run(){
+                FirebaseUser currentUser = mAuth.getCurrentUser();
+                // do something
+                if(currentUser == null) {
+                    openActivityLogin();
+                }
+            }
+        }, 3000);
+
     }
 
     private void openActivityLogin(){
