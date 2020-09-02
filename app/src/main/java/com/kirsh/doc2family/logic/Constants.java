@@ -1,5 +1,6 @@
 package com.kirsh.doc2family.logic;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class Constants {
@@ -31,10 +32,22 @@ public class Constants {
 
     private static ArrayList<Patient> getSamplePatients(){
         ArrayList<Patient> patients = new ArrayList<>();
-        patients.add(new Patient("John", "Snow", "js", new ArrayList<PatientUpdate>()));
-        patients.add(new Patient("Deneris", "Targerijan", "dt", new ArrayList<PatientUpdate>()));
-        patients.add(new Patient("Clark", "Kent", "ck", new ArrayList<PatientUpdate>()));
-        patients.add(new Patient("Captain", "America", "ca", new ArrayList<PatientUpdate>()));
+        patients.add(new Patient("John", "Snow", "js", getSampleUpdates()));
+        patients.add(new Patient("Deneris", "Targerijan", "dt", getSampleUpdates()));
+        patients.add(new Patient("Clark", "Kent", "ck", getSampleUpdates()));
+        patients.add(new Patient("Captain", "America", "ca", getSampleUpdates()));
         return patients;
+    }
+
+    private static ArrayList<Update> getSampleUpdates(){
+        Doctor doctor = new Doctor("Derek", "McDreamy", "DM93");;
+        LocalDateTime firstTime = LocalDateTime.now().minusDays(10);
+        ArrayList<Update> updates = new ArrayList<>();
+        updates.add(new Update("patient just admitted. has severe fomo.", firstTime, doctor));
+        updates.add(new Update("started treating patient with hourly whiskey shots.", updates.get(updates.size()-1).getDate().plusHours(3), doctor));
+        updates.add(new Update("patient is being a lil' bish- says he doesn't like whiskey.. wtf?", updates.get(updates.size()-1).getDate().plusMinutes(15), doctor));
+        updates.add(new Update("patient stopped complaining, now loves whiskey", updates.get(updates.size()-1).getDate().plusHours(3), doctor));
+        updates.add(new Update("patient is drunk.", updates.get(updates.size()-1).getDate().plusHours(1), doctor));
+        return updates;
     }
 }
