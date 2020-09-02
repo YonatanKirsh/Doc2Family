@@ -88,7 +88,7 @@ public class SignUpActivity extends AppCompatActivity {
                             openActivityLogin();
                         } else {
                             // If sign in fails, display a message to the user.
-                            Log.w("SIGN_UP_ERR", "createUserWithEmail:failure", task.getException());
+                            Log.w("SIGN_UP_ERR", "createUserWithEmail: failure", task.getException());
                             Toast.makeText(SignUpActivity.this, "Registration failed!",
                                     Toast.LENGTH_SHORT).show();
                         }
