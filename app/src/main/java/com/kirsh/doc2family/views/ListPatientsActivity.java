@@ -12,11 +12,10 @@ import android.widget.TextView;
 
 import com.kirsh.doc2family.R;
 import com.kirsh.doc2family.logic.Communicator;
+import com.kirsh.doc2family.logic.Constants;
 import com.kirsh.doc2family.logic.Patient;
 
 import java.util.ArrayList;
-
-import static com.kirsh.doc2family.logic.Constants.PATIENT_ID_KEY;
 
 public class ListPatientsActivity extends AppCompatActivity {
 
@@ -65,7 +64,7 @@ public class ListPatientsActivity extends AppCompatActivity {
 
     private void openActivityPatientInfo(Patient patient){
         Intent intent = new Intent(this, PatientInfoActivity.class);
-        intent.putExtra(PATIENT_ID_KEY, patient.getId());
+        intent.putExtra(Constants.PATIENT_ID_KEY, patient.getId());
         startActivity(intent);
     }
 
