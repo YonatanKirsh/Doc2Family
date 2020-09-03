@@ -4,4 +4,5 @@ public class Friend extends User {
     public Friend(String email, String nickname, String id) {
         super(email, nickname, id, false);
     }
+
 }

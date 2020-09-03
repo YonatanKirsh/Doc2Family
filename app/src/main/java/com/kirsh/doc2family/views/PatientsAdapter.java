@@ -33,8 +33,8 @@ public class PatientsAdapter extends RecyclerView.Adapter<PatientsAdapter.Patien
             @Override
             public void onClick(View v) {
                 Patient currentPatient = mDataset.get(patientHolder.getAbsoluteAdapterPosition());
-                if (mContext instanceof ListPatientsActivity){
-                    ((ListPatientsActivity)mContext).onClickPatient(currentPatient);
+                if (mContext instanceof PatientsListActivity){
+                    ((PatientsListActivity)mContext).onClickPatient(currentPatient);
                 }
             }
         });

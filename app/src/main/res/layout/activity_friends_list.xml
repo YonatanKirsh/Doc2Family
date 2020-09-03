@@ -4,43 +4,42 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".views.ListPatientsActivity">
+    tools:context=".views.FriendsListActivity">
 
     <TextView
-        android:id="@+id/text_view_list_patients_title"
+        android:id="@+id/text_view_friends_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:text="My Patients"
+        android:text="PATIENT'S FRIENDS"
         android:textSize="40sp"
         android:layout_marginBottom="20dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"/>
 
-
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_patients"
+        android:id="@+id/recycler_friends"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginTop="100dp"
+        android:layout_marginBottom="80dp"
         android:scrollbars="vertical"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/button_goto_add_patient"
-        app:layout_constraintTop_toBottomOf="@+id/text_view_list_patients_title"
-        app:layout_constraintVertical_bias="0.05" />
+        app:layout_constraintTop_toBottomOf="@+id/text_view_friends_title"
+        app:layout_constraintBottom_toTopOf="@+id/button_add_friend"
+        app:layout_constraintVertical_bias="0.0"/>
 
     <Button
-        android:id="@+id/button_goto_add_patient"
+        android:id="@+id/button_add_friend"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
-        android:layout_marginTop="40dp"
-        android:text="New Patient"
+        android:layout_margin="20dp"
+        android:text="Add Friend"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"/>
-
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

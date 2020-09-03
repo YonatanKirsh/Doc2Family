@@ -2,6 +2,8 @@ package com.kirsh.doc2family.views;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -12,8 +14,15 @@ import android.widget.LinearLayout;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.kirsh.doc2family.R;
+import com.kirsh.doc2family.logic.Communicator;
+import com.kirsh.doc2family.logic.Constants;
+import com.kirsh.doc2family.logic.Friend;
+import com.kirsh.doc2family.logic.Patient;
 
-public class FriendsActivity extends AppCompatActivity {
+public class FriendsListActivity extends AppCompatActivity {
+
+    private Patient mPatient;
+    FriendsAdapter mAdapter;
 
     Button addFriendButton;
     AlertDialog dialog;
@@ -21,14 +30,36 @@ public class FriendsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_friends);
+        setContentView(R.layout.activity_friends_list);
+        initPatient();
+        initFriendsadapter();
         initViews();
     }
 
+    private void initPatient(){
+        //todo handle no-key exception
+        //todo unite with QuestionsActivity? move to Constants?
+        String patientId = getIntent().getStringExtra(Constants.PATIENT_ID_KEY);
+        mPatient = Communicator.getPatientById(patientId);
+    }
+
+    private void initFriendsadapter(){
+        mAdapter = new FriendsAdapter(this, mPatient.getFriends());
+    }
+
     private void initViews(){
-        initAddFriendDialog();
+        // add friend button
         addFriendButton = findViewById(R.id.button_add_friend);
         setAddFriendButton();
+
+        // friends adapter
+        RecyclerView friendsAdapter = findViewById(R.id.recycler_friends);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
+        friendsAdapter.setLayoutManager(layoutManager);
+        friendsAdapter.setAdapter(mAdapter);
+
+        // add friend dialog
+        initAddFriendDialog();
     }
 
     private void setAddFriendButton(){
@@ -41,11 +72,11 @@ public class FriendsActivity extends AppCompatActivity {
     }
 
     private void initAddFriendDialog(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(FriendsActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(FriendsListActivity.this);
         builder.setTitle("Add Friend");
 
         // add edit text
-        final EditText questionInput = new EditText(FriendsActivity.this);
+        final EditText questionInput = new EditText(FriendsListActivity.this);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
@@ -72,5 +103,9 @@ public class FriendsActivity extends AppCompatActivity {
         });
         // Create the AlertDialog
         dialog = builder.create();
+    }
+
+    public void onClickFriend(Friend friend) {
+        //todo implement
     }
 }

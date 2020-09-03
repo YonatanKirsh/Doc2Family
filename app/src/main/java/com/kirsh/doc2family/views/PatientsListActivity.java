@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.kirsh.doc2family.R;
 import com.kirsh.doc2family.logic.Communicator;
@@ -17,7 +16,7 @@ import com.kirsh.doc2family.logic.Patient;
 
 import java.util.ArrayList;
 
-public class ListPatientsActivity extends AppCompatActivity {
+public class PatientsListActivity extends AppCompatActivity {
 
     PatientsAdapter mAdapter;
     Button addPatientButton;
@@ -25,7 +24,7 @@ public class ListPatientsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_list_patients);
+        setContentView(R.layout.activity_patients_list);
         initPatientAdapter();
         initViews();
     }
