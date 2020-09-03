@@ -84,6 +84,7 @@ public class PatientInfoActivity extends AppCompatActivity {
     public void openActivityQuestions(){
         // todo this patient's questions page
         Intent intent = new Intent(this, QuestionsActivity.class);
+        intent.putExtra(Constants.PATIENT_ID_KEY, mPatient.getId());
         startActivity(intent);
     }
 

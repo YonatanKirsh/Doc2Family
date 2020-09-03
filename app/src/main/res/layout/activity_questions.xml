@@ -20,12 +20,16 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_questions"
-        android:scrollbars="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/text_view_questions_title"
+        android:layout_height="match_parent"
+        android:layout_marginTop="100dp"
+        android:layout_marginBottom="80dp"
+        android:scrollbars="vertical"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"/>
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_view_questions_title"
+        app:layout_constraintBottom_toTopOf="@+id/button_submit_question"
+        app:layout_constraintVertical_bias="0.0"/>
 
     <Button
         android:id="@+id/button_submit_question"
