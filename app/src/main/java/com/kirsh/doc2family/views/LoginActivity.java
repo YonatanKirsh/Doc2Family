@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -14,12 +15,16 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.kirsh.doc2family.R;
+import com.kirsh.doc2family.logic.Constants;
 
 public class LoginActivity extends AppCompatActivity {
 
+    private TextInputLayout email_layout;
+    private TextInputLayout password_layout;
     private EditText emailEditText;
     private EditText passwordEditText;
     private Button loginButton;
@@ -39,6 +44,12 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void initViews(){
+        // email layout
+        email_layout = findViewById(R.id.input_text_email_layout);
+
+        // password layout
+        password_layout = findViewById(R.id.input_text_password_layout);
+
         // email EditText
         emailEditText = findViewById(R.id.edit_text_email);
 
@@ -75,8 +86,29 @@ public class LoginActivity extends AppCompatActivity {
 
     private void attemptLogin(){
         Snackbar.make(findViewById(android.R.id.content), "Login attempt!", Snackbar.LENGTH_SHORT).show();
-        // todo login
+        checkEmailAndPasswordValidity();
         signInWithEmailAndPassword();
+    }
+
+    private void checkEmailAndPasswordValidity(){
+        String email = emailEditText.getText().toString().trim();
+        String password = passwordEditText.getText().toString().trim();
+
+        email_layout.setError(null);
+        password_layout.setError(null);
+
+        if (TextUtils.isEmpty(email)){
+            email_layout.setError("Email is required.");
+            emailEditText.requestFocus();
+        }
+        if (!Constants.isLegalEmail(email)){
+            email_layout.setError("Email is not valid.");
+            emailEditText.requestFocus();
+        }
+        if (TextUtils.isEmpty(password)){
+            password_layout.setError("Password is required.");
+            passwordEditText.requestFocus();
+        }
     }
 
     private void signInWithEmailAndPassword() {
