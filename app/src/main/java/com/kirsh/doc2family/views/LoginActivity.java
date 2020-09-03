@@ -86,13 +86,14 @@ public class LoginActivity extends AppCompatActivity {
 
     private void attemptLogin(){
         //todo remove openActivity and attempt-message when signup&login work
-        openActivityListPatients();
-        Snackbar.make(findViewById(android.R.id.content), "Login attempt!", Snackbar.LENGTH_SHORT).show();
-        checkEmailAndPasswordValidity();
-        signInWithEmailAndPassword();
+        //openActivityListPatients();
+        if (checkEmailAndPasswordValidity()){
+            Snackbar.make(findViewById(android.R.id.content), "Login attempt!", Snackbar.LENGTH_SHORT).show();
+            signInWithEmailAndPassword();
+        };
     }
 
-    private void checkEmailAndPasswordValidity(){
+    private boolean checkEmailAndPasswordValidity(){
         String email = emailEditText.getText().toString().trim();
         String password = passwordEditText.getText().toString().trim();
 
@@ -102,15 +103,19 @@ public class LoginActivity extends AppCompatActivity {
         if (TextUtils.isEmpty(email)){
             email_layout.setError("Email is required.");
             emailEditText.requestFocus();
+            return false;
         }
         if (!Constants.isLegalEmail(email)){
             email_layout.setError("Email is not valid.");
             emailEditText.requestFocus();
+            return false;
         }
         if (TextUtils.isEmpty(password)){
             password_layout.setError("Password is required.");
             passwordEditText.requestFocus();
+            return false;
         }
+        return true;
     }
 
     private void signInWithEmailAndPassword() {

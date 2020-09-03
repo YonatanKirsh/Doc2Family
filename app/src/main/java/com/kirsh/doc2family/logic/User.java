@@ -3,9 +3,7 @@ package com.kirsh.doc2family.logic;
 import java.util.ArrayList;
 
 public class User {
-    String mFirstName;
-    String mLastName;
-    String mNickname;
+    String name;
     String mId;
     private String email;
     private boolean isDoctor;
@@ -13,8 +11,8 @@ public class User {
 
 //    public User(){}
 
-    public User(String email, String nickname, String id, boolean isDoctor){
-        this.mNickname = nickname;
+    public User(String email, String name, String id, boolean isDoctor){
+        this.name = name;
         this.mId = id;
         this.email = email;
         this.isDoctor = isDoctor;
@@ -24,8 +22,13 @@ public class User {
         return email;
     }
 
-    public String getNickname() {
-        return mNickname;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getId() {
@@ -34,10 +37,6 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public void setNickname(String name) {
-        this.mNickname = name;
     }
 
     public void setId(String id) {
