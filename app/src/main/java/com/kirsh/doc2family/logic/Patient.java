@@ -9,13 +9,15 @@ public class Patient {
     private String mId;
     private ArrayList<Update> mUpdates;
     private ArrayList<Question> mQuestions;
+    private ArrayList<Friend> mFriends;
 
-    public Patient(String firstName, String lastName, String id, ArrayList<Update> updates, ArrayList<Question> questions){
+    public Patient(String firstName, String lastName, String id, ArrayList<Update> updates, ArrayList<Question> questions, ArrayList<Friend> friends){
         mFirstName = firstName;
         mLastName = lastName;
         mId = id;
         mUpdates = updates;
         mQuestions = questions;
+        mFriends = friends;
     }
 
     public String getId() {
@@ -34,12 +36,9 @@ public class Patient {
         return mQuestions;
     }
 
-    public void addUpdate(Update update){
-        mUpdates.add(update);
+    public ArrayList<Friend> getFriends(){
+        return mFriends;
     }
 
-    public void addQuestion(Question question){
-        mQuestions.add(question);
-    }
 }
 

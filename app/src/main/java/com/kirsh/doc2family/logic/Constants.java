@@ -32,10 +32,10 @@ public class Constants {
 
     private static ArrayList<Patient> getSamplePatients(){
         ArrayList<Patient> patients = new ArrayList<>();
-        patients.add(new Patient("John", "Snow", "js", getSampleUpdates(), getSampleQuestions()));
-        patients.add(new Patient("Deneris", "Targerijan", "dt", getSampleUpdates(), getSampleQuestions()));
-        patients.add(new Patient("Clark", "Kent", "ck", getSampleUpdates(), getSampleQuestions()));
-        patients.add(new Patient("Captain", "America", "ca", getSampleUpdates(), getSampleQuestions()));
+        patients.add(new Patient("John", "Snow", "js", getSampleUpdates(), getSampleQuestions(), getSampleFriends()));
+        patients.add(new Patient("Deneris", "Targerijan", "dt", getSampleUpdates(), getSampleQuestions(), getSampleFriends()));
+        patients.add(new Patient("Clark", "Kent", "ck", getSampleUpdates(), getSampleQuestions(), getSampleFriends()));
+        patients.add(new Patient("Captain", "America", "ca", getSampleUpdates(), getSampleQuestions(), getSampleFriends()));
         return patients;
     }
 
@@ -60,5 +60,13 @@ public class Constants {
         questions.add(new Question("did you start the new treatment?", "yes, just this morning.", oldTime, now.minusDays(1)));
 
         return questions;
+    }
+
+    private static ArrayList<Friend> getSampleFriends(){
+        ArrayList<Friend> friends = new ArrayList<>();
+        friends.add(new Friend("bestFriend@mail.com", "best friend", "bestfriendId"));
+        friends.add(new Friend("mom@mail.com", "mom", "momId"));
+        friends.add(new Friend("daughter@mail.com", "Johnny English", "JEId"));
+        return friends;
     }
 }

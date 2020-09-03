@@ -14,7 +14,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -153,7 +152,7 @@ public class LoginActivity extends AppCompatActivity {
     private void openActivityListPatients(){
         // todo
 //        User thisUser = new User();
-        Intent intent = new Intent(this, ListPatientsActivity.class);
+        Intent intent = new Intent(this, PatientsListActivity.class);
         startActivity(intent);
     }
 

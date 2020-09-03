@@ -32,10 +32,14 @@ public class QuestionsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_questions);
-        String patientId = getIntent().getStringExtra(Constants.PATIENT_ID_KEY);
-        mPatient = Communicator.getPatientById(patientId);
+        initPatient();
         initQuestionsAdapter();
         initViews();
+    }
+
+    private void initPatient(){
+        String patientId = getIntent().getStringExtra(Constants.PATIENT_ID_KEY);
+        mPatient = Communicator.getPatientById(patientId);
     }
 
     private void initQuestionsAdapter(){
