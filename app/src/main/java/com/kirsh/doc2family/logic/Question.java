@@ -62,7 +62,7 @@ public class Question {
         return mDateAsked;
     }
 
-    public static class QuestionSortByLastEdited implements Comparator<Question>{
+    public static class SortByLastEdited implements Comparator<Question>{
 
         @Override
         public int compare(Question o1, Question o2) {
@@ -70,19 +70,19 @@ public class Question {
         }
     }
 
-    public static class QuestionSortByAnswered implements Comparator<Question>{
+    public static class SortByUnansweredFirst implements Comparator<Question>{
 
         @Override
         public int compare(Question o1, Question o2) {
             // un-answered is first
             if (!o1.isAnswered() && o2.isAnswered()){
-                return 1;
-            }
-            if (o1.isAnswered() && !o2.isAnswered()){
                 return -1;
             }
+            if (o1.isAnswered() && !o2.isAnswered()){
+                return 1;
+            }
             // last-edited otherwise
-            return new QuestionSortByLastEdited().compare(o1, o2);
+            return new SortByLastEdited().compare(o1, o2);
         }
     }
 }
