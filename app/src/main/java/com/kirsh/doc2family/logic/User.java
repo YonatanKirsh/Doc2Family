@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class User {
     String mFirstName;
     String mLastName;
-    String name;
+    String mNickname;
     String mId;
     private String email;
     private boolean isDoctor;
@@ -13,9 +13,8 @@ public class User {
 
 //    public User(){}
 
-    public User(String firstName, String lastName, String email, String id, boolean isDoctor){
-        this.mFirstName = firstName;
-        this.mLastName = lastName;
+    public User(String email, String nickname, String id, boolean isDoctor){
+        this.mNickname = nickname;
         this.mId = id;
         this.email = email;
         this.isDoctor = isDoctor;
@@ -25,8 +24,8 @@ public class User {
         return email;
     }
 
-    public String getName() {
-        return name;
+    public String getNickname() {
+        return mNickname;
     }
 
     public String getId() {
@@ -37,8 +36,8 @@ public class User {
         this.email = email;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setNickname(String name) {
+        this.mNickname = name;
     }
 
     public void setId(String id) {

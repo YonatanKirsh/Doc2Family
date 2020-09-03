@@ -1,7 +1,7 @@
 package com.kirsh.doc2family.logic;
 
 public class Friend extends User {
-    public Friend(String firstName, String lastName, String id) {
-        super(firstName, lastName, id);
+    public Friend(String email, String nickname, String id) {
+        super(email, nickname, id, false);
     }
 }

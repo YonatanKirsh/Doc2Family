@@ -7,7 +7,7 @@ public class Constants {
 
     // messages
     public static final String EMAIL_INFO_MESSAGE = "Please enter a valid email address.";
-    public static final String NICKNAME_INFO_MESSAGE = "Others will see this name when you follow a patient.\nNickname should be between 3 and 12 letters long.";
+    public static final String NICKNAME_INFO_MESSAGE = "Others will see this name when you follow a patient.\nNickname should be between 3 and 20 characters long.";
     public static final String PASSWORD_INFO_MESSAGE = "Password should be at least 4 characters long.";
     public static final String VERIFY_PASSWORD_INFO_MESSAGE = "Verify password - enter the same password again.";
 
@@ -20,7 +20,7 @@ public class Constants {
     }
 
     public static boolean isLegalNickname(String username){
-        return username.length() >= 3 && username.length() <= 12 && username.matches("[A-Za-z_0-9]+");
+        return username.length() >= 3 && username.length() <= 20 && username.matches("[A-Za-z_0-9. ]+");
     }
 
     public static boolean isLegalPassword(String password){
@@ -40,7 +40,7 @@ public class Constants {
     }
 
     private static ArrayList<Update> getSampleUpdates(){
-        Doctor doctor = new Doctor("Derek", "McDreamy", "DM93");;
+        Doctor doctor = new Doctor("myemail", "Dr. McDreamy","DM93");;
         LocalDateTime firstTime = LocalDateTime.now().minusDays(10);
         ArrayList<Update> updates = new ArrayList<>();
         updates.add(new Update("patient just admitted. has severe fomo.", firstTime, doctor));
