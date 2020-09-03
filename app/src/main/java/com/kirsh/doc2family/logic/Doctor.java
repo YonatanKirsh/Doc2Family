@@ -8,5 +8,6 @@ public class Doctor extends User {
 
     public void addPatient(Patient patient){
         mPatients.add(patient);
+        getPatients().add(patient);
     }
 }
