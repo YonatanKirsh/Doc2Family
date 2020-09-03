@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 public class Communicator {
 
-    //todo firebase!
-    public static Patient getPatientById(String id){
+    //todo firebase / local db !!
+    public static Patient getPatientById(String patientId){
         for (Patient patient: Constants.SAMPLE_PATIENTS) {
-            if (patient.getId().equals(id)){
+            if (patient.getId().equals(patientId)){
                 return patient;
             }
         }
@@ -15,7 +15,8 @@ public class Communicator {
     }
 
     //todo firebase!
-    public static ArrayList<Patient> getUsersPatients(String id){
+    public static ArrayList<Patient> getUsersPatients(String userId){
         return Constants.SAMPLE_PATIENTS;
     }
+
 }

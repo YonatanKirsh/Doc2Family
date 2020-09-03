@@ -11,14 +11,14 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.kirsh.doc2family.R;
+import com.kirsh.doc2family.logic.Communicator;
 import com.kirsh.doc2family.logic.Patient;
+
+import java.util.ArrayList;
 
 import static com.kirsh.doc2family.logic.Constants.PATIENT_ID_KEY;
 
 public class ListPatientsActivity extends AppCompatActivity {
-
-    // todo remove
-    TextView patientDemo;
 
     PatientsAdapter mAdapter;
     Button addPatientButton;
@@ -49,7 +49,9 @@ public class ListPatientsActivity extends AppCompatActivity {
     }
 
     private void initPatientAdapter(){
-        mAdapter = new PatientsAdapter(this);
+        //todo userId? here? from where?
+        ArrayList<Patient> patients = Communicator.getUsersPatients("userId");
+        mAdapter = new PatientsAdapter(this, patients);
     }
 
     public void onClickPatient(Patient patient){

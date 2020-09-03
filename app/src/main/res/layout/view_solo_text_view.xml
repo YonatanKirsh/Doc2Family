@@ -7,7 +7,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <TextView
-        android:id="@+id/text_view_name_in_adapter"
+        android:id="@+id/text_view_solo"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:textSize="20sp" />

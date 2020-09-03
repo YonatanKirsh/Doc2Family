@@ -1,6 +1,8 @@
 package com.kirsh.doc2family.views;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,10 +15,15 @@ import com.kirsh.doc2family.logic.Communicator;
 import com.kirsh.doc2family.logic.Patient;
 
 import com.kirsh.doc2family.logic.Constants;
+import com.kirsh.doc2family.logic.Update;
+
+import java.util.ArrayList;
 
 public class PatientInfoActivity extends AppCompatActivity {
 
     private Patient mPatient;
+    UpdatesAdapter mAdapter;
+
     TextView patientNameTextView;
     Button questionsButton;
     Button friendsButton;
@@ -27,19 +34,29 @@ public class PatientInfoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_patient_info);
         String patientId = getIntent().getStringExtra(Constants.PATIENT_ID_KEY);
         mPatient = Communicator.getPatientById(patientId);
+        initUpdatesAdapter();
         initViews();
     }
 
+    private void initUpdatesAdapter(){
+        mAdapter = new UpdatesAdapter(this, mPatient.getUpdates());
+    }
 
     public void initViews(){
         // patient name view
-        patientNameTextView = findViewById(R.id.text_view_name_in_adapter);
+        patientNameTextView = findViewById(R.id.text_view_patient_info_title);
         if (mPatient != null){
             patientNameTextView.setText(mPatient.getFullName());
         }
         else {
             patientNameTextView.setText(R.string.no_patient);
         }
+
+        // updates adapter
+        RecyclerView updatesRecycler = findViewById(R.id.recycler_updates);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
+        updatesRecycler.setLayoutManager(layoutManager);
+        updatesRecycler.setAdapter(mAdapter);
 
         // questions button
         questionsButton = findViewById(R.id.button_goto_questions);
@@ -60,6 +77,10 @@ public class PatientInfoActivity extends AppCompatActivity {
         });
     }
 
+    public void onClickUpdate(Update update) {
+        //todo do something with update? show in popup?
+    }
+
     public void openActivityQuestions(){
         // todo this patient's questions page
         Intent intent = new Intent(this, QuestionsActivity.class);
@@ -71,4 +92,5 @@ public class PatientInfoActivity extends AppCompatActivity {
         Intent intent = new Intent(this, FriendsActivity.class);
         startActivity(intent);
     }
+
 }

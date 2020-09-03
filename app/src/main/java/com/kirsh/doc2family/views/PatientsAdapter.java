@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.kirsh.doc2family.R;
-import com.kirsh.doc2family.logic.Communicator;
 import com.kirsh.doc2family.logic.Patient;
 
 import java.util.ArrayList;
@@ -20,17 +19,15 @@ public class PatientsAdapter extends RecyclerView.Adapter<PatientsAdapter.Patien
     private ArrayList<Patient> mDataset;
     private Context mContext;
 
-    public PatientsAdapter(@NonNull Context context) {
-        //todo userId? here? from where?
-        mDataset = Communicator.getUsersPatients("userId");
-
+    public PatientsAdapter(@NonNull Context context, ArrayList<Patient> dataset) {
+        mDataset = dataset;
         mContext = context;
     }
 
     @NonNull
     @Override
     public PatientHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View patientView = LayoutInflater.from(parent.getContext()).inflate(R.layout.name_in_adapter, parent, false);
+        View patientView = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_solo_text_view, parent, false);
         final PatientHolder patientHolder = new PatientHolder(patientView);
         patientView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,7 +58,7 @@ public class PatientsAdapter extends RecyclerView.Adapter<PatientsAdapter.Patien
 
         public PatientHolder(@NonNull View itemView) {
             super(itemView);
-            textView = itemView.findViewById(R.id.text_view_name_in_adapter);
+            textView = itemView.findViewById(R.id.text_view_solo);
         }
     }
 }
