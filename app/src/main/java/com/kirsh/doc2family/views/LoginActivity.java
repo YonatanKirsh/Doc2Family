@@ -91,7 +91,6 @@ public class LoginActivity extends AppCompatActivity {
         //todo remove openActivity and attempt-message when signup&login work
         //openActivityListPatients();
         if (checkEmailAndPasswordValidity()){
-            Snackbar.make(findViewById(android.R.id.content), "Login attempt!", Snackbar.LENGTH_SHORT).show();
             signInWithEmailAndPassword();
         };
     }
