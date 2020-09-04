@@ -23,8 +23,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
-
-
+        openActivityLogin();
 
 
         // check for user info
@@ -45,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
                 FirebaseUser currentUser = mAuth.getCurrentUser();
                 // do something
                 if(currentUser == null) {
-                    openActivityLogin();
+                  //  openActivityLogin();
                 }
             }
         }, 3000);

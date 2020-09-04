@@ -8,7 +8,7 @@
     tools:context=".views.LoginActivity">
 
     <TextView
-        android:id="@+id/signTIitle"
+        android:id="@+id/sign_up_title"
         android:text="Sign In"
         android:textSize="50dp"
         android:textColor="@color/navy"
@@ -29,7 +29,7 @@
         app:errorEnabled="true"
         app:layout_constraintBottom_toTopOf="@+id/input_text_password_layout"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/signTIitle"
+        app:layout_constraintTop_toBottomOf="@+id/sign_up_title"
         app:layout_constraintVertical_bias="0.709"
         app:startIconDrawable="@drawable/ic_email"
         tools:ignore="MissingConstraints">
@@ -78,7 +78,7 @@
         android:layout_marginTop="20dp"
         android:text="Login"
         app:cornerRadius="8dp"
-        android:background="@color/navy"
+        android:background="@drawable/customized_button"
         android:textColor="@color/white"
         app:layout_constraintTop_toBottomOf="@id/input_text_password_layout"
         app:layout_constraintLeft_toLeftOf="parent"
