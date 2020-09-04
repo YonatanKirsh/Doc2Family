@@ -12,10 +12,10 @@
         <activity android:name=".views.ForgotPasswordActivity"></activity>
         <activity android:name=".views.AddPatientActivity" />
         <activity android:name=".views.SignUpActivity" />
-        <activity android:name=".views.FriendsActivity" />
+        <activity android:name=".views.FriendsListActivity" />
         <activity android:name=".views.QuestionsActivity" />
         <activity android:name=".views.PatientInfoActivity" />
-        <activity android:name=".views.ListPatientsActivity" />
+        <activity android:name=".views.PatientsListActivity" />
         <activity android:name=".views.LoginActivity" />
         <activity android:name=".views.MainActivity">
             <intent-filter>

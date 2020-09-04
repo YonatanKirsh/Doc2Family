@@ -34,10 +34,10 @@ public class Constants {
 
     private static ArrayList<Patient> getSamplePatients(){
         ArrayList<Patient> patients = new ArrayList<>();
-        patients.add(new Patient("John", "Snow", "js", getSampleUpdates()));
-        patients.add(new Patient("Deneris", "Targerijan", "dt", getSampleUpdates()));
-        patients.add(new Patient("Clark", "Kent", "ck", getSampleUpdates()));
-        patients.add(new Patient("Captain", "America", "ca", getSampleUpdates()));
+        patients.add(new Patient("John", "Snow", "js", getSampleUpdates(), getSampleQuestions(), getSampleFriends()));
+        patients.add(new Patient("Deneris", "Targerijan", "dt", getSampleUpdates(), getSampleQuestions(), getSampleFriends()));
+        patients.add(new Patient("Clark", "Kent", "ck", getSampleUpdates(), getSampleQuestions(), getSampleFriends()));
+        patients.add(new Patient("Captain", "America", "ca", getSampleUpdates(), getSampleQuestions(), getSampleFriends()));
         return patients;
     }
 
@@ -52,5 +52,23 @@ public class Constants {
         updates.add(new Update("patient stopped complaining, now loves whiskey", updates.get(updates.size()-1).getDate().plusHours(3), doctor));
         updates.add(new Update("patient is drunk.", updates.get(updates.size()-1).getDate().plusHours(1), doctor));
         return updates;
+    }
+
+    private static ArrayList<Question> getSampleQuestions(){
+        ArrayList<Question> questions = new ArrayList<>();
+        LocalDateTime oldTime = LocalDateTime.now().minusDays(10);
+        LocalDateTime now = LocalDateTime.now();
+        questions.add(new Question("How did the operation go??", null, oldTime, null));
+        questions.add(new Question("did you start the new treatment?", "yes, just this morning.", oldTime, now.minusDays(1)));
+
+        return questions;
+    }
+
+    private static ArrayList<Friend> getSampleFriends(){
+        ArrayList<Friend> friends = new ArrayList<>();
+        friends.add(new Friend("bestFriend@mail.com", "best friend", "bestfriendId"));
+        friends.add(new Friend("mom@mail.com", "mom", "momId"));
+        friends.add(new Friend("daughter@mail.com", "Johnny English", "JEId"));
+        return friends;
     }
 }

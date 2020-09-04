@@ -17,8 +17,6 @@ import com.kirsh.doc2family.logic.Patient;
 import com.kirsh.doc2family.logic.Constants;
 import com.kirsh.doc2family.logic.Update;
 
-import java.util.ArrayList;
-
 public class PatientInfoActivity extends AppCompatActivity {
 
     private Patient mPatient;
@@ -84,12 +82,14 @@ public class PatientInfoActivity extends AppCompatActivity {
     public void openActivityQuestions(){
         // todo this patient's questions page
         Intent intent = new Intent(this, QuestionsActivity.class);
+        intent.putExtra(Constants.PATIENT_ID_KEY, mPatient.getId());
         startActivity(intent);
     }
 
     public void openActivityFriends(){
         // todo this patient's friends page
-        Intent intent = new Intent(this, FriendsActivity.class);
+        Intent intent = new Intent(this, FriendsListActivity.class);
+        intent.putExtra(Constants.PATIENT_ID_KEY, mPatient.getId());
         startActivity(intent);
     }
 
