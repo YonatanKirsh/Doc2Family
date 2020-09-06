@@ -66,7 +66,8 @@ public class SignUpActivity extends AppCompatActivity {
     private void createUserWithEmailAndPassword() {
         String email = mEmailEditText.getText().toString().trim();
         String password = mPasswordEditText.getText().toString();
-        final String name = mFirstNameEditText.getText().toString() + " " + mLastNameEditText.getText().toString();
+        final String firstName = mFirstNameEditText.getText().toString();
+        final String lastName = mLastNameEditText.getText().toString();
 
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -93,7 +94,7 @@ public class SignUpActivity extends AppCompatActivity {
                                                            }
                                     );
                             FirebaseUser user_auth = mAuth.getCurrentUser();
-                            User newUser = new User(user_auth.getEmail(), name, user_auth.getUid(), mIsDoctor);
+                            User newUser = new User(user_auth.getEmail(), firstName, lastName, user_auth.getUid(), mIsDoctor);
                             FirebaseFirestore firestore = FirebaseFirestore.getInstance();
                             DocumentReference document = firestore.collection("Users").document();
                             document.set(newUser);
