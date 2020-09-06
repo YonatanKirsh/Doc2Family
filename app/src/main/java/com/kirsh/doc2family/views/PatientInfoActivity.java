@@ -23,6 +23,7 @@ public class PatientInfoActivity extends AppCompatActivity {
     UpdatesAdapter mAdapter;
 
     TextView patientNameTextView;
+    TextView diagnosisTextView;
     Button questionsButton;
     Button friendsButton;
 
@@ -48,6 +49,15 @@ public class PatientInfoActivity extends AppCompatActivity {
         }
         else {
             patientNameTextView.setText(R.string.no_patient);
+        }
+
+        // diagnosis text view
+        diagnosisTextView = findViewById(R.id.text_view_patient_diagnosis);
+        if (mPatient != null){
+            diagnosisTextView.setText(mPatient.getDiagnosis());
+        }
+        else {
+            diagnosisTextView.setText(R.string.no_patient);
         }
 
         // updates adapter
