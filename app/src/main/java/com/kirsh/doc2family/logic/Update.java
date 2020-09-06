@@ -6,12 +6,12 @@ import java.util.Comparator;
 public class Update {
     String mContent;
     LocalDateTime mDate;
-    Doctor mIssuingDoctor;
+    String mIssuingTreaterId;
 
-    public Update(String content, LocalDateTime date, Doctor doctor){
+    public Update(String content, LocalDateTime date, String treaterId){
         mContent = content;
         mDate = date;
-        mIssuingDoctor = doctor;
+        mIssuingTreaterId = treaterId;
     }
 
     public String getContent(){
@@ -22,8 +22,8 @@ public class Update {
         return mDate;
     }
 
-    public Doctor getIssuingDoctor() {
-        return mIssuingDoctor;
+    public String getIssuingTreaterId() {
+        return mIssuingTreaterId;
     }
 
     public static class UpdateSorter implements Comparator<Update>{

@@ -10,9 +10,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.kirsh.doc2family.R;
+import com.kirsh.doc2family.logic.Communicator;
 import com.kirsh.doc2family.logic.Constants;
 import com.kirsh.doc2family.logic.Friend;
 import com.kirsh.doc2family.logic.Patient;
+import com.kirsh.doc2family.logic.User;
 
 import java.util.ArrayList;
 
@@ -46,7 +48,11 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendHo
     @Override
     public void onBindViewHolder(@NonNull FriendHolder holder, int position) {
         Friend friend = mDataset.get(position);
-        holder.textView.setText(friend.getName());
+        User user = Communicator.getUserById(friend.getUserId());
+        if (user != null){
+            holder.textView.setText(user.getFullName());
+        }
+        //todo what if null? trust Communicator to take care of error?
     }
 
     @Override
