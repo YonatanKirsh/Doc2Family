@@ -17,6 +17,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.kirsh.doc2family.views.ForgotPasswordActivity;
 import com.kirsh.doc2family.views.LoginActivity;
 import com.kirsh.doc2family.views.PatientsListActivity;
 
@@ -25,16 +26,6 @@ import java.util.ArrayList;
 public class Communicator {
 
     private static FirebaseAuth Auth = FirebaseAuth.getInstance();
-
-    //todo firebase / local db !!
-    public static Patient getPatientById(String patientId){
-        for (Patient patient: Constants.SAMPLE_PATIENTS) {
-            if (patient.getId().equals(patientId)){
-                return patient;
-            }
-        }
-        return null;
-    }
 
     public static void cCreateUserWithEmailAndPassword(String email, String password, final Context context, final String firstName, final String lastName, final boolean  mIsDoctor, final EditText mEmailEditText,
                                                        final EditText mPasswordEditText, final TextInputLayout mEmailLayout, final TextInputLayout mPasswordLayout){
@@ -87,7 +78,7 @@ public class Communicator {
                 });
     }
 
-    public static void signInWithEmailAndPassword(String email, String password, final Context context){
+    public static void cSignInWithEmailAndPassword(String email, String password, final Context context){
         Auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener((Activity) context, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -111,6 +102,20 @@ public class Communicator {
                 });
     }
 
+    public static void cSendPasswordResetEmail(String email, final Context context) {
+        Auth.sendPasswordResetEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    Toast.makeText(context, "Reset password sent to your email.", Toast.LENGTH_LONG).show();
+                    openActivityLogin(context);
+                } else {
+                    Toast.makeText(context, task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
     private static void openActivityListPatients(Context context){
         // todo
 //        User thisUser = new User();
@@ -121,6 +126,16 @@ public class Communicator {
     private static void openActivityLogin(Context context) {
         Intent intent = new Intent(context, LoginActivity.class);
         context.startActivity(intent);
+    }
+
+    //todo firebase / local db !!
+    public static Patient getPatientById(String patientId){
+        for (Patient patient: Constants.SAMPLE_PATIENTS) {
+            if (patient.getId().equals(patientId)){
+                return patient;
+            }
+        }
+        return null;
     }
 
     //todo firebase!
