@@ -17,11 +17,18 @@
         <activity android:name=".views.PatientInfoActivity" />
         <activity android:name=".views.PatientsListActivity" />
         <activity android:name=".views.LoginActivity" />
+        <activity android:name=".views.SplashScreen"
+            android:theme="@style/SplashTeme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity android:name=".views.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
     </application>
