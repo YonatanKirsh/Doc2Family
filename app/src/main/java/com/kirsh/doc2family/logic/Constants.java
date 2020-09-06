@@ -36,10 +36,10 @@ public class Constants {
 
     private static ArrayList<Patient> getSamplePatients(){
         ArrayList<Patient> patients = new ArrayList<>();
-        patients.add(new Patient("John", "Snow", "js", getSampleUpdates(), getSampleQuestions(), getSampleFriends(), getSampleTreaterIds()));
-        patients.add(new Patient("Deneris", "Targerijan", "dt", getSampleUpdates(), getSampleQuestions(), getSampleFriends(), getSampleTreaterIds()));
-        patients.add(new Patient("Clark", "Kent", "ck", getSampleUpdates(), getSampleQuestions(), getSampleFriends(), getSampleTreaterIds()));
-        patients.add(new Patient("Captain", "America", "ca", getSampleUpdates(), getSampleQuestions(), getSampleFriends(), getSampleTreaterIds()));
+        patients.add(new Patient("John", "Snow", "js", "can come back to life", getSampleUpdates(), getSampleQuestions(), getSampleFriends(), getSampleTreaterIds()));
+        patients.add(new Patient("Deneris", "Targerijan", "dt", "Power-Hungry", getSampleUpdates(), getSampleQuestions(), getSampleFriends(), getSampleTreaterIds()));
+        patients.add(new Patient("Clark", "Kent", "ck", "boring, too powerful", getSampleUpdates(), getSampleQuestions(), getSampleFriends(), getSampleTreaterIds()));
+        patients.add(new Patient("Captain", "America", "ca", "goody-good", getSampleUpdates(), getSampleQuestions(), getSampleFriends(), getSampleTreaterIds()));
         return patients;
     }
 
