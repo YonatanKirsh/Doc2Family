@@ -34,28 +34,30 @@ public class Constants {
 
     public static final ArrayList<User> SAMPLE_USERS = getSampleUsers();
 
-    private static final ArrayList<String> SAMPLE_TREATER_IDS = new ArrayList<String>() {{
-        add("AD65");
-    }};
+    private static final ArrayList<String> getSampleTreaterIds(){
+        return new ArrayList<String>() {{
+            add("AD65");
+        }};
+    }
 
     private static ArrayList<Patient> getSamplePatients(){
         ArrayList<Patient> patients = new ArrayList<>();
-        patients.add(new Patient("John", "Snow", "js", getSampleUpdates(), getSampleQuestions(), getSampleFriends(), SAMPLE_TREATER_IDS));
-        patients.add(new Patient("Deneris", "Targerijan", "dt", getSampleUpdates(), getSampleQuestions(), getSampleFriends(), SAMPLE_TREATER_IDS));
-        patients.add(new Patient("Clark", "Kent", "ck", getSampleUpdates(), getSampleQuestions(), getSampleFriends(), SAMPLE_TREATER_IDS));
-        patients.add(new Patient("Captain", "America", "ca", getSampleUpdates(), getSampleQuestions(), getSampleFriends(), SAMPLE_TREATER_IDS));
+        patients.add(new Patient("John", "Snow", "js", getSampleUpdates(), getSampleQuestions(), getSampleFriends(), getSampleTreaterIds()));
+        patients.add(new Patient("Deneris", "Targerijan", "dt", getSampleUpdates(), getSampleQuestions(), getSampleFriends(), getSampleTreaterIds()));
+        patients.add(new Patient("Clark", "Kent", "ck", getSampleUpdates(), getSampleQuestions(), getSampleFriends(), getSampleTreaterIds()));
+        patients.add(new Patient("Captain", "America", "ca", getSampleUpdates(), getSampleQuestions(), getSampleFriends(), getSampleTreaterIds()));
         return patients;
     }
 
     private static ArrayList<Update> getSampleUpdates(){
         LocalDateTime firstTime = LocalDateTime.now().minusDays(10);
         ArrayList<Update> updates = new ArrayList<>();
-        updates.add(new Update("patient just admitted. has severe fomo.", firstTime, SAMPLE_TREATER_IDS.get(0)));
-        updates.add(new Update("second update!!", firstTime.plusMinutes(1), SAMPLE_TREATER_IDS.get(0)));
-        updates.add(new Update("started treating patient with hourly whiskey shots.", updates.get(updates.size()-1).getDate().plusHours(3), SAMPLE_TREATER_IDS.get(0)));
-        updates.add(new Update("patient is being a lil' bish- says he doesn't like whiskey.. wtf?", updates.get(updates.size()-1).getDate().plusMinutes(15), SAMPLE_TREATER_IDS.get(0)));
-        updates.add(new Update("patient stopped complaining, now loves whiskey", updates.get(updates.size()-1).getDate().plusHours(3), SAMPLE_TREATER_IDS.get(0)));
-        updates.add(new Update("patient is drunk.", updates.get(updates.size()-1).getDate().plusHours(1), SAMPLE_TREATER_IDS.get(0)));
+        updates.add(new Update("patient just admitted. has severe fomo.", firstTime, getSampleTreaterIds().get(0)));
+        updates.add(new Update("second update!!", firstTime.plusMinutes(1), getSampleTreaterIds().get(0)));
+        updates.add(new Update("started treating patient with hourly whiskey shots.", updates.get(updates.size()-1).getDate().plusHours(3), getSampleTreaterIds().get(0)));
+        updates.add(new Update("patient is being a lil' bish- says he doesn't like whiskey.. wtf?", updates.get(updates.size()-1).getDate().plusMinutes(15), getSampleTreaterIds().get(0)));
+        updates.add(new Update("patient stopped complaining, now loves whiskey", updates.get(updates.size()-1).getDate().plusHours(3), getSampleTreaterIds().get(0)));
+        updates.add(new Update("patient is drunk.", updates.get(updates.size()-1).getDate().plusHours(1), getSampleTreaterIds().get(0)));
         return updates;
     }
 
