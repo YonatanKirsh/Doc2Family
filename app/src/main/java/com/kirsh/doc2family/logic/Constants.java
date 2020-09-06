@@ -34,12 +34,6 @@ public class Constants {
 
     public static final ArrayList<User> SAMPLE_USERS = getSampleUsers();
 
-    private static final ArrayList<String> getSampleTreaterIds(){
-        return new ArrayList<String>() {{
-            add("AD65");
-        }};
-    }
-
     private static ArrayList<Patient> getSamplePatients(){
         ArrayList<Patient> patients = new ArrayList<>();
         patients.add(new Patient("John", "Snow", "js", getSampleUpdates(), getSampleQuestions(), getSampleFriends(), getSampleTreaterIds()));
@@ -105,4 +99,9 @@ public class Constants {
         return users;
     }
 
+    private static final ArrayList<String> getSampleTreaterIds(){
+        return new ArrayList<String>() {{
+            add("AD65");
+        }};
+    }
 }
