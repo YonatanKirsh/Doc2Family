@@ -1,21 +1,26 @@
 package com.kirsh.doc2family.views;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.kirsh.doc2family.R;
 import com.kirsh.doc2family.logic.Communicator;
 import com.kirsh.doc2family.logic.Patient;
 
 import com.kirsh.doc2family.logic.Constants;
 import com.kirsh.doc2family.logic.Update;
+import com.kirsh.doc2family.logic.User;
 
 public class PatientInfoActivity extends AppCompatActivity {
 
@@ -85,8 +90,44 @@ public class PatientInfoActivity extends AppCompatActivity {
         });
     }
 
+    private void showUpdateDialog(Update update){
+        AlertDialog.Builder builder = new AlertDialog.Builder(PatientInfoActivity.this);
+        // set view
+        View view = getLayoutInflater().inflate(R.layout.view_update_dialog, null);
+        builder.setView(view);
+        // add update info
+        final TextView updateDate = view.findViewById(R.id.text_view_update_popup_date);
+        updateDate.setText(update.getDateString());
+        final EditText updateContent = view.findViewById(R.id.edit_text_update_popup_content);
+        updateContent.setText(update.getContent());
+        final TextView updateIssuer = view.findViewById(R.id.text_view_update_popup_issuer);
+        User issuer = Communicator.getUserById(update.getIssuingCareGiverId());
+        updateIssuer.setText(issuer.getFullName());
+        // Add the buttons
+        builder.setPositiveButton("Update", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked update button - todo change the update's content
+                String newUpdate = updateContent.getText().toString();
+                String message = "updated to:\n" + newUpdate;
+                Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
+                updateContent.setText("");
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User cancelled the dialog
+                dialog.cancel();
+            }
+        });
+        // Create the AlertDialog
+        AlertDialog updatesDialog = builder.create();
+        updatesDialog.show();
+    }
+
+
     public void onClickUpdate(Update update) {
-        //todo do something with update? show in popup?
+        showUpdateDialog(update);
     }
 
     public void openActivityQuestions(){
