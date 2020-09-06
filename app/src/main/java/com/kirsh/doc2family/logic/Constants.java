@@ -85,7 +85,7 @@ public class Constants {
         return friends;
     }
 
-    private static ArrayList<User> getSampleUsers(){
+    public static ArrayList<User> getSampleUsers(){
         ArrayList<User> users = new ArrayList<>();
         // add regular users
         users.add(new User("user1@email.com", "Jake", "Peralta", "JP93", false));

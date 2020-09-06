@@ -19,7 +19,7 @@ public class UpdatesAdapter extends RecyclerView.Adapter<UpdatesAdapter.UpdateHo
 
     private ArrayList<Update> mDataset;
     private Context mContext;
-    private DateTimeFormatter mFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy, HH:mm");
+
 
     public UpdatesAdapter(Context context, ArrayList<Update> dataset){
         dataset.sort(new Update.UpdateSorter());
@@ -47,7 +47,7 @@ public class UpdatesAdapter extends RecyclerView.Adapter<UpdatesAdapter.UpdateHo
     @Override
     public void onBindViewHolder(@NonNull UpdateHolder holder, int position) {
         Update update = mDataset.get(position);
-        holder.textViewDate.setText(update.getDate().format(mFormatter));
+        holder.textViewDate.setText(update.getDateString());
         holder.textViewContent.setText(update.getContent());
     }
 
