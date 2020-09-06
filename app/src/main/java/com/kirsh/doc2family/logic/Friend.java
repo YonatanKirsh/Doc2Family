@@ -1,8 +1,22 @@
 package com.kirsh.doc2family.logic;
 
-public class Friend extends User {
-    public Friend(String email, String nickname, String id) {
-        super(email, nickname, id, false);
+public class Friend {
+
+    private String mUserId;
+    private boolean mIsAdmin;
+
+
+    public Friend(String userId, boolean isAmdin)
+    {
+        mUserId = userId;
+        mIsAdmin = isAmdin;
     }
 
+    public String getUserId(){
+        return mUserId;
+    }
+
+    public boolean isAdmin(){
+        return mIsAdmin;
+    }
 }

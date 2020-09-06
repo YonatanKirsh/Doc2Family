@@ -10,14 +10,16 @@ public class Patient {
     private ArrayList<Update> mUpdates;
     private ArrayList<Question> mQuestions;
     private ArrayList<Friend> mFriends;
+    private ArrayList<String> mTreaterIds;
 
-    public Patient(String firstName, String lastName, String id, ArrayList<Update> updates, ArrayList<Question> questions, ArrayList<Friend> friends){
+    public Patient(String firstName, String lastName, String id, ArrayList<Update> updates, ArrayList<Question> questions, ArrayList<Friend> friends, ArrayList<String> treaterIds){
         mFirstName = firstName;
         mLastName = lastName;
         mId = id;
         mUpdates = updates;
         mQuestions = questions;
         mFriends = friends;
+        mTreaterIds = treaterIds;
     }
 
     public String getId() {
@@ -38,6 +40,10 @@ public class Patient {
 
     public ArrayList<Friend> getFriends(){
         return mFriends;
+    }
+
+    public ArrayList<String> getTreaterIds(){
+        return mTreaterIds;
     }
 
 }

@@ -3,32 +3,39 @@ package com.kirsh.doc2family.logic;
 import java.util.ArrayList;
 
 public class User {
-    String name;
-    String mId;
-    private String email;
-    private boolean isDoctor;
-    ArrayList<Patient> mPatients = new ArrayList<>();
+
+    private String mEmail;
+    private String mFirstName;
+    private String mLastName;
+    private String mId;
+    private boolean mIsTreater;
+    private ArrayList<String> mPatientIds = new ArrayList<>();
 
 //    public User(){}
 
-    public User(String email, String name, String id, boolean isDoctor){
-        this.name = name;
-        this.mId = id;
-        this.email = email;
-        this.isDoctor = isDoctor;
+    public User(String email, String firstName, String lastName, String id, boolean isTreater){
+        mEmail = email;
+        mFirstName = firstName;
+        mLastName = lastName;
+        mId = id;
+        mIsTreater = isTreater;
     }
 
     public String getEmail() {
-        return email;
+        return mEmail;
     }
 
 
-    public String getName() {
-        return name;
+    public String getFirstName() {
+        return mFirstName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFirstName(String firstName) {
+        mFirstName = firstName;
+    }
+
+    public String getLastName(){
+        return mLastName;
     }
 
     public String getId() {
@@ -36,28 +43,30 @@ public class User {
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        mEmail = email;
     }
 
     public void setId(String id) {
-        this.mId = id;
+        mId = id;
     }
 
-    public ArrayList<Patient> getPatients() {
-        return mPatients;
-    }
-
-    public void setPatients(ArrayList<Patient> patients) {
-        this.mPatients = patients;
+    public ArrayList<String> getPatientIds() {
+        return mPatientIds;
     }
 
     public boolean isDoctor() {
-        return isDoctor;
+        return mIsTreater;
     }
 
-    public void setDoctor(boolean doctor) {
-        isDoctor = doctor;
+    public void setIsDoctor(boolean mIsDoctor) {
+        this.mIsTreater = mIsDoctor;
     }
 
+    public String getFullName(){
+        if (isDoctor()){
+            return "Dr. " + getLastName();
+        }
+        return String.format("%s %s", getFirstName(), getLastName());
+    }
 
 }
