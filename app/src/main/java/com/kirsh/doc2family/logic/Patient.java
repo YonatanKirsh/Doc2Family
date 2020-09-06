@@ -11,9 +11,9 @@ public class Patient {
     private ArrayList<Update> mUpdates;
     private ArrayList<Question> mQuestions;
     private ArrayList<Friend> mFriends;
-    private ArrayList<String> mTreaterIds;
+    private ArrayList<String> mCareGiverIds;
 
-    public Patient(String firstName, String lastName, String id, String diagnosis, ArrayList<Update> updates, ArrayList<Question> questions, ArrayList<Friend> friends, ArrayList<String> treaterIds){
+    public Patient(String firstName, String lastName, String id, String diagnosis, ArrayList<Update> updates, ArrayList<Question> questions, ArrayList<Friend> friends, ArrayList<String> careGiverIds){
         mFirstName = firstName;
         mLastName = lastName;
         mId = id;
@@ -21,7 +21,7 @@ public class Patient {
         mUpdates = updates;
         mQuestions = questions;
         mFriends = friends;
-        mTreaterIds = treaterIds;
+        mCareGiverIds = careGiverIds;
     }
 
     public String getId() {
@@ -48,8 +48,8 @@ public class Patient {
         return mFriends;
     }
 
-    public ArrayList<String> getTreaterIds(){
-        return mTreaterIds;
+    public ArrayList<String> getCareGiverIds(){
+        return mCareGiverIds;
     }
 
 }

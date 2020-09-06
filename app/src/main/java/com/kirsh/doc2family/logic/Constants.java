@@ -36,22 +36,22 @@ public class Constants {
 
     private static ArrayList<Patient> getSamplePatients(){
         ArrayList<Patient> patients = new ArrayList<>();
-        patients.add(new Patient("John", "Snow", "js", "can come back to life", getSampleUpdates(), getSampleQuestions(), getSampleFriends(), getSampleTreaterIds()));
-        patients.add(new Patient("Deneris", "Targerijan", "dt", "Power-Hungry", getSampleUpdates(), getSampleQuestions(), getSampleFriends(), getSampleTreaterIds()));
-        patients.add(new Patient("Clark", "Kent", "ck", "boring, too powerful", getSampleUpdates(), getSampleQuestions(), getSampleFriends(), getSampleTreaterIds()));
-        patients.add(new Patient("Captain", "America", "ca", "goody-good", getSampleUpdates(), getSampleQuestions(), getSampleFriends(), getSampleTreaterIds()));
+        patients.add(new Patient("John", "Snow", "js", "can come back to life", getSampleUpdates(), getSampleQuestions(), getSampleFriends(), getSampleCareGiverIds()));
+        patients.add(new Patient("Deneris", "Targerijan", "dt", "Power-Hungry", getSampleUpdates(), getSampleQuestions(), getSampleFriends(), getSampleCareGiverIds()));
+        patients.add(new Patient("Clark", "Kent", "ck", "boring, too powerful", getSampleUpdates(), getSampleQuestions(), getSampleFriends(), getSampleCareGiverIds()));
+        patients.add(new Patient("Captain", "America", "ca", "goody-good", getSampleUpdates(), getSampleQuestions(), getSampleFriends(), getSampleCareGiverIds()));
         return patients;
     }
 
     private static ArrayList<Update> getSampleUpdates(){
         LocalDateTime firstTime = LocalDateTime.now().minusDays(10);
         ArrayList<Update> updates = new ArrayList<>();
-        updates.add(new Update("patient just admitted. has severe fomo.", firstTime, getSampleTreaterIds().get(0)));
-        updates.add(new Update("second update!!", firstTime.plusMinutes(1), getSampleTreaterIds().get(0)));
-        updates.add(new Update("started treating patient with hourly whiskey shots.", updates.get(updates.size()-1).getDate().plusHours(3), getSampleTreaterIds().get(0)));
-        updates.add(new Update("patient is being a lil' bish- says he doesn't like whiskey.. wtf?", updates.get(updates.size()-1).getDate().plusMinutes(15), getSampleTreaterIds().get(0)));
-        updates.add(new Update("patient stopped complaining, now loves whiskey", updates.get(updates.size()-1).getDate().plusHours(3), getSampleTreaterIds().get(0)));
-        updates.add(new Update("patient is drunk.", updates.get(updates.size()-1).getDate().plusHours(1), getSampleTreaterIds().get(0)));
+        updates.add(new Update("patient just admitted. has severe fomo.", firstTime, getSampleCareGiverIds().get(0)));
+        updates.add(new Update("second update!!", firstTime.plusMinutes(1), getSampleCareGiverIds().get(0)));
+        updates.add(new Update("started treating patient with hourly whiskey shots.", updates.get(updates.size()-1).getDate().plusHours(3), getSampleCareGiverIds().get(0)));
+        updates.add(new Update("patient is being a lil' bish- says he doesn't like whiskey.. wtf?", updates.get(updates.size()-1).getDate().plusMinutes(15), getSampleCareGiverIds().get(0)));
+        updates.add(new Update("patient stopped complaining, now loves whiskey", updates.get(updates.size()-1).getDate().plusHours(3), getSampleCareGiverIds().get(0)));
+        updates.add(new Update("patient is drunk.", updates.get(updates.size()-1).getDate().plusHours(1), getSampleCareGiverIds().get(0)));
         return updates;
     }
 
@@ -93,13 +93,13 @@ public class Constants {
         users.add(new User("user3@email.com", "Raymond", "Holt", "RH52", false));
 
         // add doctors
-        users.add(new User("doctor1@email.com", "Derek", "McDreamy", "DM78", true));
-        users.add(new User("doctor2@email.com", "Andre", "Dre", "AD65", true));
+        users.add(new User("doctor1@email.com", "Dr.", "McDreamy", "DM78", true));
+        users.add(new User("doctor2@email.com", "Dr.", "Dre", "AD65", true));
 
         return users;
     }
 
-    private static final ArrayList<String> getSampleTreaterIds(){
+    private static final ArrayList<String> getSampleCareGiverIds(){
         return new ArrayList<String>() {{
             add("AD65");
         }};
