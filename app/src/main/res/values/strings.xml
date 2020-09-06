@@ -9,4 +9,5 @@
     <string name="forgot_your_password_title">Forgot your password ?</string>
     <string name="forgot_password_explanation">Don\'t worry. Resetting your password is easy, just tell us the email address you registered with Doc2Family.</string>
     <string name="doctors_answer_hint">The doctor\'s answer will appear here.</string>
+    <string name="submit_answer_hint">Submit an answer</string>
 </resources>
