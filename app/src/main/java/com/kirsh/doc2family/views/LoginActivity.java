@@ -37,6 +37,9 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        //todo remove openActivity!!
+//        openActivityListPatients();
+
         initViews();
 
         // Initialize Firebase Auth
