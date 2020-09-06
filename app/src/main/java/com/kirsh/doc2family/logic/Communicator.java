@@ -19,4 +19,14 @@ public class Communicator {
         return Constants.SAMPLE_PATIENTS;
     }
 
+    // todo firebase!
+    public static User getUserById(String userId){
+        for (User user: Constants.SAMPLE_USERS) {
+            if (user.getId().equals(userId)){
+                return user;
+            }
+        }
+        return null;
+    }
+
 }
