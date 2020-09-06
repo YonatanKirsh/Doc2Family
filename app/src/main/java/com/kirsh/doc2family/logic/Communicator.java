@@ -18,13 +18,13 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.kirsh.doc2family.views.LoginActivity;
-import com.kirsh.doc2family.views.SignUpActivity;
+import com.kirsh.doc2family.views.PatientsListActivity;
 
 import java.util.ArrayList;
 
 public class Communicator {
 
-    private static FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private static FirebaseAuth Auth = FirebaseAuth.getInstance();
 
     //todo firebase / local db !!
     public static Patient getPatientById(String patientId){
@@ -38,7 +38,7 @@ public class Communicator {
 
     public static void cCreateUserWithEmailAndPassword(String email, String password, final Context context, final String firstName, final String lastName, final boolean  mIsDoctor, final EditText mEmailEditText,
                                                        final EditText mPasswordEditText, final TextInputLayout mEmailLayout, final TextInputLayout mPasswordLayout){
-        mAuth.createUserWithEmailAndPassword(email, password)
+        Auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener((Activity) context, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -47,7 +47,7 @@ public class Communicator {
                             Log.d("SIGN_UP_SUCCESS", "createUserWithEmail:success");
                             Toast.makeText(context, "Registration succeed!",
                                     Toast.LENGTH_SHORT).show();
-                            mAuth.getCurrentUser().sendEmailVerification()
+                            Auth.getCurrentUser().sendEmailVerification()
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                                @Override
                                                                public void onComplete(@NonNull Task<Void> task) {
@@ -62,7 +62,7 @@ public class Communicator {
                                                                }
                                                            }
                                     );
-                            FirebaseUser user_auth = mAuth.getCurrentUser();
+                            FirebaseUser user_auth = Auth.getCurrentUser();
                             User newUser = new User(user_auth.getEmail(), firstName, lastName, user_auth.getUid(), mIsDoctor);
                             FirebaseFirestore firestore = FirebaseFirestore.getInstance();
                             DocumentReference document = firestore.collection("Users").document();
@@ -85,6 +85,37 @@ public class Communicator {
                         }
                     }
                 });
+    }
+
+    public static void signInWithEmailAndPassword(String email, String password, final Context context){
+        Auth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener((Activity) context, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            if (Auth.getCurrentUser().isEmailVerified()){
+                                Log.d("SIGN_IN_SUCCESS", "signInWithEmail: success");
+                                openActivityListPatients(context);
+                            }
+                            else{
+                                Toast.makeText(context, "Please verify your email address.", Toast.LENGTH_LONG).show();
+                            }
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w("SIGN_IN_ERR", "signInWithEmail:failure", task.getException());
+                            Toast.makeText(context, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
+    private static void openActivityListPatients(Context context){
+        // todo
+//        User thisUser = new User();
+        Intent intent = new Intent(context, PatientsListActivity.class);
+        context.startActivity(intent);
     }
 
     private static void openActivityLogin(Context context) {

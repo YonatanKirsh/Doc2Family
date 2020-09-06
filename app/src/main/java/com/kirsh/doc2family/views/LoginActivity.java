@@ -18,6 +18,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.kirsh.doc2family.R;
+import com.kirsh.doc2family.logic.Communicator;
 import com.kirsh.doc2family.logic.Constants;
 
 public class LoginActivity extends AppCompatActivity {
@@ -30,7 +31,7 @@ public class LoginActivity extends AppCompatActivity {
     private Button signUpButton;
     private Button forgotP;
 
-    private FirebaseAuth Auth;
+    //private FirebaseAuth Auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +44,7 @@ public class LoginActivity extends AppCompatActivity {
         initViews();
 
         // Initialize Firebase Auth
-        Auth = FirebaseAuth.getInstance();
+        //Auth = FirebaseAuth.getInstance();
     }
 
     private void initViews(){
@@ -123,32 +124,7 @@ public class LoginActivity extends AppCompatActivity {
     private void signInWithEmailAndPassword() {
         String email = emailEditText.getText().toString();
         String password = passwordEditText.getText().toString();
-
-        Auth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            if (Auth.getCurrentUser().isEmailVerified()){
-                                Log.d("SIGN_IN_SUCCESS", "signInWithEmail: success");
-                                openActivityListPatients();
-                            }
-                            else{
-                                Toast.makeText(LoginActivity.this, "Please verify your email address.", Toast.LENGTH_LONG).show();
-                            }
-                            //FirebaseUser user = mAuth.getCurrentUser();
-                            //updateUI(user);
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w("SIGN_IN_ERR", "signInWithEmail:failure", task.getException());
-                            Toast.makeText(LoginActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-                            //updateUI(null);
-                            // ...
-                        }
-                    }
-                });
+        Communicator.signInWithEmailAndPassword(email, password, this);
     }
 
     private void openActivitySignUp(){

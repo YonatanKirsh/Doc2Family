@@ -53,16 +53,12 @@ public class SignUpActivity extends AppCompatActivity {
     private boolean mIsDoctor;
     private Button mSignUpButton;
 
-    //private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
         initViews();
-
-        // Initialize Firebase Auth
-        //mAuth = FirebaseAuth.getInstance();
     }
 
     private void createUserWithEmailAndPassword() {
