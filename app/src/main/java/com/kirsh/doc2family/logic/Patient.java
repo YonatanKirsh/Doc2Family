@@ -7,15 +7,17 @@ public class Patient {
     private String mFirstName;
     private String mLastName;
     private String mId;
+    private String mDiagnosis;
     private ArrayList<Update> mUpdates;
     private ArrayList<Question> mQuestions;
     private ArrayList<Friend> mFriends;
     private ArrayList<String> mTreaterIds;
 
-    public Patient(String firstName, String lastName, String id, ArrayList<Update> updates, ArrayList<Question> questions, ArrayList<Friend> friends, ArrayList<String> treaterIds){
+    public Patient(String firstName, String lastName, String id, String diagnosis, ArrayList<Update> updates, ArrayList<Question> questions, ArrayList<Friend> friends, ArrayList<String> treaterIds){
         mFirstName = firstName;
         mLastName = lastName;
         mId = id;
+        mDiagnosis = diagnosis;
         mUpdates = updates;
         mQuestions = questions;
         mFriends = friends;
@@ -28,6 +30,10 @@ public class Patient {
 
     public String getFullName(){
         return mFirstName + " " + mLastName;
+    }
+
+    public String getDiagnosis(){
+        return mDiagnosis;
     }
 
     public ArrayList<Update> getUpdates(){
