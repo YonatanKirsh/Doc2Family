@@ -8,13 +8,13 @@ public class Update {
 
     String mContent;
     LocalDateTime mDate;
-    String mIssuingTreaterId;
+    String mIssuingCareGiverId;
     private DateTimeFormatter mFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy, HH:mm");
 
-    public Update(String content, LocalDateTime date, String treaterId){
+    public Update(String content, LocalDateTime date, String careGiverId){
         mContent = content;
         mDate = date;
-        mIssuingTreaterId = treaterId;
+        mIssuingCareGiverId = careGiverId;
     }
 
     public String getContent(){
@@ -30,7 +30,7 @@ public class Update {
     }
 
     public String getIssuingCareGiverId() {
-        return mIssuingTreaterId;
+        return mIssuingCareGiverId;
     }
 
     public static class UpdateSorter implements Comparator<Update>{

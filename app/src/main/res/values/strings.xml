@@ -3,6 +3,7 @@
     <string name="docBox">DOCTOR</string>
     <string name="choosetxt">You are: </string>
     <string name="friendBox">FRIEND</string>
+    <string name="add_friend">Add Friend</string>
     <string name="no_patient">No patient :(</string>
     <string name="enter_email">Email address:</string>
     <string name="reset_password">Send</string>
@@ -10,4 +11,7 @@
     <string name="forgot_password_explanation">Don\'t worry. Resetting your password is easy, just tell us the email address you registered with Doc2Family.</string>
     <string name="doctors_answer_hint">The doctor\'s answer will appear here.</string>
     <string name="submit_answer_hint">Submit an answer</string>
+    <string name="admin">admin</string>
+    <string name="not_admin">not admin</string>
+    <string name="remove_friend">Remove Friend</string>
 </resources>
