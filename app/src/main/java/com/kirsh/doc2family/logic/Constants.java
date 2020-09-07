@@ -34,14 +34,6 @@ public class Constants {
         return password.length() >= 6;
     }
 
-    public static void confirmDialog(Context context, DialogInterface.OnClickListener dialogClickListener){
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Confirm")
-                .setMessage("Are you sure?")
-                .setPositiveButton("Yes", dialogClickListener)
-                .setNegativeButton("No", dialogClickListener).show();
-    }
-
     // sample data
     public static final ArrayList<Patient> SAMPLE_PATIENTS = getSamplePatients();
 

@@ -198,7 +198,7 @@ public class FriendsListActivity extends AppCompatActivity {
             }
         };
 
-        Constants.confirmDialog(this, dialogClickListener);
+        ConfirmDialog.show(this, dialogClickListener, String.format("Remove %s?", user.getFullName()));
     }
 
     public void onClickFriend(Friend friend) {

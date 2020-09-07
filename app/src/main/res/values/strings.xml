@@ -14,4 +14,7 @@
     <string name="admin">admin</string>
     <string name="not_admin">not admin</string>
     <string name="remove_friend">Remove Friend</string>
+    <string name="diagnosis">Diagnosis</string>
+    <string name="cancel">Cancel</string>
+    <string name="update">Update</string>
 </resources>
