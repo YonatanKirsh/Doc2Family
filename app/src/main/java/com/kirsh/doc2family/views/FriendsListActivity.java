@@ -9,8 +9,11 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.kirsh.doc2family.R;
@@ -18,6 +21,7 @@ import com.kirsh.doc2family.logic.Communicator;
 import com.kirsh.doc2family.logic.Constants;
 import com.kirsh.doc2family.logic.Friend;
 import com.kirsh.doc2family.logic.Patient;
+import com.kirsh.doc2family.logic.User;
 
 public class FriendsListActivity extends AppCompatActivity {
 
@@ -105,7 +109,99 @@ public class FriendsListActivity extends AppCompatActivity {
         dialog = builder.create();
     }
 
+    private void showEditFriendDialog(Friend friend){
+        AlertDialog.Builder builder = new AlertDialog.Builder(FriendsListActivity.this);
+        // set view
+        View view = getLayoutInflater().inflate(R.layout.view_friend_dialog, null);
+        builder.setView(view);
+        // add friend info
+        User user = Communicator.getUserById(friend.getUserId());
+        final TextView friendNameTextView = view.findViewById(R.id.friend_dialog_text_view_friend_name);
+        friendNameTextView.setText(user.getFullName());
+        final TextView friendEmailtextView = view.findViewById(R.id.friend_dialog_text_view_friend_email);
+        friendEmailtextView.setText(user.getEmail());
+        final TextView isAdminTextView = view.findViewById(R.id.friend_dialog_text_view_is_admin);
+        if (friend.isAdmin()){
+            isAdminTextView.setText(R.string.admin);
+        }else {
+            isAdminTextView.setText(R.string.not_admin);
+        }
+        // todo if user is admin- add admin privileges
+        addAdminPrivilegesToDialog(builder, view, friend);
+        // Add the buttons
+        builder.setPositiveButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User cancelled the dialog
+                dialog.cancel();
+            }
+        });
+        // Create the AlertDialog
+        AlertDialog questionsDialog = builder.create();
+        questionsDialog.show();
+    }
+
+    private void addAdminPrivilegesToDialog(AlertDialog.Builder builder, View view, final Friend friend){
+        // add admin views
+        final CheckBox makeAdminCheckBox = view.findViewById(R.id.friend_dialog_checkbox_make_admin);
+//        final Button removeFriendButton = view.findViewById(R.id.friend_dialog_button_remove_friend);
+        makeAdminCheckBox.setVisibility(View.VISIBLE);
+//        removeFriendButton.setVisibility(View.VISIBLE);
+        if (friend.isAdmin()){
+            makeAdminCheckBox.setChecked(true);
+        } else {
+            makeAdminCheckBox.setChecked(false);
+        }
+
+        // set remove friend button
+//        removeFriendButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                confirmRemoveFriend(friend);
+//            }
+//        });
+
+        builder.setNeutralButton(R.string.remove_friend, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                confirmRemoveFriend(friend, dialog);
+            }
+        });
+
+        // set update button
+        builder.setNegativeButton("Update", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked submit button - todo update friend
+                String friendId = friend.getUserId();
+                boolean makeAdmin = makeAdminCheckBox.isChecked();
+                // todo update friend with friendId isAdmin?
+                dialog.dismiss();
+            }
+        });
+    }
+
+    private void confirmRemoveFriend(Friend friendToRemove, final DialogInterface callingDialog){
+        final User user = Communicator.getUserById(friendToRemove.getUserId());
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        //Yes button clicked - todo actually remove friend
+                        Toast.makeText(FriendsListActivity.this, String.format("%s removed!", user.getFullName()), Toast.LENGTH_LONG).show();
+                        callingDialog.dismiss();
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        // No button clicked
+                        break;
+                }
+            }
+        };
+
+        ConfirmBuilder.build(this, dialogClickListener);
+    }
+
     public void onClickFriend(Friend friend) {
-        //todo implement
+        showEditFriendDialog(friend);
     }
 }
