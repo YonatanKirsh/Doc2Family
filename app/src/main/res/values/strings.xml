@@ -11,7 +11,8 @@
     <string name="password_hint">Password</string>
     <string name="confirm_password_hint">Confirm Password</string>
     <string name="friends_email_hint">Enter friend\'s email</string>
-    <string name="sign_up">Sign up</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="sign_in">Sign In</string>
     <string name="login">Login</string>
     <string name="reset_password">Send</string>
     <string name="forgot_your_password_title">Forgot your password?</string>
