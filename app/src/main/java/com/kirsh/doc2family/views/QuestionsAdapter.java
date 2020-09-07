@@ -35,8 +35,8 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.Ques
             @Override
             public void onClick(View v) {
                 Question currentQuestion = mDataset.get(questionHolder.getAbsoluteAdapterPosition());
-                if (mContext instanceof QuestionsActivity){
-                    ((QuestionsActivity)mContext).onClickQuestion(currentQuestion);
+                if (mContext instanceof QuestionsListActivity){
+                    ((QuestionsListActivity)mContext).onClickQuestion(currentQuestion);
                 }
             }
         });

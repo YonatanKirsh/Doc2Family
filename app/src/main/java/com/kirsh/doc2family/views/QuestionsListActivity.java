@@ -19,10 +19,8 @@ import com.kirsh.doc2family.logic.Communicator;
 import com.kirsh.doc2family.logic.Constants;
 import com.kirsh.doc2family.logic.Patient;
 import com.kirsh.doc2family.logic.Question;
-import com.kirsh.doc2family.logic.Update;
-import com.kirsh.doc2family.logic.User;
 
-public class QuestionsActivity extends AppCompatActivity {
+public class QuestionsListActivity extends AppCompatActivity {
 
     private Patient mPatient;
     QuestionsAdapter mAdapter;
@@ -33,7 +31,7 @@ public class QuestionsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_questions);
+        setContentView(R.layout.activity_questions_list);
         initPatient();
         initQuestionsAdapter();
         initViews();
@@ -74,11 +72,11 @@ public class QuestionsActivity extends AppCompatActivity {
     }
 
     private void initNewQuestionDialog(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(QuestionsActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(QuestionsListActivity.this);
         builder.setTitle("Add Question");
 
         // add edit text
-        final EditText questionInput = new EditText(QuestionsActivity.this);
+        final EditText questionInput = new EditText(QuestionsListActivity.this);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
@@ -107,7 +105,7 @@ public class QuestionsActivity extends AppCompatActivity {
     }
 
     private void showFriendEditQuestionDialog(Question question){
-        AlertDialog.Builder builder = new AlertDialog.Builder(QuestionsActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(QuestionsListActivity.this);
         // set view
         View view = getLayoutInflater().inflate(R.layout.view_question_friend_dialog, null);
         builder.setView(view);
@@ -141,7 +139,7 @@ public class QuestionsActivity extends AppCompatActivity {
     }
 
     private void showCaregiverEditQuestionDialog(Question question){
-        AlertDialog.Builder builder = new AlertDialog.Builder(QuestionsActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(QuestionsListActivity.this);
         // set view
         View view = getLayoutInflater().inflate(R.layout.view_question_caregiver_dialog, null);
         builder.setView(view);
