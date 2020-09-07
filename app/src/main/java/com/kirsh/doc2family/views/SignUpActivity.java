@@ -12,7 +12,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.RadioButton;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -21,9 +20,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.zzu;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.kirsh.doc2family.logic.Constants;
@@ -48,7 +45,8 @@ public class SignUpActivity extends AppCompatActivity {
     private EditText mEmailEditText;
     private EditText mPasswordEditText;
     private EditText mVerifyPasswordEditText;
-    private boolean mIsDoctor;
+    private CheckBox mCaregiverCheckbox;
+//    private boolean mIsDoctor;
     private Button mSignUpButton;
 
     private FirebaseAuth mAuth;
@@ -68,6 +66,7 @@ public class SignUpActivity extends AppCompatActivity {
         String password = mPasswordEditText.getText().toString();
         final String firstName = mFirstNameEditText.getText().toString();
         final String lastName = mLastNameEditText.getText().toString();
+        final boolean isCaregiver = mCaregiverCheckbox.isChecked();
 
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -94,7 +93,7 @@ public class SignUpActivity extends AppCompatActivity {
                                                            }
                                     );
                             FirebaseUser user_auth = mAuth.getCurrentUser();
-                            User newUser = new User(user_auth.getEmail(), firstName, lastName, user_auth.getUid(), mIsDoctor);
+                            User newUser = new User(user_auth.getEmail(), firstName, lastName, user_auth.getUid(), isCaregiver);
                             FirebaseFirestore firestore = FirebaseFirestore.getInstance();
                             DocumentReference document = firestore.collection("Users").document();
                             document.set(newUser);
@@ -146,6 +145,10 @@ public class SignUpActivity extends AppCompatActivity {
         mVerifyPasswordEditText = findViewById(R.id.su_edit_text_confirm_password);
         addPopupOnClick((ImageButton) findViewById(R.id.image_button_verify_password_info), this.getString(R.string.verify_password_info_message));
 
+        // caregiver checkbox
+        mCaregiverCheckbox = findViewById(R.id.activity_sign_up_checkbox_caregiver);
+        addPopupOnClick((ImageButton) findViewById(R.id.activity_sign_up_image_button_caregiver_info), this.getString(R.string.caregiver_info_message));
+
         // sign up button
         mSignUpButton = findViewById(R.id.button_sign_up);
         mSignUpButton.setOnClickListener(new View.OnClickListener() {
@@ -155,23 +158,23 @@ public class SignUpActivity extends AppCompatActivity {
             }
         });
 
-        // checkBox doctor and friend
-        RadioButton checkDoctor = (RadioButton) findViewById(R.id.checkDoc);
-        RadioButton checkFriend = (RadioButton) findViewById(R.id.checkFriend);
-
-        checkDoctor.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mIsDoctor = ((RadioButton) v).isChecked();
-            }
-        });
-
-        checkFriend.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mIsDoctor = !((RadioButton) v).isChecked();
-            }
-        });
+//        // checkBox doctor and friend
+//        RadioButton checkDoctor = (RadioButton) findViewById(R.id.checkDoc);
+//        RadioButton checkFriend = (RadioButton) findViewById(R.id.checkFriend);
+//
+//        checkDoctor.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                mIsDoctor = ((RadioButton) v).isChecked();
+//            }
+//        });
+//
+//        checkFriend.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                mIsDoctor = !((RadioButton) v).isChecked();
+//            }
+//        });
     }
 
     private void addPopupOnClick(final ImageButton button, final String message) {
