@@ -29,7 +29,6 @@ public class FriendsListActivity extends AppCompatActivity {
     FriendsAdapter mAdapter;
 
     Button addFriendButton;
-    AlertDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,28 +53,21 @@ public class FriendsListActivity extends AppCompatActivity {
     private void initViews(){
         // add friend button
         addFriendButton = findViewById(R.id.button_add_friend);
-        setAddFriendButton();
+        addFriendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showAddFriendDialog();
+            }
+        });
 
         // friends adapter
         RecyclerView friendsAdapter = findViewById(R.id.recycler_friends);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         friendsAdapter.setLayoutManager(layoutManager);
         friendsAdapter.setAdapter(mAdapter);
-
-        // add friend dialog
-        initAddFriendDialog();
     }
 
-    private void setAddFriendButton(){
-        addFriendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.show();
-            }
-        });
-    }
-
-    private void initAddFriendDialog(){
+    private void showAddFriendDialog(){
         AlertDialog.Builder builder = new AlertDialog.Builder(FriendsListActivity.this);
         builder.setTitle(R.string.add_friend);
 
@@ -106,7 +98,8 @@ public class FriendsListActivity extends AppCompatActivity {
             }
         });
         // Create the AlertDialog
-        dialog = builder.create();
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private void showEditFriendDialog(Friend friend){
@@ -143,22 +136,12 @@ public class FriendsListActivity extends AppCompatActivity {
     private void addAdminPrivilegesToDialog(AlertDialog.Builder builder, View view, final Friend friend){
         // add admin views
         final CheckBox makeAdminCheckBox = view.findViewById(R.id.friend_dialog_checkbox_make_admin);
-//        final Button removeFriendButton = view.findViewById(R.id.friend_dialog_button_remove_friend);
         makeAdminCheckBox.setVisibility(View.VISIBLE);
-//        removeFriendButton.setVisibility(View.VISIBLE);
         if (friend.isAdmin()){
             makeAdminCheckBox.setChecked(true);
         } else {
             makeAdminCheckBox.setChecked(false);
         }
-
-        // set remove friend button
-//        removeFriendButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                confirmRemoveFriend(friend);
-//            }
-//        });
 
         builder.setNeutralButton(R.string.remove_friend, new DialogInterface.OnClickListener() {
             @Override
