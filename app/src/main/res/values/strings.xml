@@ -30,6 +30,8 @@
     <string name="questions">Questions</string>
     <string name="caregivers">Caregivers</string>
     <string name="friends">Friends</string>
+    <string name="remove_caregiver_format">Remove %s?</string>
+    <string name="remove">Remove</string>
 
 
 <!--    hints-->
@@ -41,6 +43,7 @@
     <string name="password_hint">Password</string>
     <string name="confirm_password_hint">Confirm Password</string>
     <string name="friends_email_hint">Enter friend\'s email</string>
+    <string name="caregiver_email_hint">Enter caregiver\'s email</string>
 
 <!--    messages -->
     <string name="are_you_sure">Are you sure?</string>
