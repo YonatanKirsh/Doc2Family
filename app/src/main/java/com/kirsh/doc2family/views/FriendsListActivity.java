@@ -112,7 +112,7 @@ public class FriendsListActivity extends AppCompatActivity {
     private void showEditFriendDialog(Friend friend){
         AlertDialog.Builder builder = new AlertDialog.Builder(FriendsListActivity.this);
         // set view
-        View view = getLayoutInflater().inflate(R.layout.view_friend_dialog, null);
+        View view = getLayoutInflater().inflate(R.layout.friend_dialog, null);
         builder.setView(view);
         // add friend info
         User user = Communicator.getUserById(friend.getUserId());

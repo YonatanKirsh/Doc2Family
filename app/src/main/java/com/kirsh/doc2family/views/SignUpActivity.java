@@ -128,23 +128,23 @@ public class SignUpActivity extends AppCompatActivity {
 
         // email EditText + info button
         mEmailEditText = findViewById(R.id.su_edit_text_email);
-        addPopupOnClick((ImageButton) findViewById(R.id.image_button_email_info), Constants.EMAIL_INFO_MESSAGE);
+        addPopupOnClick((ImageButton) findViewById(R.id.image_button_email_info), this.getString(R.string.email_info_message));
 
         // first name EditText + info button
         mFirstNameEditText = findViewById(R.id.edit_text_first_name);
-        addPopupOnClick((ImageButton) findViewById(R.id.image_button_first_name_info), Constants.FIRSTNAME_INFO_MESSAGE);
+        addPopupOnClick((ImageButton) findViewById(R.id.image_button_first_name_info), this.getString(R.string.first_name_info_message));
 
         // last name EditText + info button
         mLastNameEditText = findViewById(R.id.edit_text_last_name);
-        addPopupOnClick((ImageButton) findViewById(R.id.image_button_last_name_info), Constants.LASTNAME_INFO_MESSAGE);
+        addPopupOnClick((ImageButton) findViewById(R.id.image_button_last_name_info), this.getString(R.string.last_name_info_message));
 
         // password EditText + info button
         mPasswordEditText = findViewById(R.id.su_edit_text_password);
-        addPopupOnClick((ImageButton) findViewById(R.id.image_button_password_info), Constants.PASSWORD_INFO_MESSAGE);
+        addPopupOnClick((ImageButton) findViewById(R.id.image_button_password_info), this.getString(R.string.password_info_message));
 
         // repeat password EditText + info button
         mVerifyPasswordEditText = findViewById(R.id.su_edit_text_confirm_password);
-        addPopupOnClick((ImageButton) findViewById(R.id.image_button_verify_password_info), Constants.VERIFY_PASSWORD_INFO_MESSAGE);
+        addPopupOnClick((ImageButton) findViewById(R.id.image_button_verify_password_info), this.getString(R.string.verify_password_info_message));
 
         // sign up button
         mSignUpButton = findViewById(R.id.button_sign_up);
