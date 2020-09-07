@@ -200,7 +200,6 @@
                     android:inputType="textPassword"
                     tools:layout_editor_absoluteY="248dp" />
 
-
             </com.google.android.material.textfield.TextInputLayout>
 
             <ImageButton
@@ -273,8 +272,8 @@
                 android:layout_width="310dp"
                 android:layout_height="50dp"
                 android:background="@drawable/customized_button"
-                android:text="Sign Up"
-                android:textColor="@color/white"
+                android:text="@string/sign_up"
+                android:textColor="@color/textWithinPrimary"
                 tools:ignore="MissingConstraints" />
 
         </LinearLayout>
