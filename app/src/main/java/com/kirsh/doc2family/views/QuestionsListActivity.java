@@ -107,7 +107,7 @@ public class QuestionsListActivity extends AppCompatActivity {
     private void showFriendEditQuestionDialog(Question question){
         AlertDialog.Builder builder = new AlertDialog.Builder(QuestionsListActivity.this);
         // set view
-        View view = getLayoutInflater().inflate(R.layout.view_question_friend_dialog, null);
+        View view = getLayoutInflater().inflate(R.layout.question_friend_dialog, null);
         builder.setView(view);
         // add question info
         final EditText questionEditText = view.findViewById(R.id.question_dialog_edit_text_question_content);
@@ -141,7 +141,7 @@ public class QuestionsListActivity extends AppCompatActivity {
     private void showCaregiverEditQuestionDialog(Question question){
         AlertDialog.Builder builder = new AlertDialog.Builder(QuestionsListActivity.this);
         // set view
-        View view = getLayoutInflater().inflate(R.layout.view_question_caregiver_dialog, null);
+        View view = getLayoutInflater().inflate(R.layout.question_caregiver_dialog, null);
         builder.setView(view);
         // add question info
         final TextView questionTexView = view.findViewById(R.id.question_dialog_text_view_question_content);

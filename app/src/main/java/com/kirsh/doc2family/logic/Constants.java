@@ -5,16 +5,14 @@ import java.util.ArrayList;
 
 public class Constants {
 
-    // messages
-    public static final String EMAIL_INFO_MESSAGE = "Please enter a valid email address.";
-    public static final String FIRSTNAME_INFO_MESSAGE = "Others will see this name when you follow a patient.\nFirst name should be between 3 and 20 characters long.";
-    public static final String LASTNAME_INFO_MESSAGE = "Others will see this name when you follow a patient.\nLast name should be between 3 and 20 characters long.";
-
-    public static final String PASSWORD_INFO_MESSAGE = "Password should be at least 6 characters long.";
-    public static final String VERIFY_PASSWORD_INFO_MESSAGE = "Verify password - enter the same password again.";
+    // error messages
+    public static final String NULL_USER_ERROR_FORMAT_MESSAGE = "Could not find user with id: %s.";
 
     // keys
     public static final String PATIENT_ID_KEY = "patient_id";
+
+    // tags
+    public static final String NULL_USER_TAG = "Null User";
 
     // validation functions
     public static boolean isLegalEmail(String email){

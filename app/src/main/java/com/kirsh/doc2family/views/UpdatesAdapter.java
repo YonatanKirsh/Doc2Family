@@ -31,7 +31,7 @@ public class UpdatesAdapter extends RecyclerView.Adapter<UpdatesAdapter.UpdateHo
     @NonNull
     @Override
     public UpdateHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View updateView = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_update, parent, false);
+        View updateView = LayoutInflater.from(parent.getContext()).inflate(R.layout.update_item, parent, false);
         final UpdateHolder updateHolder = new UpdateHolder(updateView);
         updateView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,9 +67,9 @@ public class UpdatesAdapter extends RecyclerView.Adapter<UpdatesAdapter.UpdateHo
 
         public UpdateHolder(@NonNull View itemView) {
             super(itemView);
-            textViewContent = itemView.findViewById(R.id.update_text_view_content);
-            textViewDate = itemView.findViewById(R.id.update_text_view_date_created);
-            texViewIssuer = itemView.findViewById(R.id.update_text_view_issuer);
+            textViewContent = itemView.findViewById(R.id.update_item_text_view_content);
+            textViewDate = itemView.findViewById(R.id.update_item_text_view_date_created);
+            texViewIssuer = itemView.findViewById(R.id.update_item_text_view_issuer);
         }
     }
 }

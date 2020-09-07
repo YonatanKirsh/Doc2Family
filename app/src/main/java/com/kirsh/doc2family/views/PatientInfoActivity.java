@@ -15,7 +15,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.material.snackbar.Snackbar;
 import com.kirsh.doc2family.R;
 import com.kirsh.doc2family.logic.Communicator;
 import com.kirsh.doc2family.logic.Patient;
@@ -32,6 +31,7 @@ public class PatientInfoActivity extends AppCompatActivity {
     TextView patientNameTextView;
     TextView diagnosisTextView;
     Button questionsButton;
+    Button caregiversButton;
     Button friendsButton;
 
     @Override
@@ -80,8 +80,7 @@ public class PatientInfoActivity extends AppCompatActivity {
         updatesRecycler.setAdapter(mAdapter);
 
         // questions button
-        questionsButton = findViewById(R.id.button_goto_questions);
-        //todo if current user is caregiver
+        questionsButton = findViewById(R.id.activity_patient_info_button_goto_questions);
         questionsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -89,8 +88,17 @@ public class PatientInfoActivity extends AppCompatActivity {
             }
         });
 
+        // caregivers button
+        caregiversButton = findViewById(R.id.activity_patient_info_button_goto_caregivers);
+        caregiversButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openActivityCaregivers();
+            }
+        });
+
         // friends button
-        friendsButton = findViewById(R.id.button_goto_friends);
+        friendsButton = findViewById(R.id.activity_patient_info_button_goto_friends);
         friendsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -102,7 +110,7 @@ public class PatientInfoActivity extends AppCompatActivity {
     private void showEditUpdateDialog(Update update){
         AlertDialog.Builder builder = new AlertDialog.Builder(PatientInfoActivity.this);
         // set view
-        View view = getLayoutInflater().inflate(R.layout.view_update_dialog, null);
+        View view = getLayoutInflater().inflate(R.layout.update_dialog, null);
         builder.setView(view);
         // add update info
         final TextView updateDate = view.findViewById(R.id.text_view_update_popup_date);
@@ -213,15 +221,19 @@ public class PatientInfoActivity extends AppCompatActivity {
     }
 
     public void openActivityQuestions(){
-        // todo this patient's questions page
         Intent intent = new Intent(this, QuestionsListActivity.class);
         intent.putExtra(Constants.PATIENT_ID_KEY, mPatient.getId());
         startActivity(intent);
     }
 
     public void openActivityFriends(){
-        // todo this patient's friends page
         Intent intent = new Intent(this, FriendsListActivity.class);
+        intent.putExtra(Constants.PATIENT_ID_KEY, mPatient.getId());
+        startActivity(intent);
+    }
+
+    public void openActivityCaregivers(){
+        Intent intent = new Intent(this, CaregiversListActivity.class);
         intent.putExtra(Constants.PATIENT_ID_KEY, mPatient.getId());
         startActivity(intent);
     }

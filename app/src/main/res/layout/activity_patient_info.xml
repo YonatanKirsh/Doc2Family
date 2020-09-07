@@ -38,24 +38,35 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_view_patient_diagnosis"
-        app:layout_constraintBottom_toTopOf="@+id/button_goto_questions"
+        app:layout_constraintBottom_toTopOf="@+id/activity_patient_info_button_goto_questions"
         app:layout_constraintVertical_bias="0.0"/>
 
     <Button
-        android:id="@+id/button_goto_questions"
+        android:id="@+id/activity_patient_info_button_goto_questions"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
         android:layout_margin="20dp"
-        android:text="Questions"
+        android:text="@string/questions"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"/>
 
     <Button
-        android:id="@+id/button_goto_friends"
+        android:id="@+id/activity_patient_info_button_goto_caregivers"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
         android:layout_margin="20dp"
-        android:text="Friends"
+        android:text="@string/caregivers"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/activity_patient_info_button_goto_questions"
+        app:layout_constraintRight_toLeftOf="@+id/activity_patient_info_button_goto_friends"
+        />
+
+    <Button
+        android:id="@+id/activity_patient_info_button_goto_friends"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_margin="20dp"
+        android:text="@string/friends"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"/>
 
