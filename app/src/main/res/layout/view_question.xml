@@ -21,7 +21,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="20sp"
-        android:textColor="@color/textSecondary"
+        android:textColor="@color/textFaded"
         android:hint="@string/doctors_answer_hint"
         app:layout_constraintTop_toBottomOf="@+id/text_view_question_content"
         app:layout_constraintBottom_toBottomOf="parent"

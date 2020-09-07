@@ -77,29 +77,29 @@ public class FriendsListActivity extends AppCompatActivity {
 
     private void initAddFriendDialog(){
         AlertDialog.Builder builder = new AlertDialog.Builder(FriendsListActivity.this);
-        builder.setTitle("Add Friend");
+        builder.setTitle(R.string.add_friend);
 
         // add edit text
-        final EditText questionInput = new EditText(FriendsListActivity.this);
+        final EditText emailInput = new EditText(FriendsListActivity.this);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
-        questionInput.setLayoutParams(lp);
-        questionInput.setHint("Enter friend's email:");
-        builder.setView(questionInput);
+        emailInput.setLayoutParams(lp);
+        emailInput.setHint(R.string.friends_email_hint);
+        builder.setView(emailInput);
 
         // Add the buttons
-        builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(R.string.add, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked add button - todo add friend
-                String newQuestion = questionInput.getText().toString();
-                String message = "added friend:\n" + newQuestion;
+                String newFriend = emailInput.getText().toString();
+                String message = "added friend:\n" + newFriend;
                 Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
-                questionInput.setText("");
+                emailInput.setText("");
                 dialog.dismiss();
             }
         });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User cancelled the dialog
                 dialog.cancel();
@@ -129,7 +129,7 @@ public class FriendsListActivity extends AppCompatActivity {
         // todo if user is admin- add admin privileges
         addAdminPrivilegesToDialog(builder, view, friend);
         // Add the buttons
-        builder.setPositiveButton("Cancel", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(R.string.cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User cancelled the dialog
                 dialog.cancel();
@@ -168,7 +168,7 @@ public class FriendsListActivity extends AppCompatActivity {
         });
 
         // set update button
-        builder.setNegativeButton("Update", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(R.string.update, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked submit button - todo update friend
                 String friendId = friend.getUserId();

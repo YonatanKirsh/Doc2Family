@@ -113,17 +113,16 @@ public class PatientInfoActivity extends AppCompatActivity {
         User issuer = Communicator.getUserById(update.getIssuingCareGiverId());
         updateIssuer.setText(issuer.getFullName());
         // Add the buttons
-        builder.setPositiveButton("Update", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(R.string.update, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked update button - todo change the update's content
                 String newUpdate = updateContent.getText().toString();
-                String message = "updated to:\n" + newUpdate;
-                Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
-                updateContent.setText("");
-                dialog.dismiss();
+                confirmUpdateUpdate(newUpdate, dialog);
+//                updateContent.setText("");
             }
         });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+        builder.setPositiveButton(R.string.cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User cancelled the dialog
                 dialog.cancel();
@@ -132,6 +131,27 @@ public class PatientInfoActivity extends AppCompatActivity {
         // Create the AlertDialog
         AlertDialog updatesDialog = builder.create();
         updatesDialog.show();
+    }
+
+    public void confirmUpdateUpdate(final String newUpdate, final DialogInterface callingDialog) {
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case DialogInterface.BUTTON_POSITIVE:
+                        //Yes button clicked - todo actually update diagnosis
+                        Toast.makeText(PatientInfoActivity.this, String.format("Updated to:\n%s", newUpdate), Toast.LENGTH_LONG).show();
+                        callingDialog.dismiss();
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        // No button clicked
+                        break;
+                }
+            }
+        };
+
+        ConfirmDialog.show(this, dialogClickListener, String.format("Update to\n\"%s\"?", newUpdate));
     }
 
     private void showEditDiagnosisDialog(){
@@ -188,6 +208,7 @@ public class PatientInfoActivity extends AppCompatActivity {
     }
 
     public void onClickUpdate(Update update) {
+        // todo iff update issued by current user
         showEditUpdateDialog(update);
     }
 
