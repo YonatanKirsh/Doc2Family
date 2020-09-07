@@ -236,26 +236,43 @@
 
             </LinearLayout>
 
-            <RadioGroup
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+            <CheckBox
+                android:id="@+id/activity_sign_up_checkbox_caregiver"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:gravity="center"
+                android:text="@string/caregiver_single"
+                />
 
-                <RadioButton
-                    android:id="@+id/checkDoc"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="true"
-                    android:text="@string/docBox" />
+            <ImageButton
+                android:id="@+id/activity_sign_up_image_button_caregiver_info"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center_vertical"
+                android:background="@null"
+                app:srcCompat="@drawable/ic_info" />
 
-                <RadioButton
-                    android:id="@+id/checkFriend"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
-                    android:text="@string/friendBox" />
-            </RadioGroup>
+<!--            <RadioGroup-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:orientation="horizontal"-->
+<!--                android:gravity="center_vertical">-->
+
+<!--                <RadioButton-->
+<!--                    android:id="@+id/checkDoc"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:checked="true"-->
+<!--                    android:text="@string/docBox" />-->
+
+<!--                <RadioButton-->
+<!--                    android:id="@+id/checkFriend"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginLeft="20dp"-->
+<!--                    android:text="@string/friendBox" />-->
+<!--            </RadioGroup>-->
 
 
 

@@ -28,7 +28,8 @@
     <string name="add_caregiver">Add Caregiver</string>
     <string name="caregivers_title">Caregivers</string>
     <string name="questions">Questions</string>
-    <string name="caregivers">Caregivers</string>
+    <string name="caregivers_plural">Caregivers</string>
+    <string name="caregiver_single">Caregiver</string>
     <string name="friends">Friends</string>
     <string name="remove_caregiver_format">Remove %s?</string>
     <string name="remove">Remove</string>
@@ -54,5 +55,6 @@
     <string name="last_name_info_message">Others will see this name when you follow a patient.\nLast name should be between 3 and 20 characters long.</string>
     <string name="password_info_message">Password should be at least 6 characters long.</string>
     <string name="verify_password_info_message">Verify password - enter the same password again.</string>
+    <string name="caregiver_info_message">Are you a doctor/nurse/other kind of caregiver?\nCaregivers have special permissions like adding/editing patients etc.</string>
 
 </resources>
