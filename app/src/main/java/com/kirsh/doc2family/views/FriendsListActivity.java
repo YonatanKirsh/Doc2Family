@@ -198,7 +198,7 @@ public class FriendsListActivity extends AppCompatActivity {
             }
         };
 
-        ConfirmBuilder.build(this, dialogClickListener);
+        Constants.confirmDialog(this, dialogClickListener);
     }
 
     public void onClickFriend(Friend friend) {

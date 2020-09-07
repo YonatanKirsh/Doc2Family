@@ -1,5 +1,10 @@
 package com.kirsh.doc2family.logic;
 
+import android.content.Context;
+import android.content.DialogInterface;
+
+import androidx.appcompat.app.AlertDialog;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -27,6 +32,14 @@ public class Constants {
 
     public static boolean isLegalPassword(String password){
         return password.length() >= 6;
+    }
+
+    public static void confirmDialog(Context context, DialogInterface.OnClickListener dialogClickListener){
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Confirm")
+                .setMessage("Are you sure?")
+                .setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener).show();
     }
 
     // sample data
