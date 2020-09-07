@@ -11,7 +11,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.kirsh.doc2family.R;
@@ -64,6 +66,12 @@ public class PatientInfoActivity extends AppCompatActivity {
         else {
             diagnosisTextView.setText(R.string.no_patient);
         }
+        diagnosisTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showEditDiagnosisDialog();
+            }
+        });
 
         // updates adapter
         RecyclerView updatesRecycler = findViewById(R.id.recycler_updates);
@@ -73,6 +81,7 @@ public class PatientInfoActivity extends AppCompatActivity {
 
         // questions button
         questionsButton = findViewById(R.id.button_goto_questions);
+        //todo if current user is caregiver
         questionsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -90,7 +99,7 @@ public class PatientInfoActivity extends AppCompatActivity {
         });
     }
 
-    private void showUpdateDialog(Update update){
+    private void showEditUpdateDialog(Update update){
         AlertDialog.Builder builder = new AlertDialog.Builder(PatientInfoActivity.this);
         // set view
         View view = getLayoutInflater().inflate(R.layout.view_update_dialog, null);
@@ -125,9 +134,61 @@ public class PatientInfoActivity extends AppCompatActivity {
         updatesDialog.show();
     }
 
+    private void showEditDiagnosisDialog(){
+        // init builder, get diagnosis
+        AlertDialog.Builder builder = new AlertDialog.Builder(PatientInfoActivity.this);
+        final EditText editText = new EditText(PatientInfoActivity.this);
+        editText.setText(diagnosisTextView.getText().toString());
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        editText.setLayoutParams(lp);
+        builder.setView(editText);
+        builder.setTitle(R.string.diagnosis);
+
+        // set cancel button
+        builder.setPositiveButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        // set update button
+        builder.setNegativeButton(R.string.update, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String newDiagnosis = editText.getText().toString();
+                confirmUpdateDiagnosis(newDiagnosis, dialog);
+            }
+        });
+
+        builder.show();
+    }
+
+    public void confirmUpdateDiagnosis(final String newDiagnosis, final DialogInterface callingDialog){
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        //Yes button clicked - todo actually update diagnosis
+                        Toast.makeText(PatientInfoActivity.this, String.format("Diagnosis updated:\n%s", newDiagnosis), Toast.LENGTH_LONG).show();
+                        callingDialog.dismiss();
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        // No button clicked
+                        break;
+                }
+            }
+        };
+
+        ConfirmDialog.show(this, dialogClickListener, String.format("Update diagnosis to\n\"%s\"?", newDiagnosis));
+    }
 
     public void onClickUpdate(Update update) {
-        showUpdateDialog(update);
+        showEditUpdateDialog(update);
     }
 
     public void openActivityQuestions(){
