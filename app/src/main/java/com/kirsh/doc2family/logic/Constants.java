@@ -1,10 +1,5 @@
 package com.kirsh.doc2family.logic;
 
-import android.content.Context;
-import android.content.DialogInterface;
-
-import androidx.appcompat.app.AlertDialog;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -51,12 +46,12 @@ public class Constants {
     private static ArrayList<Update> getSampleUpdates(){
         LocalDateTime firstTime = LocalDateTime.now().minusDays(10);
         ArrayList<Update> updates = new ArrayList<>();
-        updates.add(new Update("patient just admitted. has severe fomo.", firstTime, getSampleCareGiverIds().get(0)));
-        updates.add(new Update("second update!!", firstTime.plusMinutes(1), getSampleCareGiverIds().get(0)));
-        updates.add(new Update("started treating patient with hourly whiskey shots.", updates.get(updates.size()-1).getDate().plusHours(3), getSampleCareGiverIds().get(0)));
-        updates.add(new Update("patient is being a lil' bish- says he doesn't like whiskey.. wtf?", updates.get(updates.size()-1).getDate().plusMinutes(15), getSampleCareGiverIds().get(0)));
-        updates.add(new Update("patient stopped complaining, now loves whiskey", updates.get(updates.size()-1).getDate().plusHours(3), getSampleCareGiverIds().get(0)));
-        updates.add(new Update("patient is drunk.", updates.get(updates.size()-1).getDate().plusHours(1), getSampleCareGiverIds().get(0)));
+        updates.add(new Update(getSampleCareGiverIds().get(0), "patient just admitted. has severe fomo.", firstTime));
+        updates.add(new Update(getSampleCareGiverIds().get(0), "second update!!", firstTime.plusMinutes(1)));
+        updates.add(new Update(getSampleCareGiverIds().get(0), "started treating patient with hourly whiskey shots.", updates.get(updates.size()-1).getDateCreated().plusHours(3)));
+        updates.add(new Update(getSampleCareGiverIds().get(0), "patient is being a lil' bish- says he doesn't like whiskey.. wtf?", updates.get(updates.size()-1).getDateCreated().plusMinutes(15)));
+        updates.add(new Update(getSampleCareGiverIds().get(0), "patient stopped complaining, now loves whiskey", updates.get(updates.size()-1).getDateCreated().plusHours(3)));
+        updates.add(new Update(getSampleCareGiverIds().get(0), "patient is drunk.", updates.get(updates.size()-1).getDateCreated().plusHours(1)));
         return updates;
     }
 

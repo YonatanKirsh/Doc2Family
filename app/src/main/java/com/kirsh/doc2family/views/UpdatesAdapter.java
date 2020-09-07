@@ -10,9 +10,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.kirsh.doc2family.R;
+import com.kirsh.doc2family.logic.Communicator;
 import com.kirsh.doc2family.logic.Update;
+import com.kirsh.doc2family.logic.User;
 
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class UpdatesAdapter extends RecyclerView.Adapter<UpdatesAdapter.UpdateHolder> {
@@ -49,6 +50,8 @@ public class UpdatesAdapter extends RecyclerView.Adapter<UpdatesAdapter.UpdateHo
         Update update = mDataset.get(position);
         holder.textViewDate.setText(update.getDateString());
         holder.textViewContent.setText(update.getContent());
+        User issuer = Communicator.getUserById(update.getIssuingCareGiverId());
+        holder.texViewIssuer.setText(issuer.getFullName());
     }
 
     @Override
@@ -58,13 +61,15 @@ public class UpdatesAdapter extends RecyclerView.Adapter<UpdatesAdapter.UpdateHo
 
     static class UpdateHolder extends RecyclerView.ViewHolder{
 
-        TextView textViewDate;
         TextView textViewContent;
+        TextView texViewIssuer;
+        TextView textViewDate;
 
         public UpdateHolder(@NonNull View itemView) {
             super(itemView);
-            textViewDate = itemView.findViewById(R.id.text_view_update_date);
-            textViewContent = itemView.findViewById(R.id.text_view_update_content);
+            textViewContent = itemView.findViewById(R.id.update_text_view_content);
+            textViewDate = itemView.findViewById(R.id.update_text_view_date_created);
+            texViewIssuer = itemView.findViewById(R.id.update_text_view_issuer);
         }
     }
 }

@@ -5,24 +5,21 @@ import android.content.DialogInterface;
 
 import androidx.appcompat.app.AlertDialog;
 
+import com.kirsh.doc2family.R;
+
 import java.security.Policy;
 
 public class ConfirmDialog {
 
-    private static final String TITLE = "Confirm";
-    private static final String MESSAGE = "Are you sure?";
-    private static final String POSITIVE_BUTTON_TEXT = "Yes";
-    private static final String NEGATIVE_BUTTON_TEXT = "No";
-
     public static void show(Context context, DialogInterface.OnClickListener dialogClickListener){
-        show(context, dialogClickListener, MESSAGE);
+        show(context, dialogClickListener, context.getString(R.string.are_you_sure));
     }
 
     public static void show(Context context, DialogInterface.OnClickListener dialogClickListener, String message){
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle(TITLE)
+        builder.setTitle(R.string.confirm)
                 .setMessage(message)
-                .setPositiveButton(POSITIVE_BUTTON_TEXT, dialogClickListener)
-                .setNegativeButton(NEGATIVE_BUTTON_TEXT, dialogClickListener).show();
+                .setPositiveButton(R.string.yes, dialogClickListener)
+                .setNegativeButton(R.string.no, dialogClickListener).show();
     }
 }

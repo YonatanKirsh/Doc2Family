@@ -7,26 +7,26 @@ import java.util.Comparator;
 public class Update {
 
     String mContent;
-    LocalDateTime mDate;
+    LocalDateTime mDateCreated;
     String mIssuingCareGiverId;
     private DateTimeFormatter mFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy, HH:mm");
 
-    public Update(String content, LocalDateTime date, String careGiverId){
-        mContent = content;
-        mDate = date;
+    public Update(String careGiverId, String content, LocalDateTime date){
         mIssuingCareGiverId = careGiverId;
+        mContent = content;
+        mDateCreated = date;
     }
 
     public String getContent(){
         return mContent;
     }
 
-    public LocalDateTime getDate() {
-        return mDate;
+    public LocalDateTime getDateCreated() {
+        return mDateCreated;
     }
 
     public String getDateString(){
-        return getDate().format(mFormatter);
+        return getDateCreated().format(mFormatter);
     }
 
     public String getIssuingCareGiverId() {
@@ -37,7 +37,7 @@ public class Update {
 
         @Override
         public int compare(Update o1, Update o2) {
-            return o2.getDate().compareTo(o1.getDate());
+            return o2.getDateCreated().compareTo(o1.getDateCreated());
         }
     }
 }
