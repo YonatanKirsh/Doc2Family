@@ -12,6 +12,11 @@ import android.widget.RadioButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.kirsh.doc2family.logic.Communicator;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.kirsh.doc2family.logic.Constants;
 import com.kirsh.doc2family.R;
 
@@ -34,7 +39,8 @@ public class SignUpActivity extends AppCompatActivity {
     private EditText mEmailEditText;
     private EditText mPasswordEditText;
     private EditText mVerifyPasswordEditText;
-    private boolean mIsDoctor;
+    private CheckBox mCaregiverCheckbox;
+//    private boolean mIsDoctor;
     private Button mSignUpButton;
 
 
@@ -63,23 +69,27 @@ public class SignUpActivity extends AppCompatActivity {
 
         // email EditText + info button
         mEmailEditText = findViewById(R.id.su_edit_text_email);
-        addPopupOnClick((ImageButton) findViewById(R.id.image_button_email_info), Constants.EMAIL_INFO_MESSAGE);
+        addPopupOnClick((ImageButton) findViewById(R.id.image_button_email_info), this.getString(R.string.email_info_message));
 
         // first name EditText + info button
         mFirstNameEditText = findViewById(R.id.edit_text_first_name);
-        addPopupOnClick((ImageButton) findViewById(R.id.image_button_first_name_info), Constants.FIRSTNAME_INFO_MESSAGE);
+        addPopupOnClick((ImageButton) findViewById(R.id.image_button_first_name_info), this.getString(R.string.first_name_info_message));
 
         // last name EditText + info button
         mLastNameEditText = findViewById(R.id.edit_text_last_name);
-        addPopupOnClick((ImageButton) findViewById(R.id.image_button_last_name_info), Constants.LASTNAME_INFO_MESSAGE);
+        addPopupOnClick((ImageButton) findViewById(R.id.image_button_last_name_info), this.getString(R.string.last_name_info_message));
 
         // password EditText + info button
         mPasswordEditText = findViewById(R.id.su_edit_text_password);
-        addPopupOnClick((ImageButton) findViewById(R.id.image_button_password_info), Constants.PASSWORD_INFO_MESSAGE);
+        addPopupOnClick((ImageButton) findViewById(R.id.image_button_password_info), this.getString(R.string.password_info_message));
 
         // repeat password EditText + info button
         mVerifyPasswordEditText = findViewById(R.id.su_edit_text_confirm_password);
-        addPopupOnClick((ImageButton) findViewById(R.id.image_button_verify_password_info), Constants.VERIFY_PASSWORD_INFO_MESSAGE);
+        addPopupOnClick((ImageButton) findViewById(R.id.image_button_verify_password_info), this.getString(R.string.verify_password_info_message));
+
+        // caregiver checkbox
+        mCaregiverCheckbox = findViewById(R.id.activity_sign_up_checkbox_caregiver);
+        addPopupOnClick((ImageButton) findViewById(R.id.activity_sign_up_image_button_caregiver_info), this.getString(R.string.caregiver_info_message));
 
         // sign up button
         mSignUpButton = findViewById(R.id.button_sign_up);
@@ -90,23 +100,23 @@ public class SignUpActivity extends AppCompatActivity {
             }
         });
 
-        // checkBox doctor and friend
-        RadioButton checkDoctor = (RadioButton) findViewById(R.id.checkDoc);
-        RadioButton checkFriend = (RadioButton) findViewById(R.id.checkFriend);
-
-        checkDoctor.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mIsDoctor = ((RadioButton) v).isChecked();
-            }
-        });
-
-        checkFriend.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mIsDoctor = !((RadioButton) v).isChecked();
-            }
-        });
+//        // checkBox doctor and friend
+//        RadioButton checkDoctor = (RadioButton) findViewById(R.id.checkDoc);
+//        RadioButton checkFriend = (RadioButton) findViewById(R.id.checkFriend);
+//
+//        checkDoctor.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                mIsDoctor = ((RadioButton) v).isChecked();
+//            }
+//        });
+//
+//        checkFriend.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                mIsDoctor = !((RadioButton) v).isChecked();
+//            }
+//        });
     }
 
     private void addPopupOnClick(final ImageButton button, final String message) {

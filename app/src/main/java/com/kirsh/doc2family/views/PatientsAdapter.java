@@ -27,7 +27,7 @@ public class PatientsAdapter extends RecyclerView.Adapter<PatientsAdapter.Patien
     @NonNull
     @Override
     public PatientHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View patientView = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_solo_text_view, parent, false);
+        View patientView = LayoutInflater.from(parent.getContext()).inflate(R.layout.solo_text_view, parent, false);
         final PatientHolder patientHolder = new PatientHolder(patientView);
         patientView.setOnClickListener(new View.OnClickListener() {
             @Override

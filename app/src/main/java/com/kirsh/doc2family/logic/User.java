@@ -8,18 +8,17 @@ public class User {
     private String mFirstName;
     private String mLastName;
     private String mId;
-
-    private boolean mIsTreater;
+    private boolean mIsCareGiver;
     private ArrayList<String> mPatientIds = new ArrayList<>();
 
     public User(){}
 
-    public User(String email, String firstName, String lastName, String id, boolean isTreater){
+    public User(String email, String firstName, String lastName, String id, boolean isCareGiver){
         mEmail = email;
         mFirstName = firstName;
         mLastName = lastName;
         mId = id;
-        mIsTreater = isTreater;
+        mIsCareGiver = isCareGiver;
     }
 
     public String getEmail() {
@@ -55,18 +54,14 @@ public class User {
         return mPatientIds;
     }
 
-    public boolean isDoctor() {
-        return mIsTreater;
+    public boolean isCareGiver() {
     }
 
     public void setIsDoctor(boolean mIsDoctor) {
-        this.mIsTreater = mIsDoctor;
+    public void setIsCareGiver(boolean isCareGiver) {
     }
 
     public String getFullName(){
-        if (isDoctor()){
-            return "Dr. " + getLastName();
-        }
         return String.format("%s %s", getFirstName(), getLastName());
     }
 

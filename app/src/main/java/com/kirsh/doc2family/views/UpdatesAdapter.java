@@ -10,16 +10,17 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.kirsh.doc2family.R;
+import com.kirsh.doc2family.logic.Communicator;
 import com.kirsh.doc2family.logic.Update;
+import com.kirsh.doc2family.logic.User;
 
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class UpdatesAdapter extends RecyclerView.Adapter<UpdatesAdapter.UpdateHolder> {
 
     private ArrayList<Update> mDataset;
     private Context mContext;
-    private DateTimeFormatter mFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy, HH:mm");
+
 
     public UpdatesAdapter(Context context, ArrayList<Update> dataset){
         dataset.sort(new Update.UpdateSorter());
@@ -30,7 +31,7 @@ public class UpdatesAdapter extends RecyclerView.Adapter<UpdatesAdapter.UpdateHo
     @NonNull
     @Override
     public UpdateHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View updateView = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_update, parent, false);
+        View updateView = LayoutInflater.from(parent.getContext()).inflate(R.layout.update_item, parent, false);
         final UpdateHolder updateHolder = new UpdateHolder(updateView);
         updateView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,8 +48,10 @@ public class UpdatesAdapter extends RecyclerView.Adapter<UpdatesAdapter.UpdateHo
     @Override
     public void onBindViewHolder(@NonNull UpdateHolder holder, int position) {
         Update update = mDataset.get(position);
-        holder.textViewDate.setText(update.getDate().format(mFormatter));
+        holder.textViewDate.setText(update.getDateString());
         holder.textViewContent.setText(update.getContent());
+        User issuer = Communicator.getUserById(update.getIssuingCareGiverId());
+        holder.texViewIssuer.setText(issuer.getFullName());
     }
 
     @Override
@@ -58,13 +61,15 @@ public class UpdatesAdapter extends RecyclerView.Adapter<UpdatesAdapter.UpdateHo
 
     static class UpdateHolder extends RecyclerView.ViewHolder{
 
-        TextView textViewDate;
         TextView textViewContent;
+        TextView texViewIssuer;
+        TextView textViewDate;
 
         public UpdateHolder(@NonNull View itemView) {
             super(itemView);
-            textViewDate = itemView.findViewById(R.id.text_view_update_date);
-            textViewContent = itemView.findViewById(R.id.text_view_update_content);
+            textViewContent = itemView.findViewById(R.id.update_item_text_view_content);
+            textViewDate = itemView.findViewById(R.id.update_item_text_view_date_created);
+            texViewIssuer = itemView.findViewById(R.id.update_item_text_view_issuer);
         }
     }
 }

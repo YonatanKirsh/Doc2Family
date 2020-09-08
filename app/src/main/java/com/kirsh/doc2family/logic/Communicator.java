@@ -166,6 +166,17 @@ public class Communicator {
                 });
     }
 
+    //todo firebase!
+    public static ArrayList<User> getPatientsCaregivers(String patientId){
+        ArrayList<User> caregivers = new ArrayList<>();
+        Patient patient = getPatientById(patientId);
+        ArrayList<String> caregiverIds = patient.getCaregiverIds();
+        for (String userId : caregiverIds) {
+            caregivers.add(getUserById(userId));
+        }
+        return caregivers;
+    }
+
     // todo firebase!
     public static User getUserById(String userId){
         for (User user: Constants.SAMPLE_USERS) {

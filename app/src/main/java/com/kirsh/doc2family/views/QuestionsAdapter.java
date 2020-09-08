@@ -29,14 +29,14 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.Ques
     @NonNull
     @Override
     public QuestionHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View questionView = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_question, parent, false);
+        View questionView = LayoutInflater.from(parent.getContext()).inflate(R.layout.question_item, parent, false);
         final QuestionHolder questionHolder = new QuestionHolder(questionView);
         questionView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Question currentQuestion = mDataset.get(questionHolder.getAbsoluteAdapterPosition());
-                if (mContext instanceof QuestionsActivity){
-                    ((QuestionsActivity)mContext).onClickQuestion(currentQuestion);
+                if (mContext instanceof QuestionsListActivity){
+                    ((QuestionsListActivity)mContext).onClickQuestion(currentQuestion);
                 }
             }
         });

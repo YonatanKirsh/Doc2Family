@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#0070EE</color>
-    <color name="colorPrimaryDark">#1540EE</color>
+    <color name="colorPrimary">@color/blue</color>
+    <color name="colorPrimaryDark">@color/navy</color>
 <!--    <color name="colorAccent">#03DAC5</color>-->
     <color name="colorAccent">@color/green</color>
-    <color name="textPrimary">@color/black</color>
-    <color name="textSecondary">@color/gray</color>
+    <color name="textPrimary">@color/navy</color>
+    <color name="textWithinPrimary">@color/white</color>
+    <color name="textSecondary">@color/green</color>
+    <color name="textFaded">@color/gray</color>
     <color name="colorBackground">#FFFFFF</color>
 
 

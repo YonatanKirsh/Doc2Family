@@ -1,12 +1,60 @@
 <resources>
+
     <string name="app_name">Doc2Family</string>
+
+<!--    buttons / titles / etc -->
     <string name="docBox">DOCTOR</string>
     <string name="choosetxt">You are: </string>
     <string name="friendBox">FRIEND</string>
+    <string name="add_friend">Add Friend</string>
     <string name="no_patient">No patient :(</string>
-    <string name="enter_email">Email address:</string>
+    <string name="admin">admin</string>
+    <string name="not_admin">not admin</string>
+    <string name="remove_friend">Remove Friend</string>
+    <string name="diagnosis">Diagnosis</string>
+    <string name="cancel">Cancel</string>
+    <string name="update">Update</string>
+    <string name="add">Add</string>
+    <string name="confirm">Confirm</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="sign_in">Sign In</string>
+    <string name="login">Login</string>
     <string name="reset_password">Send</string>
-    <string name="forgot_your_password_title">Forgot your password ?</string>
-    <string name="forgot_password_explanation">Don\'t worry. Resetting your password is easy, just tell us the email address you registered with Doc2Family.</string>
+    <string name="forgot_your_password_title">Forgot your password?</string>
+    <string name="new_patient">New Patient</string>
+    <string name="my_patients">My Patients</string>
+    <string name="add_caregiver">Add Caregiver</string>
+    <string name="caregivers_title">Caregivers</string>
+    <string name="questions">Questions</string>
+    <string name="caregivers_plural">Caregivers</string>
+    <string name="caregiver_single">Caregiver</string>
+    <string name="friends">Friends</string>
+    <string name="remove_caregiver_format">Remove %s?</string>
+    <string name="remove">Remove</string>
+
+
+<!--    hints-->
     <string name="doctors_answer_hint">The doctor\'s answer will appear here.</string>
+    <string name="submit_answer_hint">Submit an answer</string>
+    <string name="first_name_hint">First Name</string>
+    <string name="last_name_hint">Last Name</string>
+    <string name="email_hint">Email Address</string>
+    <string name="password_hint">Password</string>
+    <string name="confirm_password_hint">Confirm Password</string>
+    <string name="friends_email_hint">Enter friend\'s email</string>
+    <string name="caregiver_email_hint">Enter caregiver\'s email</string>
+
+<!--    messages -->
+    <string name="are_you_sure">Are you sure?</string>
+    <string name="dont_have_an_account">Don\'t have an account?</string>
+    <string name="forgot_password_explanation">Don\'t worry, resetting your password is easy! Just tell us the email address you used to register with Doc2Family.</string>
+    <string name="email_info_message">Please enter a valid email address.</string>
+    <string name="first_name_info_message">Others will see this name when you follow a patient.\nFirst name should be between 3 and 20 characters long.</string>
+    <string name="last_name_info_message">Others will see this name when you follow a patient.\nLast name should be between 3 and 20 characters long.</string>
+    <string name="password_info_message">Password should be at least 6 characters long.</string>
+    <string name="verify_password_info_message">Verify password - enter the same password again.</string>
+    <string name="caregiver_info_message">Are you a doctor/nurse/other kind of caregiver?\nCaregivers have special permissions like adding/editing patients etc.</string>
+
 </resources>

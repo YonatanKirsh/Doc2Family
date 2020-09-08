@@ -1,6 +1,7 @@
 package com.kirsh.doc2family.views;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +14,6 @@ import com.kirsh.doc2family.R;
 import com.kirsh.doc2family.logic.Communicator;
 import com.kirsh.doc2family.logic.Constants;
 import com.kirsh.doc2family.logic.Friend;
-import com.kirsh.doc2family.logic.Patient;
 import com.kirsh.doc2family.logic.User;
 
 import java.util.ArrayList;
@@ -31,9 +31,9 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendHo
     @NonNull
     @Override
     public FriendHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View friendView = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_solo_text_view, parent ,false);
-        final FriendHolder friendHolder = new FriendHolder(friendView);
-        friendView.setOnClickListener(new View.OnClickListener() {
+        View friendItemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.solo_text_view, parent ,false);
+        final FriendHolder friendHolder = new FriendHolder(friendItemView);
+        friendItemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Friend currentFriend = mDataset.get(friendHolder.getAbsoluteAdapterPosition());
@@ -51,8 +51,9 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendHo
         User user = Communicator.getUserById(friend.getUserId());
         if (user != null){
             holder.textView.setText(user.getFullName());
+        }else {
+            Log.d(Constants.NULL_USER_TAG, String.format(Constants.NULL_USER_ERROR_FORMAT_MESSAGE, friend.getUserId()));
         }
-        //todo what if null? trust Communicator to take care of error?
     }
 
     @Override
