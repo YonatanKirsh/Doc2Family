@@ -6,22 +6,27 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
-
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.kirsh.doc2family.views.ForgotPasswordActivity;
 import com.kirsh.doc2family.views.LoginActivity;
 import com.kirsh.doc2family.views.PatientsListActivity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 public class Communicator {
 
@@ -138,9 +143,27 @@ public class Communicator {
         return null;
     }
 
-    //todo firebase!
-    public static ArrayList<Patient> getUsersPatients(String userId){
-        return Constants.SAMPLE_PATIENTS;
+//    //todo firebase!
+    public static void getUsersPatients(String userId){
+        //return Constants.SAMPLE_PATIENTS;
+        FirebaseFirestore fireStore = FirebaseFirestore.getInstance();
+        fireStore.collection("Users")
+                .whereEqualTo("id", userId)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot myDoc : task.getResult()) {
+                                User user = myDoc.toObject(User.class);
+                                user.getPatientIds();
+                            }
+                        }
+                        else {
+                            Log.d("ErrorDoc", "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
     }
 
     // todo firebase!

@@ -12,6 +12,8 @@ import com.kirsh.doc2family.R;
 import com.kirsh.doc2family.logic.Communicator;
 import com.kirsh.doc2family.logic.Constants;
 
+import static com.kirsh.doc2family.logic.Communicator.getUsersPatients;
+
 public class LoginActivity extends AppCompatActivity {
 
     private TextInputLayout email_layout;
@@ -27,6 +29,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         initViews();
+
         //todo remove openActivity!!
 //        openActivityListPatients();
     }

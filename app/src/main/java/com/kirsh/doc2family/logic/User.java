@@ -8,10 +8,11 @@ public class User {
     private String mFirstName;
     private String mLastName;
     private String mId;
+
     private boolean mIsTreater;
     private ArrayList<String> mPatientIds = new ArrayList<>();
 
-//    public User(){}
+    public User(){}
 
     public User(String email, String firstName, String lastName, String id, boolean isTreater){
         mEmail = email;
@@ -68,5 +69,11 @@ public class User {
         }
         return String.format("%s %s", getFirstName(), getLastName());
     }
+
+
+    public void setmPatientIds(ArrayList<String> mPatientIds) {
+        this.mPatientIds = mPatientIds;
+    }
+
 
 }

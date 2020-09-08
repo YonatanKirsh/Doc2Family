@@ -48,8 +48,8 @@ public class PatientsListActivity extends AppCompatActivity {
 
     private void initPatientAdapter(){
         //todo userId? here? from where?
-        ArrayList<Patient> patients = Communicator.getUsersPatients("userId");
-        mAdapter = new PatientsAdapter(this, patients);
+       // ArrayList<String> patients = Communicator.getUsersPatients("userId");
+        //mAdapter = new PatientsAdapter(this, patients);
     }
 
     public void onClickPatient(Patient patient){
