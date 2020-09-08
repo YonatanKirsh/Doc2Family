@@ -55,10 +55,11 @@ public class User {
     }
 
     public boolean isCareGiver() {
+        return mIsCareGiver;
     }
 
-    public void setIsDoctor(boolean mIsDoctor) {
     public void setIsCareGiver(boolean isCareGiver) {
+        mIsCareGiver = isCareGiver;
     }
 
     public String getFullName(){

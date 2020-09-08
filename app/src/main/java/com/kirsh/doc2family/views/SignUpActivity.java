@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
@@ -17,6 +18,12 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.kirsh.doc2family.logic.Constants;
 import com.kirsh.doc2family.R;
 
@@ -56,7 +63,8 @@ public class SignUpActivity extends AppCompatActivity {
         String password = mPasswordEditText.getText().toString();
         final String firstName = mFirstNameEditText.getText().toString();
         final String lastName = mLastNameEditText.getText().toString();
-        Communicator.cCreateUserWithEmailAndPassword(email, password, SignUpActivity.this, firstName, lastName, mIsDoctor,mEmailEditText, mPasswordEditText, mEmailLayout, mPasswordLayout);
+        final boolean isCaregiver = mCaregiverCheckbox.isChecked();
+        Communicator.cCreateUserWithEmailAndPassword(email, password, SignUpActivity.this, firstName, lastName, isCaregiver,mEmailEditText, mPasswordEditText, mEmailLayout, mPasswordLayout);
     }
 
     private void initViews() {

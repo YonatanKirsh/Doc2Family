@@ -29,6 +29,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         initViews();
+        Communicator.getUsersPatients("hJAUk7JnMLYIc9QA4jciftKclLE2");
 
         //todo remove openActivity!!
 //        openActivityListPatients();

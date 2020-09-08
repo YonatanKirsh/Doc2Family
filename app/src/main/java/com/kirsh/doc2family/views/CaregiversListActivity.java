@@ -43,8 +43,8 @@ public class CaregiversListActivity extends AppCompatActivity {
     }
 
     private void initCaregiversAdapter() {
-        ArrayList<User> caregivers = Communicator.getPatientsCaregivers(mPatient.getId());
-        mAdapter = new CaregiversAdapter(this, caregivers);
+        ArrayList<String> caregivers = Communicator.getPatientsCaregivers(mPatient.getId());
+        //mAdapter = new CaregiversAdapter(this, caregivers);
     }
 
     private void initViews() {
