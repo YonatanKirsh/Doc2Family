@@ -14,7 +14,7 @@ public class Communicator {
         return null;
     }
 
-    //todo firebase!
+    //todo firebase! maayann
     public static ArrayList<Patient> getUsersPatients(String userId){
         return Constants.SAMPLE_PATIENTS;
     }

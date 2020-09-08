@@ -4,66 +4,75 @@ import java.util.ArrayList;
 
 public class User {
 
-    private String mEmail;
-    private String mFirstName;
-    private String mLastName;
-    private String mId;
-    private boolean mIsCareGiver;
-    private ArrayList<String> mPatientIds = new ArrayList<>();
+    private String email;
+    private String firstName;
+    private String lastName;
+    private String id;
+    private boolean careGiver;
+    private ArrayList<String> patientIds = new ArrayList<>();
+    String fullName;
 
-//    public User(){}
+    public User(){}
 
-    public User(String email, String firstName, String lastName, String id, boolean isCareGiver){
-        mEmail = email;
-        mFirstName = firstName;
-        mLastName = lastName;
-        mId = id;
-        mIsCareGiver = isCareGiver;
+    public User(String email, String firstName, String lastName, String id, boolean careGiver){
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.id = id;
+        this.careGiver = careGiver;
+        fullName = String.format("%s %s", getFirstName(), getLastName());
     }
 
     public String getEmail() {
-        return mEmail;
+        return email;
     }
 
 
     public String getFirstName() {
-        return mFirstName;
+        return firstName;
     }
 
     public void setFirstName(String firstName) {
-        mFirstName = firstName;
+        this.firstName = firstName;
     }
 
     public String getLastName(){
-        return mLastName;
+        return lastName;
     }
 
     public String getId() {
-        return mId;
+        return id;
     }
 
     public void setEmail(String email) {
-        mEmail = email;
+        this.email = email;
     }
 
     public void setId(String id) {
-        mId = id;
+        this.id = id;
     }
 
     public ArrayList<String> getPatientIds() {
-        return mPatientIds;
+        return patientIds;
     }
 
     public boolean isCareGiver() {
-        return mIsCareGiver;
+        return careGiver;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public void setIsCareGiver(boolean isCareGiver) {
-        mIsCareGiver = isCareGiver;
+        this.careGiver = isCareGiver;
     }
 
     public String getFullName(){
         return String.format("%s %s", getFirstName(), getLastName());
     }
 
+    public void setPatientIds(ArrayList<String> patientIds){
+        this.patientIds = patientIds;
+    }
 }

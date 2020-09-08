@@ -4,53 +4,72 @@ import java.util.ArrayList;
 
 public class Patient {
 
-    private String mFirstName;
-    private String mLastName;
-    private String mId;
-    private String mDiagnosis;
-    private ArrayList<Update> mUpdates;
-    private ArrayList<Question> mQuestions;
-    private ArrayList<Friend> mFriends;
-    private ArrayList<String> mCaregiverIds;
+    private String firstName;
+    private String lastName;
+    private String id;
+    private String diagnosis;
+    private ArrayList<Update> updates;
+    private ArrayList<Question> questions;
+    private ArrayList<Friend> friends;
+    private ArrayList<String> caregiverIds;
 
-    public Patient(String firstName, String lastName, String id, String diagnosis, ArrayList<Update> updates, ArrayList<Question> questions, ArrayList<Friend> friends, ArrayList<String> careGiverIds){
-        mFirstName = firstName;
-        mLastName = lastName;
-        mId = id;
-        mDiagnosis = diagnosis;
-        mUpdates = updates;
-        mQuestions = questions;
-        mFriends = friends;
-        mCaregiverIds = careGiverIds;
+    public Patient(String firstName, String lastName, String id, String diagnosis){
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.id = id;
+        this.diagnosis = diagnosis;
+        updates = new ArrayList<Update>();
+        questions = new ArrayList<Question>();
+        friends = new ArrayList<Friend>();
+        caregiverIds = new ArrayList<String>();
     }
 
     public String getId() {
-        return mId;
+        return id;
     }
 
     public String getFullName(){
-        return mFirstName + " " + mLastName;
+        return firstName + " " + lastName;
     }
 
     public String getDiagnosis(){
-        return mDiagnosis;
+        return diagnosis;
     }
 
     public ArrayList<Update> getUpdates(){
-        return mUpdates;
+        return updates;
     }
 
     public ArrayList<Question> getQuestions(){
-        return mQuestions;
+        return questions;
     }
 
     public ArrayList<Friend> getFriends(){
-        return mFriends;
+        return friends;
     }
 
     public ArrayList<String> getCaregiverIds(){
-        return mCaregiverIds;
+        return caregiverIds;
     }
 
+    public void setCaregiverIds(ArrayList<String> caregiverIds) {
+        this.caregiverIds = caregiverIds;
+    }
+
+    public void setDiagnosis(String diagnosis) {
+        this.diagnosis = diagnosis;
+    }
+
+    public void setFriends(ArrayList<Friend> friends) {
+        this.friends = friends;
+    }
+
+    public void setQuestions(ArrayList<Question> questions) {
+        this.questions = questions;
+    }
+
+    public void setUpdates(ArrayList<Update> updates) {
+        this.updates = updates;
+    }
 }
 
