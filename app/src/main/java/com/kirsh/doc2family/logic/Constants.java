@@ -5,16 +5,14 @@ import java.util.ArrayList;
 
 public class Constants {
 
-    // messages
-    public static final String EMAIL_INFO_MESSAGE = "Please enter a valid email address.";
-    public static final String FIRSTNAME_INFO_MESSAGE = "Others will see this name when you follow a patient.\nFirst name should be between 3 and 20 characters long.";
-    public static final String LASTNAME_INFO_MESSAGE = "Others will see this name when you follow a patient.\nLast name should be between 3 and 20 characters long.";
-
-    public static final String PASSWORD_INFO_MESSAGE = "Password should be at least 6 characters long.";
-    public static final String VERIFY_PASSWORD_INFO_MESSAGE = "Verify password - enter the same password again.";
+    // error messages
+    public static final String NULL_USER_ERROR_FORMAT_MESSAGE = "Could not find user with id: %s.";
 
     // keys
     public static final String PATIENT_ID_KEY = "patient_id";
+
+    // tags
+    public static final String NULL_USER_TAG = "Null User";
 
     // validation functions
     public static boolean isLegalEmail(String email){
@@ -36,22 +34,22 @@ public class Constants {
 
     private static ArrayList<Patient> getSamplePatients(){
         ArrayList<Patient> patients = new ArrayList<>();
-        patients.add(new Patient("John", "Snow", "js", "can come back to life", getSampleUpdates(), getSampleQuestions(), getSampleFriends(), getSampleTreaterIds()));
-        patients.add(new Patient("Deneris", "Targerijan", "dt", "Power-Hungry", getSampleUpdates(), getSampleQuestions(), getSampleFriends(), getSampleTreaterIds()));
-        patients.add(new Patient("Clark", "Kent", "ck", "boring, too powerful", getSampleUpdates(), getSampleQuestions(), getSampleFriends(), getSampleTreaterIds()));
-        patients.add(new Patient("Captain", "America", "ca", "goody-good", getSampleUpdates(), getSampleQuestions(), getSampleFriends(), getSampleTreaterIds()));
+        patients.add(new Patient("John", "Snow", "js", "can come back to life", getSampleUpdates(), getSampleQuestions(), getSampleFriends(), getSampleCareGiverIds()));
+        patients.add(new Patient("Deneris", "Targerijan", "dt", "Power-Hungry", getSampleUpdates(), getSampleQuestions(), getSampleFriends(), getSampleCareGiverIds()));
+        patients.add(new Patient("Clark", "Kent", "ck", "boring, too powerful", getSampleUpdates(), getSampleQuestions(), getSampleFriends(), getSampleCareGiverIds()));
+        patients.add(new Patient("Captain", "America", "ca", "goody-good", getSampleUpdates(), getSampleQuestions(), getSampleFriends(), getSampleCareGiverIds()));
         return patients;
     }
 
     private static ArrayList<Update> getSampleUpdates(){
         LocalDateTime firstTime = LocalDateTime.now().minusDays(10);
         ArrayList<Update> updates = new ArrayList<>();
-        updates.add(new Update("patient just admitted. has severe fomo.", firstTime, getSampleTreaterIds().get(0)));
-        updates.add(new Update("second update!!", firstTime.plusMinutes(1), getSampleTreaterIds().get(0)));
-        updates.add(new Update("started treating patient with hourly whiskey shots.", updates.get(updates.size()-1).getDate().plusHours(3), getSampleTreaterIds().get(0)));
-        updates.add(new Update("patient is being a lil' bish- says he doesn't like whiskey.. wtf?", updates.get(updates.size()-1).getDate().plusMinutes(15), getSampleTreaterIds().get(0)));
-        updates.add(new Update("patient stopped complaining, now loves whiskey", updates.get(updates.size()-1).getDate().plusHours(3), getSampleTreaterIds().get(0)));
-        updates.add(new Update("patient is drunk.", updates.get(updates.size()-1).getDate().plusHours(1), getSampleTreaterIds().get(0)));
+        updates.add(new Update(getSampleCareGiverIds().get(0), "patient just admitted. has severe fomo.", firstTime));
+        updates.add(new Update(getSampleCareGiverIds().get(0), "second update!!", firstTime.plusMinutes(1)));
+        updates.add(new Update(getSampleCareGiverIds().get(0), "started treating patient with hourly whiskey shots.", updates.get(updates.size()-1).getDateCreated().plusHours(3)));
+        updates.add(new Update(getSampleCareGiverIds().get(0), "patient is being a lil' bish- says he doesn't like whiskey.. wtf?", updates.get(updates.size()-1).getDateCreated().plusMinutes(15)));
+        updates.add(new Update(getSampleCareGiverIds().get(0), "patient stopped complaining, now loves whiskey", updates.get(updates.size()-1).getDateCreated().plusHours(3)));
+        updates.add(new Update(getSampleCareGiverIds().get(0), "patient is drunk.", updates.get(updates.size()-1).getDateCreated().plusHours(1)));
         return updates;
     }
 
@@ -85,7 +83,7 @@ public class Constants {
         return friends;
     }
 
-    private static ArrayList<User> getSampleUsers(){
+    public static ArrayList<User> getSampleUsers(){
         ArrayList<User> users = new ArrayList<>();
         // add regular users
         users.add(new User("user1@email.com", "Jake", "Peralta", "JP93", false));
@@ -93,13 +91,13 @@ public class Constants {
         users.add(new User("user3@email.com", "Raymond", "Holt", "RH52", false));
 
         // add doctors
-        users.add(new User("doctor1@email.com", "Derek", "McDreamy", "DM78", true));
-        users.add(new User("doctor2@email.com", "Andre", "Dre", "AD65", true));
+        users.add(new User("doctor1@email.com", "Dr.", "McDreamy", "DM78", true));
+        users.add(new User("doctor2@email.com", "Dr.", "Dre", "AD65", true));
 
         return users;
     }
 
-    private static final ArrayList<String> getSampleTreaterIds(){
+    private static final ArrayList<String> getSampleCareGiverIds(){
         return new ArrayList<String>() {{
             add("AD65");
         }};

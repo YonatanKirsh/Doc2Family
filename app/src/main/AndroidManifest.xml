@@ -7,13 +7,13 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        >
-        <activity android:name=".views.ForgotPasswordActivity"></activity>
+        android:theme="@style/AppTheme">
+        <activity android:name=".views.CaregiversListActivity"></activity>
+        <activity android:name=".views.ForgotPasswordActivity" />
         <activity android:name=".views.AddPatientActivity" />
         <activity android:name=".views.SignUpActivity" />
         <activity android:name=".views.FriendsListActivity" />
-        <activity android:name=".views.QuestionsActivity" />
+        <activity android:name=".views.QuestionsListActivity" />
         <activity android:name=".views.PatientInfoActivity" />
         <activity android:name=".views.PatientsListActivity" />
         <activity android:name=".views.LoginActivity" />
