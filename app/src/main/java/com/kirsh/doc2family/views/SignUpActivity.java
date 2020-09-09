@@ -1,17 +1,18 @@
 package com.kirsh.doc2family.views;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.RadioButton;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
+import com.kirsh.doc2family.logic.Communicator;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -25,7 +26,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.kirsh.doc2family.logic.Constants;
 import com.kirsh.doc2family.R;
-import com.kirsh.doc2family.logic.User;
+
 
 
 public class SignUpActivity extends AppCompatActivity {
@@ -49,16 +50,12 @@ public class SignUpActivity extends AppCompatActivity {
 //    private boolean mIsDoctor;
     private Button mSignUpButton;
 
-    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
         initViews();
-
-        // Initialize Firebase Auth
-        mAuth = FirebaseAuth.getInstance();
     }
 
     private void createUserWithEmailAndPassword() {
@@ -67,54 +64,7 @@ public class SignUpActivity extends AppCompatActivity {
         final String firstName = mFirstNameEditText.getText().toString();
         final String lastName = mLastNameEditText.getText().toString();
         final boolean isCaregiver = mCaregiverCheckbox.isChecked();
-
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d("SIGN_UP_SUCCESS", "createUserWithEmail:success");
-                            Toast.makeText(SignUpActivity.this, "Registration succeed!",
-                                    Toast.LENGTH_SHORT).show();
-                            mAuth.getCurrentUser().sendEmailVerification()
-                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                               @Override
-                                                               public void onComplete(@NonNull Task<Void> task) {
-                                                                   if (task.isSuccessful()) {
-                                                                       Toast.makeText(SignUpActivity.this, "Registration succeed!. Please check your email for verification.",
-                                                                               Toast.LENGTH_SHORT).show();
-                                                                       mEmailEditText.setText("");
-                                                                       mPasswordEditText.setText("");
-                                                                   } else {
-                                                                       Toast.makeText(SignUpActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                                                                   }
-                                                               }
-                                                           }
-                                    );
-                            FirebaseUser user_auth = mAuth.getCurrentUser();
-                            User newUser = new User(user_auth.getEmail(), firstName, lastName, user_auth.getUid(), isCaregiver);
-                            FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-                            DocumentReference document = firestore.collection("Users").document();
-                            document.set(newUser);
-                            openActivityLogin();
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w("SIGN_UP_ERR", "createUserWithEmail: failure", task.getException());
-                            String errorMessage = task.getException().getMessage();
-                            Toast.makeText(SignUpActivity.this, "Registration failed! " + errorMessage,
-                                    Toast.LENGTH_LONG).show();
-                            if (errorMessage.contains("email")){
-                                mEmailLayout.setError(" ");
-                                mEmailLayout.requestFocus();
-                            }
-                            else if (errorMessage.contains("password")){
-                                mPasswordLayout.setError(" ");
-                                mPasswordLayout.requestFocus();
-                            }
-                        }
-                    }
-                });
+        Communicator.cCreateUserWithEmailAndPassword(email, password, SignUpActivity.this, firstName, lastName, isCaregiver,mEmailEditText, mPasswordEditText, mEmailLayout, mPasswordLayout);
     }
 
     private void initViews() {
@@ -204,7 +154,6 @@ public class SignUpActivity extends AppCompatActivity {
         mPasswordLayout.setError(null);
         mConfirmPasswordLayout.setError(null);
     }
-
 
     private boolean isLegalInput(View v) {
         // collect input
