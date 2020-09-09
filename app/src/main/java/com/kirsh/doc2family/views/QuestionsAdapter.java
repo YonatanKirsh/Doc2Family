@@ -19,6 +19,14 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.Ques
     private ArrayList<Question> mDataset;
     private Context mContext;
 
+    public ArrayList<Question> getmDataset() {
+        return mDataset;
+    }
+
+    public void setmDataset(ArrayList<Question> mDataset) {
+        this.mDataset = mDataset;
+    }
+
     public QuestionsAdapter(Context context, ArrayList<Question> dataset){
         //todo sort by unanswered first for doctor, answered first for friend?
         dataset.sort(new Question.SortByLastEdited());
