@@ -38,12 +38,14 @@ public class QuestionsListActivity extends AppCompatActivity {
     }
 
     private void initPatient(){
-        String patientId = getIntent().getStringExtra(Constants.PATIENT_ID_KEY);
-        mPatient = Communicator.getPatientById(patientId);
+        mPatient = (Patient) getIntent().getSerializableExtra(Constants.PATIENT_ID_KEY);
+//        mPatient = Communicator.getPatientById(patientId);
     }
 
     private void initQuestionsAdapter(){
         mAdapter = new QuestionsAdapter(this, mPatient.getQuestions());
+        Communicator.createLiveQueryQuestionsList(mAdapter, mAdapter.getmDataset(), mPatient);
+        mAdapter.notifyDataSetChanged();
     }
 
     private void initViews(){
@@ -88,6 +90,10 @@ public class QuestionsListActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked submit button - todo submit question
                 String newQuestion = questionInput.getText().toString();
+                if (newQuestion != null){
+                    Communicator.cAddQuestionForPatient(QuestionsListActivity.this, mPatient, newQuestion);
+
+                }
                 String message = "added question:\n" + newQuestion;
                 Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
                 questionInput.setText("");

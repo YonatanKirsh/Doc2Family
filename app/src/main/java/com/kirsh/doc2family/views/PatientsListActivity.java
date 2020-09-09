@@ -16,6 +16,7 @@ import com.kirsh.doc2family.logic.Communicator;
 import com.kirsh.doc2family.logic.Constants;
 import com.kirsh.doc2family.logic.Patient;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class PatientsListActivity extends AppCompatActivity {
@@ -44,7 +45,7 @@ public class PatientsListActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 openActivityAddPatient();
-                mAdapter.notifyDataSetChanged(); //todo
+                mAdapter.notifyDataSetChanged();
             }
         });
     }
@@ -70,7 +71,9 @@ public class PatientsListActivity extends AppCompatActivity {
 
     private void openActivityPatientInfo(Patient patient){
         Intent intent = new Intent(this, PatientInfoActivity.class);
-        intent.putExtra(Constants.PATIENT_ID_KEY, patient.getId());
+
+        // todo pass le patient ici
+        intent.putExtra(Constants.PATIENT_ID_KEY, (Serializable) patient);
         startActivity(intent);
     }
 

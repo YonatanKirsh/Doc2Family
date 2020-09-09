@@ -1,8 +1,9 @@
 package com.kirsh.doc2family.logic;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Patient {
+public class Patient implements Serializable {
 
     private String firstName;
     private String lastName;

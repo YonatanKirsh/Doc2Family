@@ -1,6 +1,8 @@
 package com.kirsh.doc2family.logic;
 
-public class Friend {
+import java.io.Serializable;
+
+public class Friend implements Serializable {
 
     private String mUserId;
     private boolean mIsAdmin;
