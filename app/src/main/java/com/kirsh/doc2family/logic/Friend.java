@@ -5,6 +5,7 @@ public class Friend {
     private String mUserId;
     private boolean mIsAdmin;
 
+    public Friend(){}
 
     public Friend(String userId, boolean isAmdin)
     {

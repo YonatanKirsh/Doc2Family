@@ -26,7 +26,9 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.kirsh.doc2family.views.ForgotPasswordActivity;
 import com.kirsh.doc2family.views.LoginActivity;
+import com.kirsh.doc2family.views.PatientsAdapter;
 import com.kirsh.doc2family.views.PatientsListActivity;
+import com.kirsh.doc2family.logic.Friend;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -128,16 +130,107 @@ public class Communicator {
         });
     }
 
-    private static void openActivityListPatients(Context context){
-        // todo
-//        User thisUser = new User();
-        Intent intent = new Intent(context, PatientsListActivity.class);
-        context.startActivity(intent);
+    public static void cAddPatient(String firstName, String lastName, String diagnosis, final Context context){
+        //TODO What if the patient is already in the db ( need to add tz ??)
+        final FirebaseFirestore db = FirebaseFirestore.getInstance();
+        final DocumentReference myDocPatient = db.collection("Patients").document();
+        final Patient myPatient = new Patient(firstName, lastName, myDocPatient.getId(), diagnosis);
+        myDocPatient.set(myPatient);
+
+        FirebaseAuth myAuth = FirebaseAuth.getInstance();
+        final FirebaseUser myUser = myAuth.getCurrentUser();
+        db.collection("Users")
+                .whereEqualTo("id", myUser.getUid())
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()){
+                            for (QueryDocumentSnapshot myDoc : task.getResult()){
+                                User user = myDoc.toObject(User.class);
+                                ArrayList<Patient> myPatients = user.getPatientIds();
+
+//                                if (user.isCareGiver()){
+//                                    db.collection("Users").document(user.getId()).set(user, SetOptions.merge());
+//                                }
+//                                else {
+//                                }
+                                if (user.isCareGiver()){
+                                    ArrayList<String> careGivers = myPatient.getCaregiverIds();
+                                    careGivers.add(myUser.getUid());
+                                    myPatient.setCaregiverIds(careGivers);
+                                    db.collection("Patients").document(myPatient.getId()).set(myPatient);
+                                }
+                                else{
+                                    //TODO check admin
+                                    Friend myFriend = new Friend(myUser.getUid(), false);
+                                    ArrayList<Friend> friends = myPatient.getFriends();
+                                    friends.add(myFriend);
+                                    myPatient.setFriends(friends);
+                                    db.collection("Patients").document(myPatient.getId()).set(myPatient);
+                                }
+                                myPatients.add(myPatient);
+                                user.setPatientIds(myPatients);
+                                db.collection("Users").document(user.getId()).set(user);
+                                openActivityListPatients(context);
+                            }
+                        }
+                    }
+                });
     }
 
-    private static void openActivityLogin(Context context) {
-        Intent intent = new Intent(context, LoginActivity.class);
-        context.startActivity(intent);
+    public static void createLiveQueryPatientList(final PatientsAdapter adapter, final ArrayList<Patient> patientsList){
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        final FirebaseUser myUser  = Auth.getCurrentUser();
+        final String userID = myUser.getUid();
+        final ArrayList<Patient>[] patientsIds = new ArrayList[]{new ArrayList<Patient>()};
+        final User[] user = new User[1];
+        CollectionReference referenceToCollection = firestore.collection("Users");
+        referenceToCollection.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (e != null){
+                    Log.d("FirestoreManager", "exception in snapshot :(" + e.getMessage());
+                    return;
+                }
+                if (queryDocumentSnapshots == null){
+                    Log.d("FirestoreManager", "value is null");
+                    return;
+                }
+                // let's refresh the local array list
+                patientsList.clear();
+                //adapter.setmDataset(getUsersPatients(myUser.getUid()));
+                adapter.notifyDataSetChanged();
+            }
+        });
+
+        referenceToCollection.whereEqualTo("id", userID).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                //adapter.setmDataset(getUsersPatients(myUser.getUid()));
+                adapter.notifyDataSetChanged();
+            }
+        });
+
+        referenceToCollection.whereEqualTo("id", userID).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot myDoc : task.getResult()) {
+                        user[0] = myDoc.toObject(User.class);
+                        patientsIds[0] = user[0].getPatientIds();
+                        adapter.setmDataset(patientsIds[0]);
+                        adapter.notifyDataSetChanged();
+                    }
+                }
+                else {
+                    Log.d("ErrorDoc", "Error getting documents: ", task.getException());
+                    return;
+                }
+                //adapter.setmDataset(getUsersPatients(myUser.getUid()));
+                //adapter.notifyDataSetChanged();
+            }
+        });
     }
 
     //todo firebase / local db !! TO TEST
@@ -169,9 +262,10 @@ public class Communicator {
     }
 
 //    //todo firebase! TO TEST
-    public static ArrayList<String> getUsersPatients(String userId){
+    public static ArrayList<Patient> getUsersPatients(String userId){
         //return Constants.SAMPLE_PATIENTS;
-        final ArrayList<String>[] patientsIds = new ArrayList[]{new ArrayList<>()};
+        final ArrayList<Patient>[] patientsIds = new ArrayList[]{new ArrayList<Patient>()};
+        final User[] user = new User[1];
 
         fireStore[0].collection("Users")
                 .whereEqualTo("id", userId)
@@ -182,8 +276,8 @@ public class Communicator {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot myDoc : task.getResult()) {
-                                User user = myDoc.toObject(User.class);
-                                patientsIds[0] = user.getPatientIds();
+                                user[0] = myDoc.toObject(User.class);
+                                patientsIds[0] = user[0].getPatientIds();
                             }
                         }
                         else {
@@ -239,46 +333,17 @@ public class Communicator {
         return null;
     }
 
-    private void createLiveQuery(){
-        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-        CollectionReference referenceToCollection = firestore.collection("Users");
-        referenceToCollection.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                if (e != null){
-                    Log.d("FirestoreManager", "exception in snapshot :(" + e.getMessage());
-                    return;
-                }
-                if (queryDocumentSnapshots == null){
-                    Log.d("FirestoreManager", "value is null");
-                    return;
-                }
-                // let's refresh the local array list
-                //my_todo_list.clear();
-                for(QueryDocumentSnapshot document : queryDocumentSnapshots){
-                  //  TodoItem todoItem = document.toObject(TodoItem.class);
-                    //my_todo_list.add(todoItem);
-                }
-                //adapter.setList_of_todo_items(my_todo_list);
-                //adapter.notifyDataSetChanged();
-            }
-        });
-
-        referenceToCollection.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                //adapter.setList_of_todo_items(my_todo_list);
-                //adapter.notifyDataSetChanged();
-            }
-        });
-
-        referenceToCollection.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                //adapter.setList_of_todo_items(my_todo_list);
-                //adapter.notifyDataSetChanged();
-            }
-        });
+    private static void openActivityListPatients(Context context){
+        // todo
+//        User thisUser = new User();
+        Intent intent = new Intent(context, PatientsListActivity.class);
+        context.startActivity(intent);
     }
+
+    private static void openActivityLogin(Context context) {
+        Intent intent = new Intent(context, LoginActivity.class);
+        context.startActivity(intent);
+    }
+
 
 }

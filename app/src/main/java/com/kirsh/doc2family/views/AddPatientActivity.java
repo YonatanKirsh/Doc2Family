@@ -19,6 +19,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.kirsh.doc2family.R;
+import com.kirsh.doc2family.logic.Communicator;
 import com.kirsh.doc2family.logic.Friend;
 import com.kirsh.doc2family.logic.Patient;
 import com.kirsh.doc2family.logic.User;
@@ -80,51 +81,6 @@ public class AddPatientActivity extends AppCompatActivity {
         lastNameEdit.getText().clear();
         diagnosisEdit.getText().clear();
 
-        //TODO What if the patient is already in the db ( need to add tz ??)
-        final FirebaseFirestore db = FirebaseFirestore.getInstance();
-        final DocumentReference myDocPatient = db.collection("Patients").document();
-        final Patient myPatient = new Patient(firstName, lastName, myDocPatient.getId(), diagnosis);
-        myDocPatient.set(myPatient);
-
-        FirebaseAuth myAuth = FirebaseAuth.getInstance();
-        final FirebaseUser myUser = myAuth.getCurrentUser();
-        db.collection("Users")
-                .whereEqualTo("id", myUser.getUid())
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()){
-                            for (QueryDocumentSnapshot myDoc : task.getResult()){
-                                User user = myDoc.toObject(User.class);
-                                ArrayList<String> myPatients = user.getPatientIds();
-                                myPatients.add(myDocPatient.getId());
-                                user.setPatientIds(myPatients);
-//                                if (user.isCareGiver()){
-//                                    db.collection("Users").document(user.getId()).set(user, SetOptions.merge());
-//                                }
-//                                else {
-                                    db.collection("Users").document(user.getId()).set(user);
-//                                }
-
-                                if (user.isCareGiver()){
-                                    ArrayList<String> careGivers = myPatient.getCaregiverIds();
-                                    careGivers.add(myUser.getUid());
-                                    myPatient.setCaregiverIds(careGivers);
-                                    db.collection("Patients").document(myPatient.getId()).set(myPatient);
-                                }
-                                else{
-                                    //TODO check admin
-                                    Friend myFriend = new Friend(myUser.getUid(), false);
-                                    ArrayList<Friend> friends = myPatient.getFriends();
-                                    friends.add(myFriend);
-                                    myPatient.setFriends(friends);
-                                    db.collection("Patients").document(myPatient.getId()).set(myPatient);
-                                }
-                            }
-                        }
-                    }
-                });
-
+        Communicator.cAddPatient(firstName, lastName, diagnosis, this);
     }
 }

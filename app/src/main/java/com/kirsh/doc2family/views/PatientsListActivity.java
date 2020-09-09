@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.kirsh.doc2family.R;
 import com.kirsh.doc2family.logic.Communicator;
 import com.kirsh.doc2family.logic.Constants;
@@ -42,14 +44,19 @@ public class PatientsListActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 openActivityAddPatient();
+                mAdapter.notifyDataSetChanged(); //todo
             }
         });
     }
 
     private void initPatientAdapter(){
         //todo userId? here? from where?
-       // ArrayList<String> patients = Communicator.getUsersPatients("userId");
-        //mAdapter = new PatientsAdapter(this, patients);
+       FirebaseAuth myAuth = FirebaseAuth.getInstance();
+       final FirebaseUser myUser  = myAuth.getCurrentUser();
+       ArrayList<Patient> patients = Communicator.getUsersPatients(myUser.getUid());
+       mAdapter = new PatientsAdapter(this, patients);
+       Communicator.createLiveQueryPatientList(mAdapter, mAdapter.getmDataset());
+       mAdapter.notifyDataSetChanged();
     }
 
     public void onClickPatient(Patient patient){
