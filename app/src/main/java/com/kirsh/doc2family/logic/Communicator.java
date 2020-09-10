@@ -150,19 +150,6 @@ public class Communicator {
         context.startActivity(intent);
     }
 
-    //todo firebase / local db !! TO TEST
-    static final FirebaseFirestore[] fireStore = {FirebaseFirestore.getInstance()};
-
-//    //todo firebase / local db !!
-//    public static Patient getPatientById(String patientId){
-//        for (Patient patient: Constants.SAMPLE_PATIENTS) {
-//            if (patient.getId().equals(patientId)){
-//                return patient;
-//            }
-//        }
-//        return null;
-//    }
-
 
     public static Patient getPatientById(String patientId){
         final Patient[] patient = new Patient[1];
@@ -184,11 +171,6 @@ public class Communicator {
                     }
                 });
         return patient[0];
-        //for (Patient patient: Constants.SAMPLE_PATIENTS) {
-        //    if (patient.getId().equals(patientId)){
-        //        return patient;
-        //    }
-        //}
     }
 
 //    //todo firebase! TO TEST
