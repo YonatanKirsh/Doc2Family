@@ -9,11 +9,14 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.kirsh.doc2family.R;
 import com.kirsh.doc2family.logic.Communicator;
 import com.kirsh.doc2family.logic.Constants;
 import com.kirsh.doc2family.logic.Patient;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class PatientsListActivity extends AppCompatActivity {
@@ -42,14 +45,19 @@ public class PatientsListActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 openActivityAddPatient();
+                mAdapter.notifyDataSetChanged();
             }
         });
     }
 
     private void initPatientAdapter(){
         //todo userId? here? from where?
-       // ArrayList<String> patients = Communicator.getUsersPatients("userId");
-        //mAdapter = new PatientsAdapter(this, patients);
+       FirebaseAuth myAuth = FirebaseAuth.getInstance();
+       final FirebaseUser myUser  = myAuth.getCurrentUser();
+       ArrayList<Patient> patients = Communicator.getUsersPatients(myUser.getUid());
+       mAdapter = new PatientsAdapter(this, patients);
+       Communicator.createLiveQueryPatientList(mAdapter, mAdapter.getmDataset());
+       mAdapter.notifyDataSetChanged();
     }
 
     public void onClickPatient(Patient patient){
@@ -63,7 +71,9 @@ public class PatientsListActivity extends AppCompatActivity {
 
     private void openActivityPatientInfo(Patient patient){
         Intent intent = new Intent(this, PatientInfoActivity.class);
-        intent.putExtra(Constants.PATIENT_ID_KEY, patient.getId());
+
+        // todo pass le patient ici
+        intent.putExtra(Constants.PATIENT_ID_KEY, (Serializable) patient);
         startActivity(intent);
     }
 

@@ -9,7 +9,7 @@ public class User {
     private String lastName;
     private String id;
     private boolean careGiver;
-    private ArrayList<String> patientIds = new ArrayList<>();
+    private ArrayList<Patient> patientIds = new ArrayList<>();
     String fullName;
 
     public User(){}
@@ -27,6 +27,9 @@ public class User {
         return email;
     }
 
+    public boolean isCareGiver() {
+        return careGiver;
+    }
 
     public String getFirstName() {
         return firstName;
@@ -52,13 +55,11 @@ public class User {
         this.id = id;
     }
 
-    public ArrayList<String> getPatientIds() {
+    public ArrayList<Patient> getPatientIds() {
         return patientIds;
     }
 
-    public boolean isCareGiver() {
-        return careGiver;
-    }
+
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
@@ -72,7 +73,7 @@ public class User {
         return String.format("%s %s", getFirstName(), getLastName());
     }
 
-    public void setPatientIds(ArrayList<String> patientIds){
+    public void setPatientIds(ArrayList<Patient> patientIds){
         this.patientIds = patientIds;
     }
 }

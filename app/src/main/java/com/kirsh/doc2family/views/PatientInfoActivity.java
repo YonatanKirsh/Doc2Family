@@ -23,6 +23,8 @@ import com.kirsh.doc2family.logic.Constants;
 import com.kirsh.doc2family.logic.Update;
 import com.kirsh.doc2family.logic.User;
 
+import java.io.Serializable;
+
 public class PatientInfoActivity extends AppCompatActivity {
 
     private Patient mPatient;
@@ -38,8 +40,7 @@ public class PatientInfoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_patient_info);
-        String patientId = getIntent().getStringExtra(Constants.PATIENT_ID_KEY);
-        mPatient = Communicator.getPatientById(patientId);
+        mPatient = (Patient) getIntent().getSerializableExtra(Constants.PATIENT_ID_KEY);
         initUpdatesAdapter();
         initViews();
     }
@@ -222,7 +223,7 @@ public class PatientInfoActivity extends AppCompatActivity {
 
     public void openActivityQuestions(){
         Intent intent = new Intent(this, QuestionsListActivity.class);
-        intent.putExtra(Constants.PATIENT_ID_KEY, mPatient.getId());
+        intent.putExtra(Constants.PATIENT_ID_KEY, mPatient);
         startActivity(intent);
     }
 

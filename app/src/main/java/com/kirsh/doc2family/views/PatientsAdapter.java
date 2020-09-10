@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.kirsh.doc2family.R;
+import com.kirsh.doc2family.logic.Communicator;
 import com.kirsh.doc2family.logic.Patient;
 
 import java.util.ArrayList;
@@ -51,6 +52,16 @@ public class PatientsAdapter extends RecyclerView.Adapter<PatientsAdapter.Patien
     public int getItemCount() {
         return mDataset.size();
     }
+
+
+    public ArrayList<Patient> getmDataset() {
+        return mDataset;
+    }
+
+    public void setmDataset(ArrayList<Patient> mDataset) {
+        this.mDataset = mDataset;
+    }
+
 
     static class PatientHolder extends RecyclerView.ViewHolder{
 
