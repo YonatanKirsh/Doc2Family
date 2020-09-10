@@ -6,7 +6,7 @@ import java.util.Comparator;
 
 public class Question implements Serializable {
 
-    private Friend mAsker;
+    private Friend asker;
     private String question;
     private String answer;
     private LocalDateTime mDateAsked;
@@ -25,13 +25,14 @@ public class Question implements Serializable {
         }
     }
 
-    public Question(String question){
+    public Question(String question, Friend asker){
         this.question = question;
+        this.asker = asker;
         mDateAsked = LocalDateTime.now();
     }
 
-    public Question(String question, String answer){
-        this(question);
+    public Question(String question, String answer, Friend asker){
+        this(question, asker);
         this.answer = answer;
         mIsAnswered = true;
     }
@@ -68,6 +69,15 @@ public class Question implements Serializable {
         }
         return mDateAsked;
     }
+
+    public Friend getAsker() {
+        return asker;
+    }
+
+    public void setAsker(Friend asker) {
+        this.asker = asker;
+    }
+
 
     public static class SortByLastEdited implements Comparator<Question>{
 

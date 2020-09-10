@@ -107,24 +107,6 @@ public class SignUpActivity extends AppCompatActivity {
                 attemptSignUp(v);
             }
         });
-
-//        // checkBox doctor and friend
-//        RadioButton checkDoctor = (RadioButton) findViewById(R.id.checkDoc);
-//        RadioButton checkFriend = (RadioButton) findViewById(R.id.checkFriend);
-//
-//        checkDoctor.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                mIsDoctor = ((RadioButton) v).isChecked();
-//            }
-//        });
-//
-//        checkFriend.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                mIsDoctor = !((RadioButton) v).isChecked();
-//            }
-//        });
     }
 
     private void addPopupOnClick(final ImageButton button, final String message) {

@@ -179,11 +179,11 @@ public class Communicator {
                 });
     }
 
-    public static void cAddQuestionForPatient(Context context, final Patient patient, String questions){
+    public static void cAddQuestionForPatient(Context context, final Patient patient, String questions, Friend asker){
 
         // update the list of questions of given patient in the Patient collection
         //todo test remove answer
-        final Question question = new Question(questions, "test answer from DR maayann ");
+        final Question question = new Question(questions, asker);
         final ArrayList<Question> oldQuestions = patient.getQuestions();
         oldQuestions.add(question);
         patient.setQuestions(oldQuestions);
@@ -410,12 +410,48 @@ public class Communicator {
 
     // todo firebase!
     public static User getUserById(String userId){
-        for (User user: Constants.SAMPLE_USERS) {
-            if (user.getId().equals(userId)){
-                return user;
-            }
-        }
-        return null;
+        final User[] user = new User[1];
+        db.collection("Users")
+                .whereEqualTo("id", userId)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot myDoc : task.getResult()) {
+                                user[0] = myDoc.toObject(User.class);
+                            }
+                        }
+                        else {
+                            Log.d("ErrorDoc", "Error getting documents: ", task.getException());
+                            return;
+                        }
+                    }
+                });
+        return user[0];
+    }
+
+    public static Friend getFriendById(String friendId){
+        final Friend[] friend = new Friend[1];
+        db.collection("Users")
+                .whereEqualTo("id", friendId)
+                .whereEqualTo("careGiver", false)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot myDoc : task.getResult()) {
+                                friend[0] = myDoc.toObject(Friend.class);
+                            }
+                        }
+                        else {
+                            Log.d("ErrorDoc", "Error getting documents: ", task.getException());
+                            return;
+                        }
+                    }
+                });
+        return friend[0];
     }
 
     private static void openActivityListPatients(Context context){
