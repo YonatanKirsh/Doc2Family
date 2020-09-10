@@ -1,20 +1,23 @@
 package com.kirsh.doc2family.logic;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 
-public class Question {
+public class Question implements Serializable {
 
     private Friend mAsker;
-    private String mQuestion;
-    private String mAnswer;
+    private String question;
+    private String answer;
     private LocalDateTime mDateAsked;
     private LocalDateTime mDateEdited;
     private boolean mIsAnswered = false;
 
+    public Question(){}
+
     public Question(String question, String answer, LocalDateTime dateAsked, LocalDateTime dateEdited){
-        mQuestion = question;
-        mAnswer = answer;
+        this.question = question;
+        this.answer = answer;
         mDateAsked = dateAsked;
         mDateEdited = dateEdited;
         if (answer != null && !answer.isEmpty()){
@@ -23,26 +26,30 @@ public class Question {
     }
 
     public Question(String question){
-        mQuestion = question;
+        this.question = question;
         mDateAsked = LocalDateTime.now();
     }
 
     public Question(String question, String answer){
         this(question);
-        mAnswer = answer;
+        this.answer = answer;
         mIsAnswered = true;
     }
 
     public String getQuestion(){
-        return mQuestion;
+        return question;
     }
 
     public String getAnswer() {
-        return mAnswer;
+        return answer;
+    }
+
+    public void setQuestion(String question) {
+        this.question = question;
     }
 
     public void setAnswer(String answer){
-        mAnswer = answer;
+        this.answer = answer;
         mDateEdited = LocalDateTime.now();
         mIsAnswered = true;
     }

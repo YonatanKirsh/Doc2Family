@@ -1,8 +1,9 @@
 package com.kirsh.doc2family.logic;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Patient {
+public class Patient implements Serializable {
 
     private String firstName;
     private String lastName;
@@ -12,6 +13,8 @@ public class Patient {
     private ArrayList<Question> questions;
     private ArrayList<Friend> friends;
     private ArrayList<String> caregiverIds;
+
+    public Patient(){}
 
     public Patient(String firstName, String lastName, String id, String diagnosis){
         this.firstName = firstName;
@@ -71,5 +74,26 @@ public class Patient {
     public void setUpdates(ArrayList<Update> updates) {
         this.updates = updates;
     }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
 }
 
