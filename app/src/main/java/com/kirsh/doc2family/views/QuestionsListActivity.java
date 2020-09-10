@@ -1,5 +1,6 @@
 package com.kirsh.doc2family.views;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -7,18 +8,28 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.kirsh.doc2family.R;
 import com.kirsh.doc2family.logic.Communicator;
 import com.kirsh.doc2family.logic.Constants;
+import com.kirsh.doc2family.logic.Friend;
 import com.kirsh.doc2family.logic.Patient;
 import com.kirsh.doc2family.logic.Question;
+import com.kirsh.doc2family.logic.User;
 
 public class QuestionsListActivity extends AppCompatActivity {
 
@@ -27,6 +38,9 @@ public class QuestionsListActivity extends AppCompatActivity {
 
     Button submitQuestionButton;
     AlertDialog dialog;
+
+    static FirebaseFirestore db = FirebaseFirestore.getInstance();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +65,30 @@ public class QuestionsListActivity extends AppCompatActivity {
     private void initViews(){
         // submit new question button
         submitQuestionButton = findViewById(R.id.button_submit_question);
-        setAddQuestionButton();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        String userID = auth.getCurrentUser().getUid();
+        final User[] user = new User[1];
+        db.collection("Users")
+                .whereEqualTo("id", userID)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot myDoc : task.getResult()) {
+                                user[0] = myDoc.toObject(User.class);
+                                if (!user[0].isCareGiver()){
+                                    submitQuestionButton.setVisibility(View.VISIBLE);
+                                    setAddQuestionButton();
+                                }
+                            }
+                        }
+                        else {
+                            Log.d("ErrorDoc", "Error getting documents: ", task.getException());
+                            return;
+                        }
+                    }
+                });
 
         // questions adapter
         RecyclerView questionsAdapter = findViewById(R.id.recycler_questions);
@@ -91,7 +128,11 @@ public class QuestionsListActivity extends AppCompatActivity {
                 // User clicked submit button - todo submit question
                 String newQuestion = questionInput.getText().toString();
                 if (newQuestion != null){
-                    Communicator.cAddQuestionForPatient(QuestionsListActivity.this, mPatient, newQuestion);
+                    FirebaseAuth auth = FirebaseAuth.getInstance();
+                    String askerID = auth.getCurrentUser().getUid();
+                    Friend asker = Communicator.getFriendById(askerID);
+
+                    Communicator.cAddQuestionForPatient(QuestionsListActivity.this, mPatient, newQuestion, asker);
 
                 }
                 String message = "added question:\n" + newQuestion;
