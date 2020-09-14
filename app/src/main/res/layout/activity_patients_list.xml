@@ -38,6 +38,7 @@
         android:layout_height="50dp"
         android:layout_marginTop="40dp"
         android:text="@string/new_patient"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"/>

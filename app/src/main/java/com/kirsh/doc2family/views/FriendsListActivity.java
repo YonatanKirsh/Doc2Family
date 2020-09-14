@@ -19,9 +19,10 @@ import com.google.android.material.snackbar.Snackbar;
 import com.kirsh.doc2family.R;
 import com.kirsh.doc2family.logic.Communicator;
 import com.kirsh.doc2family.logic.Constants;
-import com.kirsh.doc2family.logic.Friend;
 import com.kirsh.doc2family.logic.Patient;
 import com.kirsh.doc2family.logic.User;
+
+import java.util.ArrayList;
 
 public class FriendsListActivity extends AppCompatActivity {
 
@@ -42,12 +43,15 @@ public class FriendsListActivity extends AppCompatActivity {
     private void initPatient(){
         //todo handle no-key exception
         //todo unite with QuestionsActivity? move to Constants?
-        String patientId = getIntent().getStringExtra(Constants.PATIENT_ID_KEY);
-        mPatient = Communicator.getPatientById(patientId);
+        mPatient = (Patient) getIntent().getSerializableExtra(Constants.PATIENT_ID_KEY);
     }
 
     private void initFriendsadapter(){
-        mAdapter = new FriendsAdapter(this, mPatient.getFriends());
+        ArrayList<String> careGiverIds = mPatient.getFriends();
+        ArrayList<User> friendsList = new ArrayList<User>();
+        mAdapter = new FriendsAdapter(this, friendsList);
+        Communicator.getFriendsByIds(mAdapter, mAdapter.getmDataset(), careGiverIds);
+        mAdapter.notifyDataSetChanged();
     }
 
     private void initViews(){
@@ -102,19 +106,19 @@ public class FriendsListActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private void showEditFriendDialog(Friend friend){
+    private void showEditFriendDialog(User friend){
         AlertDialog.Builder builder = new AlertDialog.Builder(FriendsListActivity.this);
         // set view
         View view = getLayoutInflater().inflate(R.layout.friend_dialog, null);
         builder.setView(view);
         // add friend info
-        User user = Communicator.getUserById(friend.getUserId());
+        User user = Communicator.getUserById(friend.getId());
         final TextView friendNameTextView = view.findViewById(R.id.friend_dialog_text_view_friend_name);
         friendNameTextView.setText(user.getFullName());
         final TextView friendEmailtextView = view.findViewById(R.id.friend_dialog_text_view_friend_email);
         friendEmailtextView.setText(user.getEmail());
         final TextView isAdminTextView = view.findViewById(R.id.friend_dialog_text_view_is_admin);
-        if (friend.isAdmin()){
+        if (friend.getTz().equals(mPatient.getAdminTz())){
             isAdminTextView.setText(R.string.admin);
         }else {
             isAdminTextView.setText(R.string.not_admin);
@@ -133,11 +137,11 @@ public class FriendsListActivity extends AppCompatActivity {
         questionsDialog.show();
     }
 
-    private void addAdminPrivilegesToDialog(AlertDialog.Builder builder, View view, final Friend friend){
+    private void addAdminPrivilegesToDialog(AlertDialog.Builder builder, View view, final User friend){
         // add admin views
         final CheckBox makeAdminCheckBox = view.findViewById(R.id.friend_dialog_checkbox_make_admin);
         makeAdminCheckBox.setVisibility(View.VISIBLE);
-        if (friend.isAdmin()){
+        if (friend.getTz().equals(mPatient.getAdminTz())){
             makeAdminCheckBox.setChecked(true);
         } else {
             makeAdminCheckBox.setChecked(false);
@@ -154,7 +158,7 @@ public class FriendsListActivity extends AppCompatActivity {
         builder.setNegativeButton(R.string.update, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked submit button - todo update friend
-                String friendId = friend.getUserId();
+                String friendId = friend.getId();
                 boolean makeAdmin = makeAdminCheckBox.isChecked();
                 // todo update friend with friendId isAdmin?
                 dialog.dismiss();
@@ -162,8 +166,8 @@ public class FriendsListActivity extends AppCompatActivity {
         });
     }
 
-    private void confirmRemoveFriend(Friend friendToRemove, final DialogInterface callingDialog){
-        final User user = Communicator.getUserById(friendToRemove.getUserId());
+    private void confirmRemoveFriend(User friendToRemove, final DialogInterface callingDialog){
+        final User user = Communicator.getUserById(friendToRemove.getId());
         DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -184,7 +188,7 @@ public class FriendsListActivity extends AppCompatActivity {
         ConfirmDialog.show(this, dialogClickListener, String.format("Remove %s?", user.getFullName()));
     }
 
-    public void onClickFriend(Friend friend) {
+    public void onClickFriend(User friend) {
         showEditFriendDialog(friend);
     }
 }

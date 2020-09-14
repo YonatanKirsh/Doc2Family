@@ -20,10 +20,10 @@ import java.util.ArrayList;
 
 public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendHolder> {
 
-    private ArrayList<Friend> mDataset;
+    private ArrayList<User> mDataset;
     private Context mContext;
 
-    public FriendsAdapter(Context context, ArrayList<Friend> friends){
+    public FriendsAdapter(Context context, ArrayList<User> friends){
         mDataset = friends;
         mContext = context;
     }
@@ -36,7 +36,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendHo
         friendItemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Friend currentFriend = mDataset.get(friendHolder.getAbsoluteAdapterPosition());
+                User currentFriend = mDataset.get(friendHolder.getAbsoluteAdapterPosition());
                 if (mContext instanceof FriendsListActivity){
                     ((FriendsListActivity)mContext).onClickFriend(currentFriend);
                 }
@@ -47,18 +47,26 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendHo
 
     @Override
     public void onBindViewHolder(@NonNull FriendHolder holder, int position) {
-        Friend friend = mDataset.get(position);
-        User user = Communicator.getUserById(friend.getUserId());
+        User friend = mDataset.get(position);
+        User user = Communicator.getUserById(friend.getId());
         if (user != null){
             holder.textView.setText(user.getFullName());
         }else {
-            Log.d(Constants.NULL_USER_TAG, String.format(Constants.NULL_USER_ERROR_FORMAT_MESSAGE, friend.getUserId()));
+            Log.d(Constants.NULL_USER_TAG, String.format(Constants.NULL_USER_ERROR_FORMAT_MESSAGE, friend.getId()));
         }
     }
 
     @Override
     public int getItemCount() {
         return mDataset.size();
+    }
+
+    public ArrayList<User> getmDataset() {
+        return mDataset;
+    }
+
+    public void setmDataset(ArrayList<User> mDataset) {
+        this.mDataset = mDataset;
     }
 
     static class FriendHolder extends RecyclerView.ViewHolder{

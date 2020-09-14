@@ -38,13 +38,18 @@ public class CaregiversListActivity extends AppCompatActivity {
     }
 
     private void initPatient(){
-        String patientId = getIntent().getStringExtra(Constants.PATIENT_ID_KEY);
-        mPatient = Communicator.getPatientById(patientId);
+        //String patientId = getIntent().getStringExtra(Constants.PATIENT_ID_KEY);
+        //mPatient = Communicator.getPatientById(patientId);
+        mPatient = (Patient) getIntent().getSerializableExtra(Constants.PATIENT_ID_KEY);
+
     }
 
     private void initCaregiversAdapter() {
-        ArrayList<String> caregivers = Communicator.getPatientsCaregivers(mPatient.getId());
-        //mAdapter = new CaregiversAdapter(this, caregivers);
+        ArrayList<String> careGiverIds = mPatient.getCaregiverIds();
+        ArrayList<User> careGivers = new ArrayList<User>();
+        mAdapter = new CaregiversAdapter(this, careGivers);
+        Communicator.getUsersByIds(mAdapter, mAdapter.getmDataset(), careGiverIds);
+        mAdapter.notifyDataSetChanged();
     }
 
     private void initViews() {

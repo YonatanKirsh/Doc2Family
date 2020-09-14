@@ -1,5 +1,6 @@
 package com.kirsh.doc2family.views;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -9,12 +10,19 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.kirsh.doc2family.R;
 import com.kirsh.doc2family.logic.Communicator;
 import com.kirsh.doc2family.logic.Constants;
 import com.kirsh.doc2family.logic.Patient;
+import com.kirsh.doc2family.logic.User;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -40,7 +48,29 @@ public class PatientsListActivity extends AppCompatActivity {
         patientsRecycler.setAdapter(mAdapter);
 
         // add-patient button
+
         addPatientButton = findViewById(R.id.button_goto_add_patient);
+
+        FirebaseAuth myAuth = FirebaseAuth.getInstance();
+        final FirebaseUser myUser = myAuth.getCurrentUser();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("Users").whereEqualTo("id", myUser.getUid())
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            for (QueryDocumentSnapshot myDoc : task.getResult()){
+                                User user = myDoc.toObject(User.class);
+                                if(user.isCareGiver()){
+                                    addPatientButton.setVisibility(View.VISIBLE);
+                                }
+                            }
+                        }
+                    }
+                });
+
         addPatientButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

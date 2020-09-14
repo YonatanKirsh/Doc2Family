@@ -132,6 +132,8 @@ public class QuestionsListActivity extends AppCompatActivity {
                     String askerID = auth.getCurrentUser().getUid();
                     Friend asker = Communicator.getFriendById(askerID);
 
+                    //todo add to list of questions of the patients  ?
+
                     Communicator.cAddQuestionForPatient(QuestionsListActivity.this, mPatient, newQuestion, asker);
 
                 }

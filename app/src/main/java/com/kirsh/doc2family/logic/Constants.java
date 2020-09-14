@@ -44,12 +44,12 @@ public class Constants {
     private static ArrayList<Update> getSampleUpdates(){
         LocalDateTime firstTime = LocalDateTime.now().minusDays(10);
         ArrayList<Update> updates = new ArrayList<>();
-        updates.add(new Update(getSampleCareGiverIds().get(0), "patient just admitted. has severe fomo.", firstTime));
-        updates.add(new Update(getSampleCareGiverIds().get(0), "second update!!", firstTime.plusMinutes(1)));
-        updates.add(new Update(getSampleCareGiverIds().get(0), "started treating patient with hourly whiskey shots.", updates.get(updates.size()-1).getDateCreated().plusHours(3)));
-        updates.add(new Update(getSampleCareGiverIds().get(0), "patient is being a lil' bish- says he doesn't like whiskey.. wtf?", updates.get(updates.size()-1).getDateCreated().plusMinutes(15)));
-        updates.add(new Update(getSampleCareGiverIds().get(0), "patient stopped complaining, now loves whiskey", updates.get(updates.size()-1).getDateCreated().plusHours(3)));
-        updates.add(new Update(getSampleCareGiverIds().get(0), "patient is drunk.", updates.get(updates.size()-1).getDateCreated().plusHours(1)));
+        //updates.add(new Update(getSampleCareGiverIds().get(0), "patient just admitted. has severe fomo.", firstTime));
+        //updates.add(new Update(getSampleCareGiverIds().get(0), "second update!!", firstTime.plusMinutes(1)));
+        //updates.add(new Update(getSampleCareGiverIds().get(0), "started treating patient with hourly whiskey shots.", updates.get(updates.size()-1).getDateCreated().plusHours(3)));
+        //updates.add(new Update(getSampleCareGiverIds().get(0), "patient is being a lil' bish- says he doesn't like whiskey.. wtf?", updates.get(updates.size()-1).getDateCreated().plusMinutes(15)));
+        //updates.add(new Update(getSampleCareGiverIds().get(0), "patient stopped complaining, now loves whiskey", updates.get(updates.size()-1).getDateCreated().plusHours(3)));
+        //updates.add(new Update(getSampleCareGiverIds().get(0), "patient is drunk.", updates.get(updates.size()-1).getDateCreated().plusHours(1)));
         return updates;
     }
 
@@ -86,13 +86,13 @@ public class Constants {
     public static ArrayList<User> getSampleUsers(){
         ArrayList<User> users = new ArrayList<>();
         // add regular users
-        users.add(new User("user1@email.com", "Jake", "Peralta", "JP93", false));
-        users.add(new User("user2@email.com", "Elizabeth", "Doubtfire", "ED45", false));
-        users.add(new User("user3@email.com", "Raymond", "Holt", "RH52", false));
+        //users.add(new User("user1@email.com", "Jake", "Peralta", "JP93", false));
+        //users.add(new User("user2@email.com", "Elizabeth", "Doubtfire", "ED45", false));
+        //users.add(new User("user3@email.com", "Raymond", "Holt", "RH52", false));
 
         // add doctors
-        users.add(new User("doctor1@email.com", "Dr.", "McDreamy", "DM78", true));
-        users.add(new User("doctor2@email.com", "Dr.", "Dre", "AD65", true));
+        //users.add(new User("doctor1@email.com", "Dr.", "McDreamy", "DM78", true));
+        //users.add(new User("doctor2@email.com", "Dr.", "Dre", "AD65", true));
 
         return users;
     }

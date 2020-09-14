@@ -56,5 +56,9 @@
     <string name="password_info_message">Password should be at least 6 characters long.</string>
     <string name="verify_password_info_message">Verify password - enter the same password again.</string>
     <string name="caregiver_info_message">Are you a doctor/nurse/other kind of caregiver?\nCaregivers have special permissions like adding/editing patients etc.</string>
+    <string name="id_number">ID number</string>
+    <string name="tz_info_message">Please enter your Teudat Zeut number</string>
+    <string name="add_update">Add an update</string>
+    <string name="set_admin">Set admin</string>
 
 </resources>
