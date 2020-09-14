@@ -44,7 +44,6 @@ public class PatientInfoActivity extends AppCompatActivity {
 
     private Patient mPatient;
     UpdatesAdapter mAdapter;
-
     TextView patientNameTextView;
     TextView diagnosisTextView;
     Button questionsButton;
@@ -52,7 +51,6 @@ public class PatientInfoActivity extends AppCompatActivity {
     Button friendsButton;
     Button addAdminButton;
     Button addUpdateButton;
-    AlertDialog dialogAdmin;
     Gson gson = new Gson();
     private SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy HH:mm");
 
@@ -150,7 +148,9 @@ public class PatientInfoActivity extends AppCompatActivity {
                             for (QueryDocumentSnapshot myDoc : task.getResult()){
                                 User user = myDoc.toObject(User.class);
                                 if(user.isCareGiver()){
-                                    addAdminButton.setVisibility(View.VISIBLE);
+                                    if (mPatient.getAdminTz().equals("")){
+                                        addAdminButton.setVisibility(View.VISIBLE); //todo a tester
+                                    }
                                     addUpdateButton.setVisibility(View.VISIBLE);
                                 }
                             }
@@ -393,7 +393,9 @@ public class PatientInfoActivity extends AppCompatActivity {
                 switch (which){
                     case DialogInterface.BUTTON_POSITIVE:
                         //Yes button clicked - todo actually update diagnosis
-                        Toast.makeText(PatientInfoActivity.this, String.format("Diagnosis updated:\n%s", newDiagnosis), Toast.LENGTH_LONG).show();
+                        mPatient.setDiagnosis(newDiagnosis);
+                        Communicator.updatePatientInUsersandPatientCollection(mPatient);
+                        diagnosisTextView.setText(newDiagnosis);
                         callingDialog.dismiss();
                         break;
 
