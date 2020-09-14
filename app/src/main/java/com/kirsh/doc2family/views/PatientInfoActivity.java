@@ -18,12 +18,14 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.gson.Gson;
 import com.kirsh.doc2family.R;
 import com.kirsh.doc2family.logic.Communicator;
 import com.kirsh.doc2family.logic.Friend;
@@ -33,8 +35,10 @@ import com.kirsh.doc2family.logic.Constants;
 import com.kirsh.doc2family.logic.Update;
 import com.kirsh.doc2family.logic.User;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class PatientInfoActivity extends AppCompatActivity {
 
@@ -49,13 +53,16 @@ public class PatientInfoActivity extends AppCompatActivity {
     Button addAdminButton;
     Button addUpdateButton;
     AlertDialog dialogAdmin;
+    Gson gson = new Gson();
+    private SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy HH:mm");
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_patient_info);
-        mPatient = (Patient) getIntent().getSerializableExtra(Constants.PATIENT_ID_KEY);
+        String patientString = getIntent().getStringExtra(Constants.PATIENT_ID_KEY);
+        mPatient = gson.fromJson(patientString, Patient.class);
         initUpdatesAdapter();
         initViews();
     }
@@ -65,6 +72,7 @@ public class PatientInfoActivity extends AppCompatActivity {
     }
 
     public void initViews(){
+
         // patient name view
         patientNameTextView = findViewById(R.id.text_view_patient_info_title);
         if (mPatient != null){
@@ -192,10 +200,12 @@ public class PatientInfoActivity extends AppCompatActivity {
                     //update the list of updates of the patient
                     ArrayList<Update> updates = mPatient.getUpdates();
                     updates.add(newUpdate);
+                    updates.sort(new Update.UpdateSorter());
                     mPatient.setUpdates(updates);
 
                     // update the db
                     Communicator.updatePatientInUsersandPatientCollection(mPatient);
+                    mAdapter.notifyDataSetChanged();
                 }
                 String message = "added update:\n" + updateMess;
                 Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
@@ -249,48 +259,88 @@ public class PatientInfoActivity extends AppCompatActivity {
         builder.show();
     }
 
-    private void showEditUpdateDialog(Update update){
+    private void showEditUpdateDialog(final Update update, User user){
         AlertDialog.Builder builder = new AlertDialog.Builder(PatientInfoActivity.this);
         // set view
         View view = getLayoutInflater().inflate(R.layout.update_dialog, null);
         builder.setView(view);
         // add update info
         final TextView updateDate = view.findViewById(R.id.text_view_update_popup_date);
-        updateDate.setText(update.getDateString());
+        Date resultdate = new Date(update.getDateCreated());
+        updateDate.setText(sdf.format(resultdate));
         final EditText updateContent = view.findViewById(R.id.edit_text_update_popup_content);
         updateContent.setText(update.getContent());
         final TextView updateIssuer = view.findViewById(R.id.text_view_update_popup_issuer);
-        User issuer = Communicator.getUserById(update.getIssuingCareGiverId());
-        updateIssuer.setText(issuer.getFullName());
+
+        String fullName =  user.getFullName();
+        updateIssuer.setText(fullName);
         // Add the buttons
-        builder.setNegativeButton(R.string.update, new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(R.string.update, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked update button - todo change the update's content
                 String newUpdate = updateContent.getText().toString();
-                confirmUpdateUpdate(newUpdate, dialog);
+                confirmUpdateUpdate(update, newUpdate, dialog);
 //                updateContent.setText("");
             }
         });
 
-        builder.setPositiveButton(R.string.cancel, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // User cancelled the dialog
-                dialog.cancel();
+        builder.setNegativeButton(R.string.delete, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                deleteUpdate(update, dialog);
             }
         });
+
         // Create the AlertDialog
         AlertDialog updatesDialog = builder.create();
         updatesDialog.show();
+        //builder.show();
     }
 
-    public void confirmUpdateUpdate(final String newUpdate, final DialogInterface callingDialog) {
+    private void deleteUpdate(final Update update, final DialogInterface callDialog) {
         DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 switch (which) {
                     case DialogInterface.BUTTON_POSITIVE:
                         //Yes button clicked - todo actually update diagnosis
-                        Toast.makeText(PatientInfoActivity.this, String.format("Updated to:\n%s", newUpdate), Toast.LENGTH_LONG).show();
+                        // todo update db
+                        ArrayList<Update> updates = mPatient.getUpdates();
+                        updates.remove(update);
+                        updates.sort(new Update.UpdateSorter());
+                        mPatient.setUpdates(updates);
+                        Communicator.updatePatientInUsersandPatientCollection(mPatient);
+                        mAdapter.notifyDataSetChanged();
+                        callDialog.dismiss();
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        // No button clicked
+                        break;
+                }
+            }
+        };
+        ConfirmDialog.show(this, dialogClickListener);
+
+
+    }
+
+    public void confirmUpdateUpdate(final Update update, final String nUpdateContent, final DialogInterface callingDialog) {
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case DialogInterface.BUTTON_POSITIVE:
+                        //Yes button clicked - todo actually update diagnosis
+                        // todo update db
+                        ArrayList<Update> updates = mPatient.getUpdates();
+                        Update newUpdate = new Update(update.getIssuingCareGiverId(), nUpdateContent, System.currentTimeMillis());
+                        updates.remove(update);
+                        updates.add(newUpdate);
+                        updates.sort(new Update.UpdateSorter());
+                        mPatient.setUpdates(updates);
+                        Communicator.updatePatientInUsersandPatientCollection(mPatient);
+                        mAdapter.notifyDataSetChanged();
                         callingDialog.dismiss();
                         break;
 
@@ -301,7 +351,7 @@ public class PatientInfoActivity extends AppCompatActivity {
             }
         };
 
-        ConfirmDialog.show(this, dialogClickListener, String.format("Update to\n\"%s\"?", newUpdate));
+        ConfirmDialog.show(this, dialogClickListener);
     }
 
     private void showEditDiagnosisDialog(){
@@ -357,26 +407,45 @@ public class PatientInfoActivity extends AppCompatActivity {
         ConfirmDialog.show(this, dialogClickListener, String.format("Update diagnosis to\n\"%s\"?", newDiagnosis));
     }
 
-    public void onClickUpdate(Update update) {
+    public void onClickUpdate(final Update update) {
         // todo iff update issued by current user
-        showEditUpdateDialog(update);
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        FirebaseAuth myAuth = FirebaseAuth.getInstance();
+        final FirebaseUser myUser = myAuth.getCurrentUser();
+        db.collection("Users").whereEqualTo("id", myUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()){
+                    for (QueryDocumentSnapshot doc: task.getResult()){
+                        User user = doc.toObject(User.class);
+                        if (update.getIssuingCareGiverId().equals(user.getId())) {
+                            showEditUpdateDialog(update, user);
+                        }
+                    }
+                }
+            }
+        });
     }
 
     public void openActivityQuestions(){
         Intent intent = new Intent(this, QuestionsListActivity.class);
-        intent.putExtra(Constants.PATIENT_ID_KEY, mPatient);
+        String patientString = gson.toJson(mPatient);
+        intent.putExtra(Constants.PATIENT_ID_KEY, patientString);
         startActivity(intent);
     }
 
     public void openActivityFriends(){
         Intent intent = new Intent(this, FriendsListActivity.class);
-        intent.putExtra(Constants.PATIENT_ID_KEY, mPatient);
+        String patientString = gson.toJson(mPatient);
+        intent.putExtra(Constants.PATIENT_ID_KEY, patientString);
         startActivity(intent);
     }
 
     public void openActivityCaregivers(){
         Intent intent = new Intent(this, CaregiversListActivity.class);
-        intent.putExtra(Constants.PATIENT_ID_KEY, mPatient);
+        String patientString = gson.toJson(mPatient);
+        intent.putExtra(Constants.PATIENT_ID_KEY, patientString);
         startActivity(intent);
     }
 

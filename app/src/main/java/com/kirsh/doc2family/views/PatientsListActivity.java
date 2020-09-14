@@ -18,6 +18,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.gson.Gson;
 import com.kirsh.doc2family.R;
 import com.kirsh.doc2family.logic.Communicator;
 import com.kirsh.doc2family.logic.Constants;
@@ -31,6 +32,7 @@ public class PatientsListActivity extends AppCompatActivity {
 
     PatientsAdapter mAdapter;
     Button addPatientButton;
+    Gson gson = new Gson();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,8 +104,8 @@ public class PatientsListActivity extends AppCompatActivity {
     private void openActivityPatientInfo(Patient patient){
         Intent intent = new Intent(this, PatientInfoActivity.class);
 
-        // todo pass le patient ici
-        intent.putExtra(Constants.PATIENT_ID_KEY, (Serializable) patient);
+        String patientString = gson.toJson(patient);
+        intent.putExtra(Constants.PATIENT_ID_KEY, patientString);
         startActivity(intent);
     }
 

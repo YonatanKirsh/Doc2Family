@@ -2,62 +2,60 @@ package com.kirsh.doc2family.logic;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.Date;
 
-public class Update  implements  Serializable{
+public class Update{
 
-    String mContent;
-    long mDateCreated;
-    String mIssuingCareGiverId;
-    private SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy HH:mm");
+    String content;
+    long dateCreated;
+    String issuingCareGiverId;
+
 
     public Update(){}
 
     public Update(String careGiverId, String content, long date){
-        mIssuingCareGiverId = careGiverId;
-        mContent = content;
-        mDateCreated = date;
+        issuingCareGiverId = careGiverId;
+        this.content = content;
+        dateCreated = date;
     }
 
     public String getContent(){
-        return mContent;
+        return content;
     }
 
     public long getDateCreated() {
-        return mDateCreated;
-    }
-
-    public String getDateString(){
-
-        Date resultdate = new Date(getDateCreated());
-        return sdf.format(resultdate);
+        return dateCreated;
     }
 
     public String getIssuingCareGiverId() {
-        return mIssuingCareGiverId;
+        return issuingCareGiverId;
     }
 
 
-    public void setmContent(String mContent) {
-        this.mContent = mContent;
+    public void setContent(String content) {
+        this.content = content;
     }
 
-    public void setmDateCreated(long mDateCreated) {
-        this.mDateCreated = mDateCreated;
+    public void setDateCreated(long dateCreated) {
+        this.dateCreated = dateCreated;
     }
 
-    public void setmIssuingCareGiverId(String mIssuingCareGiverId) {
-        this.mIssuingCareGiverId = mIssuingCareGiverId;
+    public void setIssuingCareGiverId(String issuingCareGiverId) {
+        this.issuingCareGiverId = issuingCareGiverId;
     }
 
     public static class UpdateSorter implements Comparator<Update>{
 
         @Override
         public int compare(Update o1, Update o2) {
-            return o2.getDateString().compareTo(o1.getDateString());
+            if(o1.getDateCreated() > o2.getDateCreated()){
+                return -1;
+            }
+            else if (o1.getDateCreated() < o2.getDateCreated()){
+                return 1;
+            }
+            return 0;
         }
     }
 }

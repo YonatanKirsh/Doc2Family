@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.google.gson.Gson;
 import com.kirsh.doc2family.R;
 import com.kirsh.doc2family.logic.Communicator;
 import com.kirsh.doc2family.logic.Constants;
@@ -30,6 +31,7 @@ public class FriendsListActivity extends AppCompatActivity {
     FriendsAdapter mAdapter;
 
     Button addFriendButton;
+    Gson gson = new Gson();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,14 +45,17 @@ public class FriendsListActivity extends AppCompatActivity {
     private void initPatient(){
         //todo handle no-key exception
         //todo unite with QuestionsActivity? move to Constants?
-        mPatient = (Patient) getIntent().getSerializableExtra(Constants.PATIENT_ID_KEY);
+        String patientString = getIntent().getStringExtra(Constants.PATIENT_ID_KEY);
+        mPatient = gson.fromJson(patientString, Patient.class);
     }
 
     private void initFriendsadapter(){
-        ArrayList<String> careGiverIds = mPatient.getFriends();
+        ArrayList<String> FriendsIds = mPatient.getFriends();
         ArrayList<User> friendsList = new ArrayList<User>();
         mAdapter = new FriendsAdapter(this, friendsList);
-        Communicator.getFriendsByIds(mAdapter, mAdapter.getmDataset(), careGiverIds);
+        if (FriendsIds.size() != 0) {
+            Communicator.getFriendsByIds(mAdapter, mAdapter.getmDataset(), FriendsIds);
+        }
         mAdapter.notifyDataSetChanged();
     }
 

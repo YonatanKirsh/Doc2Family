@@ -9,17 +9,25 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.kirsh.doc2family.R;
 import com.kirsh.doc2family.logic.Communicator;
 import com.kirsh.doc2family.logic.Update;
 import com.kirsh.doc2family.logic.User;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class UpdatesAdapter extends RecyclerView.Adapter<UpdatesAdapter.UpdateHolder> {
 
     private ArrayList<Update> mDataset;
     private Context mContext;
+    private SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy HH:mm");
 
 
     public UpdatesAdapter(Context context, ArrayList<Update> dataset){
@@ -46,17 +54,40 @@ public class UpdatesAdapter extends RecyclerView.Adapter<UpdatesAdapter.UpdateHo
     }
 
     @Override
-    public void onBindViewHolder(@NonNull UpdateHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final UpdateHolder holder, int position) {
         Update update = mDataset.get(position);
-        holder.textViewDate.setText(update.getDateString());
+        Date resultdate = new Date(update.getDateCreated());
+        holder.textViewDate.setText(sdf.format(resultdate));
         holder.textViewContent.setText(update.getContent());
-        User issuer = Communicator.getUserById(update.getIssuingCareGiverId());
-        holder.texViewIssuer.setText(issuer.getFullName());
+        String userID = update.getIssuingCareGiverId();
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("Users").whereEqualTo("id", userID).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()){
+                    for (QueryDocumentSnapshot doc: task.getResult()){
+                        User user = doc.toObject(User.class);
+                        String fullName = "by " + user.getFullName();
+                        holder.texViewIssuer.setText(fullName);
+                    }
+                }
+            }
+        });
+
     }
 
     @Override
     public int getItemCount() {
         return mDataset.size();
+    }
+
+    public ArrayList<Update> getmDataset() {
+        return mDataset;
+    }
+
+    public void setmDataset(ArrayList<Update> mDataset) {
+        this.mDataset = mDataset;
     }
 
     static class UpdateHolder extends RecyclerView.ViewHolder{

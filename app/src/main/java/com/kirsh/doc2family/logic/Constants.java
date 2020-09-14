@@ -42,7 +42,7 @@ public class Constants {
     }
 
     private static ArrayList<Update> getSampleUpdates(){
-        LocalDateTime firstTime = LocalDateTime.now().minusDays(10);
+        //LocalDateTime firstTime = LocalDateTime.now().minusDays(10);
         ArrayList<Update> updates = new ArrayList<>();
         //updates.add(new Update(getSampleCareGiverIds().get(0), "patient just admitted. has severe fomo.", firstTime));
         //updates.add(new Update(getSampleCareGiverIds().get(0), "second update!!", firstTime.plusMinutes(1)));

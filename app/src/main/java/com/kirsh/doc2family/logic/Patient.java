@@ -3,7 +3,7 @@ package com.kirsh.doc2family.logic;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Patient implements Serializable {
+public class Patient{
 
     private String firstName;
     private String lastName;
@@ -16,7 +16,7 @@ public class Patient implements Serializable {
     private String adminTz;
     private String tz;
 
-    public Patient(){}
+    public Patient(){ }
 
     public Patient(String firstName, String lastName, String id, String diagnosis, String tz){
         this.firstName = firstName;
