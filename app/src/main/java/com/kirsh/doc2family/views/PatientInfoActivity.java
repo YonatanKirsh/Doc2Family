@@ -239,12 +239,34 @@ public class PatientInfoActivity extends AppCompatActivity {
         builder.setPositiveButton("Define", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 String adminTz = adminTzInput.getText().toString();
-                if (adminTz != null){
+                if (!adminTz.equals("")){
                     mPatient.setAdminTz(adminTz);
                     Communicator.updatePatientInUsersandPatientCollection(mPatient);
+                    final FirebaseFirestore db = FirebaseFirestore.getInstance();
+                    db.collection("Users").whereEqualTo("tz", adminTz).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()){
+                                for (QueryDocumentSnapshot doc : task.getResult()){
+                                    User user = doc.toObject(User.class);
+                                    ArrayList<String> friends = mPatient.getFriends();
+                                    friends.add(user.getId());
+                                    mPatient.setFriends(friends);
+                                    ArrayList<Patient> patients = user.getPatientIds();
+                                    patients.add(mPatient);
+                                    user.setPatientIds(patients);
+                                    db.collection("Users").document(user.getId()).set(user);
+                                    Communicator.updatePatientInUsersandPatientCollection(mPatient);
+                                }
+                            }
+                        }
+                    });
+
+
                 }
                 String message = "added admin:\n" + adminTz;
                 Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
+                addAdminButton.setVisibility(View.INVISIBLE);
                 adminTzInput.setText("");
                 dialog.dismiss();
             }

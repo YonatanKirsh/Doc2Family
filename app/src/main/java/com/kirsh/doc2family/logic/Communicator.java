@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
@@ -23,6 +24,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
+import com.google.firestore.v1.ArrayValue;
 import com.kirsh.doc2family.views.CaregiversAdapter;
 import com.kirsh.doc2family.views.FriendsAdapter;
 import com.kirsh.doc2family.views.LoginActivity;
@@ -67,11 +70,32 @@ public class Communicator {
                                                                }
                                                            }
                                     );
-                            FirebaseUser user_auth = Auth.getCurrentUser();
-                            User newUser = new User(user_auth.getEmail(), firstName, lastName, user_auth.getUid(), mIsDoctor, tz);
+                            final FirebaseUser user_auth = Auth.getCurrentUser();
+                            final User newUser = new User(user_auth.getEmail(), firstName, lastName, user_auth.getUid(), mIsDoctor, tz);
                             FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-                            DocumentReference document = firestore.collection("Users").document();
-                            document.set(newUser);
+                            firestore.collection("Users").document(user_auth.getUid()).set(newUser);
+                            //document.set(newUser);
+                            db.collection("Patients").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                    if (task.isSuccessful()){
+                                        for (QueryDocumentSnapshot doc : task.getResult()){
+                                            Patient patient = doc.toObject(Patient.class);
+                                            if (patient.getAdminTz().equals(newUser.getTz())){
+                                                ArrayList<String> friends = patient.getFriends();
+                                                friends.add(newUser.getId());
+                                                patient.setFriends(friends);
+                                                ArrayList<Patient> userPatients = newUser.getPatientIds();
+                                                userPatients.add(patient);
+                                                newUser.setPatientIds(userPatients);
+                                                db.collection("Users").document(user_auth.getUid()).set(newUser);
+                                                Communicator.updatePatientInUsersandPatientCollection(patient);
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+
                             openActivityLogin(context);
                         } else {
                             // If sign in fails, display a message to the user.
@@ -377,7 +401,7 @@ public class Communicator {
     public  static void getFriendsByIds(final FriendsAdapter adapter, final ArrayList<User> userList, final ArrayList<String> idsList){
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
         final FirebaseUser myUser  = Auth.getCurrentUser();
-        final ArrayList<User>[] careGivers = new ArrayList[]{new ArrayList<User>()};
+        final ArrayList<User>[] friends = new ArrayList[]{new ArrayList<User>()};
         CollectionReference referenceToCollection = firestore.collection("Users");
         referenceToCollection.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -410,10 +434,11 @@ public class Communicator {
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
                     for (QueryDocumentSnapshot myDoc : task.getResult()) {
-                        careGivers[0].add(myDoc.toObject(User.class));
+                        User user = myDoc.toObject(User.class);
+                        friends[0].add(user);
 
                     }
-                    adapter.setmDataset(careGivers[0]);
+                    adapter.setmDataset(friends[0]);
                     adapter.notifyDataSetChanged();
                 }
                 else {

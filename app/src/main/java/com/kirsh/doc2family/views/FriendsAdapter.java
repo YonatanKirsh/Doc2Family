@@ -48,9 +48,9 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendHo
     @Override
     public void onBindViewHolder(@NonNull FriendHolder holder, int position) {
         User friend = mDataset.get(position);
-        User user = Communicator.getUserById(friend.getId());
-        if (user != null){
-            holder.textView.setText(user.getFullName());
+        //User user = Communicator.getUserById(friend.getId());
+        if (friend != null){
+            holder.textView.setText(friend.getFullName());
         }else {
             Log.d(Constants.NULL_USER_TAG, String.format(Constants.NULL_USER_ERROR_FORMAT_MESSAGE, friend.getId()));
         }

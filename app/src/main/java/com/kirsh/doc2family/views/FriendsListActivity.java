@@ -1,5 +1,6 @@
 package com.kirsh.doc2family.views;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -8,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -15,7 +17,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.gson.Gson;
 import com.kirsh.doc2family.R;
 import com.kirsh.doc2family.logic.Communicator;
@@ -62,6 +71,24 @@ public class FriendsListActivity extends AppCompatActivity {
     private void initViews(){
         // add friend button
         addFriendButton = findViewById(R.id.button_add_friend);
+
+        final FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("Users").whereEqualTo("id", auth.getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()){
+                    for (QueryDocumentSnapshot doc : task.getResult()){
+                        User user = doc.toObject(User.class);
+                        if (user.getTz().equals(mPatient.getAdminTz())){
+                            addFriendButton.setVisibility(View.VISIBLE);
+                        }
+                    }
+                }
+            }
+        });
+
         addFriendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -94,8 +121,50 @@ public class FriendsListActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked add button - todo add friend
                 String newFriend = emailInput.getText().toString();
-                String message = "added friend:\n" + newFriend;
-                Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
+
+                final FirebaseFirestore db = FirebaseFirestore.getInstance();
+                final boolean[] flag = {false};
+
+                db.collection("Users").whereEqualTo("tz", newFriend).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()){
+                            for (QueryDocumentSnapshot doc : task.getResult()){
+
+
+                                User user = doc.toObject(User.class);
+
+                                if (mPatient.getFriends().contains(user.getId())){
+                                    Toast.makeText(FriendsListActivity.this, "Already his friend !",
+                                            Toast.LENGTH_SHORT).show();
+                                    break;
+                                }
+                                flag[0] = true;
+                                ArrayList<Patient> patients = user.getPatientIds();
+                                patients.add(mPatient);
+                                user.setPatientIds(patients);
+                                db.collection("Users").document(user.getId()).set(user);
+                                ArrayList<String> friends = mPatient.getFriends();
+                                friends.add(user.getId());
+                                mPatient.setFriends(friends);
+                                Communicator.updatePatientInUsersandPatientCollection(mPatient);
+                                Toast.makeText(FriendsListActivity.this, "Friend added !",
+                                        Toast.LENGTH_SHORT).show();
+                                ArrayList<User> users = mAdapter.getmDataset();
+                                users.add(user);
+                                mAdapter.setmDataset(users);
+                                mAdapter.notifyDataSetChanged();
+                            }
+                        }
+                        if (!flag[0]){
+                            Toast.makeText(FriendsListActivity.this, "Not a valid User !",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+                //String message = "added friend:\n" + newFriend;
+                //Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
                 emailInput.setText("");
                 dialog.dismiss();
             }
@@ -194,6 +263,6 @@ public class FriendsListActivity extends AppCompatActivity {
     }
 
     public void onClickFriend(User friend) {
-        showEditFriendDialog(friend);
+        //showEditFriendDialog(friend);
     }
 }

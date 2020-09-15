@@ -43,7 +43,7 @@
     <string name="email_hint">Email Address</string>
     <string name="password_hint">Password</string>
     <string name="confirm_password_hint">Confirm Password</string>
-    <string name="friends_email_hint">Enter friend\'s email</string>
+    <string name="friends_email_hint">Enter friend\'s tz</string>
     <string name="caregiver_email_hint">Enter caregiver\'s email</string>
 
 <!--    messages -->
