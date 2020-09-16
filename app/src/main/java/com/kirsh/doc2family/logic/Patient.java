@@ -3,7 +3,7 @@ package com.kirsh.doc2family.logic;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Patient implements Serializable {
+public class Patient{
 
     private String firstName;
     private String lastName;
@@ -11,20 +11,24 @@ public class Patient implements Serializable {
     private String diagnosis;
     private ArrayList<Update> updates;
     private ArrayList<Question> questions;
-    private ArrayList<Friend> friends;
+    private ArrayList<String> friends;
     private ArrayList<String> caregiverIds;
+    private String adminTz;
+    private String tz;
 
-    public Patient(){}
+    public Patient(){ }
 
-    public Patient(String firstName, String lastName, String id, String diagnosis){
+    public Patient(String firstName, String lastName, String id, String diagnosis, String tz){
         this.firstName = firstName;
         this.lastName = lastName;
         this.id = id;
         this.diagnosis = diagnosis;
         updates = new ArrayList<Update>();
         questions = new ArrayList<Question>();
-        friends = new ArrayList<Friend>();
+        friends = new ArrayList<String>();
         caregiverIds = new ArrayList<String>();
+        adminTz = "";
+        this.tz = tz;
     }
 
     public String getId() {
@@ -47,7 +51,7 @@ public class Patient implements Serializable {
         return questions;
     }
 
-    public ArrayList<Friend> getFriends(){
+    public ArrayList<String> getFriends(){
         return friends;
     }
 
@@ -63,7 +67,7 @@ public class Patient implements Serializable {
         this.diagnosis = diagnosis;
     }
 
-    public void setFriends(ArrayList<Friend> friends) {
+    public void setFriends(ArrayList<String> friends) {
         this.friends = friends;
     }
 
@@ -94,6 +98,23 @@ public class Patient implements Serializable {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
+
+    public String getAdminTz() {
+        return adminTz;
+    }
+
+    public void setAdminTz(String adminTz) {
+        this.adminTz = adminTz;
+    }
+
+    public String getTz() {
+        return tz;
+    }
+
+    public void setTz(String tz) {
+        this.tz = tz;
+    }
+
 
 }
 

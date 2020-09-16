@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 
-public class Question implements Serializable {
+public class Question{
 
     private Friend asker;
     private String question;

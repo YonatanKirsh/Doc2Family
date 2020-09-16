@@ -2,7 +2,7 @@ package com.kirsh.doc2family.logic;
 
 import java.io.Serializable;
 
-public class Friend implements Serializable {
+public class Friend {
     private String userId;
     private boolean admin;
 

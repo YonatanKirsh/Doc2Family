@@ -55,6 +55,15 @@ public class CaregiversAdapter extends RecyclerView.Adapter<CaregiversAdapter.Ca
         return mDataset.size();
     }
 
+
+    public ArrayList<User> getmDataset() {
+        return mDataset;
+    }
+
+    public void setmDataset(ArrayList<User> mDataset) {
+        this.mDataset = mDataset;
+    }
+
     static class CaregiverHolder extends RecyclerView.ViewHolder{
 
         TextView textView;

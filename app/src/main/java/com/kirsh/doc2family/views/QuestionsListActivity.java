@@ -23,6 +23,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.gson.Gson;
 import com.kirsh.doc2family.R;
 import com.kirsh.doc2family.logic.Communicator;
 import com.kirsh.doc2family.logic.Constants;
@@ -40,6 +41,8 @@ public class QuestionsListActivity extends AppCompatActivity {
     AlertDialog dialog;
 
     static FirebaseFirestore db = FirebaseFirestore.getInstance();
+    Gson gson = new Gson();
+
 
 
     @Override
@@ -52,8 +55,11 @@ public class QuestionsListActivity extends AppCompatActivity {
     }
 
     private void initPatient(){
-        mPatient = (Patient) getIntent().getSerializableExtra(Constants.PATIENT_ID_KEY);
+       // mPatient = (Patient) getIntent().getSerializableExtra(Constants.PATIENT_ID_KEY);
 //        mPatient = Communicator.getPatientById(patientId);
+        String patientString = getIntent().getStringExtra(Constants.PATIENT_ID_KEY);
+        mPatient = gson.fromJson(patientString, Patient.class);
+
     }
 
     private void initQuestionsAdapter(){
@@ -131,6 +137,8 @@ public class QuestionsListActivity extends AppCompatActivity {
                     FirebaseAuth auth = FirebaseAuth.getInstance();
                     String askerID = auth.getCurrentUser().getUid();
                     Friend asker = Communicator.getFriendById(askerID);
+
+                    //todo add to list of questions of the patients  ?
 
                     Communicator.cAddQuestionForPatient(QuestionsListActivity.this, mPatient, newQuestion, asker);
 

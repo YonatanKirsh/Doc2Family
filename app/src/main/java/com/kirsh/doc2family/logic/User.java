@@ -11,16 +11,18 @@ public class User {
     private boolean careGiver;
     private ArrayList<Patient> patientIds = new ArrayList<>();
     String fullName;
+    private String tz;
 
     public User(){}
 
-    public User(String email, String firstName, String lastName, String id, boolean careGiver){
+    public User(String email, String firstName, String lastName, String id, boolean careGiver, String tz){
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
         this.id = id;
         this.careGiver = careGiver;
         fullName = String.format("%s %s", getFirstName(), getLastName());
+        this.tz = tz;
     }
 
     public String getEmail() {
@@ -59,8 +61,6 @@ public class User {
         return patientIds;
     }
 
-
-
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
@@ -76,4 +76,13 @@ public class User {
     public void setPatientIds(ArrayList<Patient> patientIds){
         this.patientIds = patientIds;
     }
+
+    public String getTz() {
+        return tz;
+    }
+
+    public void setTz(String tz) {
+        this.tz = tz;
+    }
+
 }

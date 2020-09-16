@@ -38,16 +38,18 @@ public class SignUpActivity extends AppCompatActivity {
 
     private TextInputLayout mFirstNameLayout;
     private TextInputLayout mLastNameLayout;
+    private TextInputLayout mTzLayout;
     private TextInputLayout mEmailLayout;
     private TextInputLayout mPasswordLayout;
     private TextInputLayout mConfirmPasswordLayout;
+
     private EditText mFirstNameEditText;
     private EditText mLastNameEditText;
+    private EditText mTzEditText;
     private EditText mEmailEditText;
     private EditText mPasswordEditText;
     private EditText mVerifyPasswordEditText;
     private CheckBox mCaregiverCheckbox;
-//    private boolean mIsDoctor;
     private Button mSignUpButton;
 
 
@@ -64,13 +66,15 @@ public class SignUpActivity extends AppCompatActivity {
         final String firstName = mFirstNameEditText.getText().toString();
         final String lastName = mLastNameEditText.getText().toString();
         final boolean isCaregiver = mCaregiverCheckbox.isChecked();
-        Communicator.cCreateUserWithEmailAndPassword(email, password, SignUpActivity.this, firstName, lastName, isCaregiver,mEmailEditText, mPasswordEditText, mEmailLayout, mPasswordLayout);
+        final String tz = mTzEditText.getText().toString();
+        Communicator.cCreateUserWithEmailAndPassword(email, password, SignUpActivity.this, firstName, lastName, isCaregiver,mEmailEditText, mPasswordEditText, mEmailLayout, mPasswordLayout, tz);
     }
 
     private void initViews() {
         // layouts
         mFirstNameLayout = findViewById(R.id.input_text_first_name_layout);
         mLastNameLayout = findViewById(R.id.input_text_last_name_layout);
+        mTzLayout = findViewById(R.id.input_text_tz_layout);
         mEmailLayout = findViewById(R.id.su_input_text_email_layout);
         mPasswordLayout = findViewById(R.id.su_input_text_password_layout);
         mConfirmPasswordLayout = findViewById(R.id.su_input_text_confirm_password_layout);
@@ -86,6 +90,11 @@ public class SignUpActivity extends AppCompatActivity {
         // last name EditText + info button
         mLastNameEditText = findViewById(R.id.edit_text_last_name);
         addPopupOnClick((ImageButton) findViewById(R.id.image_button_last_name_info), this.getString(R.string.last_name_info_message));
+
+        // tz EditText + info button
+        mTzEditText = findViewById(R.id.edit_text_tz);
+        addPopupOnClick((ImageButton) findViewById(R.id.image_button_tz_info), this.getString(R.string.tz_info_message));
+
 
         // password EditText + info button
         mPasswordEditText = findViewById(R.id.su_edit_text_password);
