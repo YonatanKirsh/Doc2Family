@@ -31,6 +31,18 @@
         app:layout_constraintTop_toBottomOf="@+id/edit_text_patient_first_name" />
 
     <EditText
+        android:id="@+id/edit_text_tz"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp"
+        android:hint="Patient's ID number:"
+        android:textSize="15dp"
+        android:textAppearance="@color/colorAccent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edit_text_patients_last_name" />
+
+    <EditText
         android:id="@+id/edit_text_patients_diagnosis"
         android:layout_width="200dp"
         android:layout_height="50dp"
@@ -40,7 +52,7 @@
         android:textAppearance="@color/colorAccent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_text_patients_last_name" />
+        app:layout_constraintTop_toBottomOf="@+id/edit_text_tz" />
 
     <Button
         android:id="@+id/button_add_patient"
@@ -48,7 +60,7 @@
         android:layout_height="50dp"
         android:layout_marginTop="40dp"
         android:text="Add Patient"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/edit_text_patients_diagnosis"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"/>
 

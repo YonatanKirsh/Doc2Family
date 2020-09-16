@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.google.gson.Gson;
 import com.kirsh.doc2family.R;
 import com.kirsh.doc2family.logic.Communicator;
 import com.kirsh.doc2family.logic.Constants;
@@ -27,6 +28,7 @@ public class CaregiversListActivity extends AppCompatActivity {
     private Patient mPatient;
     CaregiversAdapter mAdapter;
     Button addCaregiverButton;
+    Gson gson = new Gson();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,13 +40,18 @@ public class CaregiversListActivity extends AppCompatActivity {
     }
 
     private void initPatient(){
-        String patientId = getIntent().getStringExtra(Constants.PATIENT_ID_KEY);
-        mPatient = Communicator.getPatientById(patientId);
+        //String patientId = getIntent().getStringExtra(Constants.PATIENT_ID_KEY);
+        //mPatient = Communicator.getPatientById(patientId);
+        String patientString = getIntent().getStringExtra(Constants.PATIENT_ID_KEY);
+        mPatient = gson.fromJson(patientString, Patient.class);
     }
 
     private void initCaregiversAdapter() {
-        ArrayList<String> caregivers = Communicator.getPatientsCaregivers(mPatient.getId());
-        //mAdapter = new CaregiversAdapter(this, caregivers);
+        ArrayList<String> careGiverIds = mPatient.getCaregiverIds();
+        ArrayList<User> careGivers = new ArrayList<User>();
+        mAdapter = new CaregiversAdapter(this, careGivers);
+        Communicator.getUsersByIds(mAdapter, mAdapter.getmDataset(), careGiverIds);
+        mAdapter.notifyDataSetChanged();
     }
 
     private void initViews() {
@@ -55,13 +62,13 @@ public class CaregiversListActivity extends AppCompatActivity {
         caregiversRecycler.setAdapter(mAdapter);
 
         // add-caregiver button
-        addCaregiverButton = findViewById(R.id.caregivers_list_button_goto_add_caregiver);
-        addCaregiverButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showAddCaregiverDialog();
-            }
-        });
+        //addCaregiverButton = findViewById(R.id.caregivers_list_button_goto_add_caregiver);
+        //addCaregiverButton.setOnClickListener(new View.OnClickListener() {
+          //  @Override
+           // public void onClick(View v) {
+            //    showAddCaregiverDialog();
+            //}
+        //});
     }
 
     private void showAddCaregiverDialog(){
@@ -101,28 +108,28 @@ public class CaregiversListActivity extends AppCompatActivity {
 
     public void onLongClickCaregiver(final User currentUser) {
         // init builder, get diagnosis
-        AlertDialog.Builder builder = new AlertDialog.Builder(CaregiversListActivity.this);
-        String titleToFormat = this.getString(R.string.remove_caregiver_format);
-        final String nameToRemove = currentUser.getFullName();
-        builder.setTitle(String.format(titleToFormat, nameToRemove));
+        //AlertDialog.Builder builder = new AlertDialog.Builder(CaregiversListActivity.this);
+        //String titleToFormat = this.getString(R.string.remove_caregiver_format);
+        //final String nameToRemove = currentUser.getFullName();
+        //builder.setTitle(String.format(titleToFormat, nameToRemove));
 
         // set cancel button
-        builder.setPositiveButton(R.string.cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
+        //builder.setPositiveButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            //@Override
+          //  public void onClick(DialogInterface dialog, int which) {
+              //  dialog.dismiss();
+            //}
+        //});
 
         // set update button
-        builder.setNegativeButton(R.string.remove, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
+        //builder.setNegativeButton(R.string.remove, new DialogInterface.OnClickListener() {
+          //  @Override
+            //public void onClick(DialogInterface dialog, int which) {
                 // todo actually remove caregiver. leave at least one caregiver!
-                Toast.makeText(CaregiversListActivity.this, String.format("removed %s", nameToRemove), Toast.LENGTH_LONG).show();
-            }
-        });
+              //  Toast.makeText(CaregiversListActivity.this, String.format("removed %s", nameToRemove), Toast.LENGTH_LONG).show();
+            //}
+        //});
 
-        builder.show();
+        //builder.show();
     }
 }

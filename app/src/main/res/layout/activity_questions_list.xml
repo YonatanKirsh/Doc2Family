@@ -37,6 +37,7 @@
         android:layout_height="50dp"
         android:layout_margin="20dp"
         android:text="Add Question"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"/>

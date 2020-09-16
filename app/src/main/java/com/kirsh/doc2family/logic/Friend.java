@@ -2,24 +2,31 @@ package com.kirsh.doc2family.logic;
 
 import java.io.Serializable;
 
-public class Friend implements Serializable {
-
-    private String mUserId;
-    private boolean mIsAdmin;
+public class Friend {
+    private String userId;
+    private boolean admin;
 
     public Friend(){}
 
-    public Friend(String userId, boolean isAmdin)
+    public Friend(String userId, boolean admin)
     {
-        mUserId = userId;
-        mIsAdmin = isAmdin;
+        this.userId = userId;
+        this.admin = admin;
     }
 
-    public String getUserId(){
-        return mUserId;
+    public String getUserId() {
+        return userId;
     }
 
-    public boolean isAdmin(){
-        return mIsAdmin;
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
     }
 }

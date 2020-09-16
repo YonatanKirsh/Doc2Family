@@ -1,5 +1,6 @@
 package com.kirsh.doc2family.views;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -8,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -15,13 +17,22 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.gson.Gson;
 import com.kirsh.doc2family.R;
 import com.kirsh.doc2family.logic.Communicator;
 import com.kirsh.doc2family.logic.Constants;
-import com.kirsh.doc2family.logic.Friend;
 import com.kirsh.doc2family.logic.Patient;
 import com.kirsh.doc2family.logic.User;
+
+import java.util.ArrayList;
 
 public class FriendsListActivity extends AppCompatActivity {
 
@@ -29,6 +40,7 @@ public class FriendsListActivity extends AppCompatActivity {
     FriendsAdapter mAdapter;
 
     Button addFriendButton;
+    Gson gson = new Gson();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,17 +54,41 @@ public class FriendsListActivity extends AppCompatActivity {
     private void initPatient(){
         //todo handle no-key exception
         //todo unite with QuestionsActivity? move to Constants?
-        String patientId = getIntent().getStringExtra(Constants.PATIENT_ID_KEY);
-        mPatient = Communicator.getPatientById(patientId);
+        String patientString = getIntent().getStringExtra(Constants.PATIENT_ID_KEY);
+        mPatient = gson.fromJson(patientString, Patient.class);
     }
 
     private void initFriendsadapter(){
-        mAdapter = new FriendsAdapter(this, mPatient.getFriends());
+        ArrayList<String> FriendsIds = mPatient.getFriends();
+        ArrayList<User> friendsList = new ArrayList<User>();
+        mAdapter = new FriendsAdapter(this, friendsList);
+        if (FriendsIds.size() != 0) {
+            Communicator.getFriendsByIds(mAdapter, mAdapter.getmDataset(), FriendsIds);
+        }
+        mAdapter.notifyDataSetChanged();
     }
 
     private void initViews(){
         // add friend button
         addFriendButton = findViewById(R.id.button_add_friend);
+
+        final FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("Users").whereEqualTo("id", auth.getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()){
+                    for (QueryDocumentSnapshot doc : task.getResult()){
+                        User user = doc.toObject(User.class);
+                        if (user.getTz().equals(mPatient.getAdminTz())){
+                            addFriendButton.setVisibility(View.VISIBLE);
+                        }
+                    }
+                }
+            }
+        });
+
         addFriendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,8 +121,50 @@ public class FriendsListActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked add button - todo add friend
                 String newFriend = emailInput.getText().toString();
-                String message = "added friend:\n" + newFriend;
-                Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
+
+                final FirebaseFirestore db = FirebaseFirestore.getInstance();
+                final boolean[] flag = {false};
+
+                db.collection("Users").whereEqualTo("tz", newFriend).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()){
+                            for (QueryDocumentSnapshot doc : task.getResult()){
+
+
+                                User user = doc.toObject(User.class);
+
+                                if (mPatient.getFriends().contains(user.getId())){
+                                    Toast.makeText(FriendsListActivity.this, "Already his friend !",
+                                            Toast.LENGTH_SHORT).show();
+                                    break;
+                                }
+                                flag[0] = true;
+                                ArrayList<Patient> patients = user.getPatientIds();
+                                patients.add(mPatient);
+                                user.setPatientIds(patients);
+                                db.collection("Users").document(user.getId()).set(user);
+                                ArrayList<String> friends = mPatient.getFriends();
+                                friends.add(user.getId());
+                                mPatient.setFriends(friends);
+                                Communicator.updatePatientInUsersandPatientCollection(mPatient);
+                                Toast.makeText(FriendsListActivity.this, "Friend added !",
+                                        Toast.LENGTH_SHORT).show();
+                                ArrayList<User> users = mAdapter.getmDataset();
+                                users.add(user);
+                                mAdapter.setmDataset(users);
+                                mAdapter.notifyDataSetChanged();
+                            }
+                        }
+                        if (!flag[0]){
+                            Toast.makeText(FriendsListActivity.this, "Not a valid User !",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+                //String message = "added friend:\n" + newFriend;
+                //Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
                 emailInput.setText("");
                 dialog.dismiss();
             }
@@ -102,19 +180,19 @@ public class FriendsListActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private void showEditFriendDialog(Friend friend){
+    private void showEditFriendDialog(User friend){
         AlertDialog.Builder builder = new AlertDialog.Builder(FriendsListActivity.this);
         // set view
         View view = getLayoutInflater().inflate(R.layout.friend_dialog, null);
         builder.setView(view);
         // add friend info
-        User user = Communicator.getUserById(friend.getUserId());
+        User user = Communicator.getUserById(friend.getId());
         final TextView friendNameTextView = view.findViewById(R.id.friend_dialog_text_view_friend_name);
         friendNameTextView.setText(user.getFullName());
         final TextView friendEmailtextView = view.findViewById(R.id.friend_dialog_text_view_friend_email);
         friendEmailtextView.setText(user.getEmail());
         final TextView isAdminTextView = view.findViewById(R.id.friend_dialog_text_view_is_admin);
-        if (friend.isAdmin()){
+        if (friend.getTz().equals(mPatient.getAdminTz())){
             isAdminTextView.setText(R.string.admin);
         }else {
             isAdminTextView.setText(R.string.not_admin);
@@ -133,11 +211,11 @@ public class FriendsListActivity extends AppCompatActivity {
         questionsDialog.show();
     }
 
-    private void addAdminPrivilegesToDialog(AlertDialog.Builder builder, View view, final Friend friend){
+    private void addAdminPrivilegesToDialog(AlertDialog.Builder builder, View view, final User friend){
         // add admin views
         final CheckBox makeAdminCheckBox = view.findViewById(R.id.friend_dialog_checkbox_make_admin);
         makeAdminCheckBox.setVisibility(View.VISIBLE);
-        if (friend.isAdmin()){
+        if (friend.getTz().equals(mPatient.getAdminTz())){
             makeAdminCheckBox.setChecked(true);
         } else {
             makeAdminCheckBox.setChecked(false);
@@ -154,7 +232,7 @@ public class FriendsListActivity extends AppCompatActivity {
         builder.setNegativeButton(R.string.update, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked submit button - todo update friend
-                String friendId = friend.getUserId();
+                String friendId = friend.getId();
                 boolean makeAdmin = makeAdminCheckBox.isChecked();
                 // todo update friend with friendId isAdmin?
                 dialog.dismiss();
@@ -162,8 +240,8 @@ public class FriendsListActivity extends AppCompatActivity {
         });
     }
 
-    private void confirmRemoveFriend(Friend friendToRemove, final DialogInterface callingDialog){
-        final User user = Communicator.getUserById(friendToRemove.getUserId());
+    private void confirmRemoveFriend(User friendToRemove, final DialogInterface callingDialog){
+        final User user = Communicator.getUserById(friendToRemove.getId());
         DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -184,7 +262,7 @@ public class FriendsListActivity extends AppCompatActivity {
         ConfirmDialog.show(this, dialogClickListener, String.format("Remove %s?", user.getFullName()));
     }
 
-    public void onClickFriend(Friend friend) {
-        showEditFriendDialog(friend);
+    public void onClickFriend(User friend) {
+        //showEditFriendDialog(friend);
     }
 }

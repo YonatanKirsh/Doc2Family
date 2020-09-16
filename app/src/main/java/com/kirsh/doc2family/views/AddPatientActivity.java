@@ -1,6 +1,5 @@
 package com.kirsh.doc2family.views;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -9,28 +8,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.SetOptions;
 import com.kirsh.doc2family.R;
 import com.kirsh.doc2family.logic.Communicator;
-import com.kirsh.doc2family.logic.Friend;
-import com.kirsh.doc2family.logic.Patient;
-import com.kirsh.doc2family.logic.User;
-
-import java.util.ArrayList;
 
 public class AddPatientActivity extends AppCompatActivity {
 
     Button addPatientButton;
     EditText firstNameEdit;
     EditText lastNameEdit;
+    EditText tzEdit;
     EditText diagnosisEdit;
 
     @Override
@@ -39,6 +25,7 @@ public class AddPatientActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_patient);
         this.firstNameEdit = (EditText) findViewById(R.id.edit_text_patient_first_name);
         this.lastNameEdit = (EditText) findViewById(R.id.edit_text_patients_last_name);
+        this.tzEdit =  (EditText) findViewById(R.id.edit_text_tz);
         this.diagnosisEdit = (EditText) findViewById(R.id.edit_text_patients_diagnosis) ;
         initViews();
     }
@@ -63,6 +50,7 @@ public class AddPatientActivity extends AppCompatActivity {
         String firstName = firstNameEdit.getText().toString();
         String lastName = lastNameEdit.getText().toString();
         String diagnosis = diagnosisEdit.getText().toString();
+        String tz = tzEdit.getText().toString();
 
         if (firstName.isEmpty()){
             Toast.makeText(this, "Please enter valid first name", Toast.LENGTH_SHORT).show();
@@ -72,6 +60,11 @@ public class AddPatientActivity extends AppCompatActivity {
             Toast.makeText(this, "Please enter valid last name", Toast.LENGTH_SHORT).show();
             return;
         }
+        if (tz.isEmpty()){
+            Toast.makeText(this, "Please enter valid teudat zeut number", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if (diagnosis.isEmpty()){
             Toast.makeText(this, "Please enter valid diagnosis", Toast.LENGTH_SHORT).show();
             return;
@@ -79,8 +72,8 @@ public class AddPatientActivity extends AppCompatActivity {
 
         firstNameEdit.getText().clear();
         lastNameEdit.getText().clear();
+        tzEdit.getText().clear();
         diagnosisEdit.getText().clear();
-
-        Communicator.cAddPatient(firstName, lastName, diagnosis, this);
+        Communicator.cAddPatient(firstName, lastName, tz, diagnosis, this);
     }
 }
