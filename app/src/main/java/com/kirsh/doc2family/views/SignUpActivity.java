@@ -132,9 +132,7 @@ public class SignUpActivity extends AppCompatActivity {
 
     private void attemptSignUp(View v) {
         if (isLegalInput(v)) {
-            //todo signup
             createUserWithEmailAndPassword();
-            //finish();
         }
     }
 
@@ -144,6 +142,7 @@ public class SignUpActivity extends AppCompatActivity {
         mEmailLayout.setError(null);
         mPasswordLayout.setError(null);
         mConfirmPasswordLayout.setError(null);
+        mTzLayout.setError(null);
     }
 
     private boolean isLegalInput(View v) {
@@ -197,6 +196,8 @@ public class SignUpActivity extends AppCompatActivity {
             mConfirmPasswordLayout.setError(" ");
             return false;
         }
+
+        //todo check if TZ is legal
         return true;
     }
 

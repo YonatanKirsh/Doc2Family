@@ -134,29 +134,7 @@ public class PatientInfoActivity extends AppCompatActivity {
 
         //add update button
         addUpdateButton = findViewById(R.id.add_an_update_button);
-
-        FirebaseAuth myAuth = FirebaseAuth.getInstance();
-        final FirebaseUser myUser = myAuth.getCurrentUser();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        db.collection("Users").whereEqualTo("id", myUser.getUid())
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if(task.isSuccessful()){
-                            for (QueryDocumentSnapshot myDoc : task.getResult()){
-                                User user = myDoc.toObject(User.class);
-                                if(user.isCareGiver()){
-                                    if (mPatient.getAdminTz().equals("")){
-                                        addAdminButton.setVisibility(View.VISIBLE); //todo a tester
-                                    }
-                                    addUpdateButton.setVisibility(View.VISIBLE);
-                                }
-                            }
-                        }
-                    }
-                });
+        Communicator.appearAddAdminAndUpdate(addAdminButton, addUpdateButton, mPatient);
 
         addAdminButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -241,28 +219,7 @@ public class PatientInfoActivity extends AppCompatActivity {
                 String adminTz = adminTzInput.getText().toString();
                 if (!adminTz.equals("")){
                     mPatient.setAdminTz(adminTz);
-                    Communicator.updatePatientInUsersandPatientCollection(mPatient);
-                    final FirebaseFirestore db = FirebaseFirestore.getInstance();
-                    db.collection("Users").whereEqualTo("tz", adminTz).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()){
-                                for (QueryDocumentSnapshot doc : task.getResult()){
-                                    User user = doc.toObject(User.class);
-                                    ArrayList<String> friends = mPatient.getFriends();
-                                    friends.add(user.getId());
-                                    mPatient.setFriends(friends);
-                                    ArrayList<Patient> patients = user.getPatientIds();
-                                    patients.add(mPatient);
-                                    user.setPatientIds(patients);
-                                    db.collection("Users").document(user.getId()).set(user);
-                                    Communicator.updatePatientInUsersandPatientCollection(mPatient);
-                                }
-                            }
-                        }
-                    });
-
-
+                    Communicator.updateAdminInUsersAndPatientCollection(mPatient, adminTz);
                 }
                 String message = "added admin:\n" + adminTz;
                 Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
@@ -281,7 +238,7 @@ public class PatientInfoActivity extends AppCompatActivity {
         builder.show();
     }
 
-    private void showEditUpdateDialog(final Update update, User user){
+    public void showEditUpdateDialog(final Update update, User user){
         AlertDialog.Builder builder = new AlertDialog.Builder(PatientInfoActivity.this);
         // set view
         View view = getLayoutInflater().inflate(R.layout.update_dialog, null);
@@ -325,8 +282,6 @@ public class PatientInfoActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 switch (which) {
                     case DialogInterface.BUTTON_POSITIVE:
-                        //Yes button clicked - todo actually update diagnosis
-                        // todo update db
                         ArrayList<Update> updates = mPatient.getUpdates();
                         updates.remove(update);
                         updates.sort(new Update.UpdateSorter());
@@ -353,8 +308,6 @@ public class PatientInfoActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 switch (which) {
                     case DialogInterface.BUTTON_POSITIVE:
-                        //Yes button clicked - todo actually update diagnosis
-                        // todo update db
                         ArrayList<Update> updates = mPatient.getUpdates();
                         Update newUpdate = new Update(update.getIssuingCareGiverId(), nUpdateContent, System.currentTimeMillis());
                         updates.remove(update);
@@ -376,7 +329,7 @@ public class PatientInfoActivity extends AppCompatActivity {
         ConfirmDialog.show(this, dialogClickListener);
     }
 
-    private void showEditDiagnosisDialog(){
+    public void showEditDiagnosisDialog(){
         // init builder, get diagnosis
         AlertDialog.Builder builder = new AlertDialog.Builder(PatientInfoActivity.this);
         final EditText editText = new EditText(PatientInfoActivity.this);
@@ -432,7 +385,7 @@ public class PatientInfoActivity extends AppCompatActivity {
     }
 
     public void onClickUpdate(final Update update) {
-        // todo iff update issued by current user
+        // todo communicator
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         FirebaseAuth myAuth = FirebaseAuth.getInstance();

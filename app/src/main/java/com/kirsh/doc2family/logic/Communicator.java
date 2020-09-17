@@ -2,17 +2,23 @@ package com.kirsh.doc2family.logic;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.ActionBarContextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,9 +32,11 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firestore.v1.ArrayValue;
+import com.kirsh.doc2family.views.AddPatientActivity;
 import com.kirsh.doc2family.views.CaregiversAdapter;
 import com.kirsh.doc2family.views.FriendsAdapter;
 import com.kirsh.doc2family.views.LoginActivity;
+import com.kirsh.doc2family.views.PatientInfoActivity;
 import com.kirsh.doc2family.views.PatientsAdapter;
 import com.kirsh.doc2family.views.PatientsListActivity;
 import com.kirsh.doc2family.views.QuestionsAdapter;
@@ -41,8 +49,8 @@ public class Communicator {
     private static FirebaseAuth Auth = FirebaseAuth.getInstance();
     static final FirebaseFirestore[] fireStore = {FirebaseFirestore.getInstance()};
     static FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-
+    static FirebaseAuth myAuth = FirebaseAuth.getInstance();
+    static FirebaseUser myUser = myAuth.getCurrentUser();
 
     public static void cCreateUserWithEmailAndPassword(String email, String password, final Context context, final String firstName, final String lastName, final boolean  mIsDoctor, final EditText mEmailEditText,
                                                        final EditText mPasswordEditText, final TextInputLayout mEmailLayout, final TextInputLayout mPasswordLayout, final String tz){
@@ -451,6 +459,167 @@ public class Communicator {
         });
     }
 
+    public static void appearAddPatientIfCaregiver(final Button addPatientButton){
+        db.collection("Users").whereEqualTo("id", myUser.getUid())
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot myDoc : task.getResult()) {
+                                User user = myDoc.toObject(User.class);
+                                if (user.isCareGiver()) {
+                                    addPatientButton.setVisibility(View.VISIBLE);
+                                }
+                            }
+                        }
+                    }
+                });
+    }
+
+    public static void appearAddAdminAndUpdate(final Button addAdminButton, final Button addUpdateButton, final Patient mPatient){
+
+        db.collection("Users").whereEqualTo("id", myUser.getUid())
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            for (QueryDocumentSnapshot myDoc : task.getResult()){
+                                User user = myDoc.toObject(User.class);
+                                if(user.isCareGiver()){
+                                    if (mPatient.getAdminTz().equals("")){
+                                        addAdminButton.setVisibility(View.VISIBLE); //todo to test
+                                    }
+                                    addUpdateButton.setVisibility(View.VISIBLE);
+                                }
+                            }
+                        }
+                    }
+                });
+    }
+
+    public static void removePatientFromUserAndUpdate(final Patient currentPatient){
+        db.collection("Users").whereEqualTo("id", myUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot doc : task.getResult()) {
+                        User user = doc.toObject(User.class);
+                        ArrayList<Patient> patients = user.getPatientIds();
+                        ArrayList<Patient> nLstPatient = new ArrayList<>();
+                        for (Patient patient : patients) {
+                            if (!patient.getId().equals(currentPatient.getId())) {
+                                nLstPatient.add(patient);
+                            }
+                        }
+                        user.setPatientIds(nLstPatient);
+                        db.collection("Users").document(user.getId()).set(user);
+
+                        if (user.isCareGiver()) {
+                            ArrayList<String> careGivers = currentPatient.getCaregiverIds();
+                            careGivers.remove(user.getId());
+                            currentPatient.setCaregiverIds(careGivers);
+                            Communicator.updatePatientInUsersandPatientCollection(currentPatient);
+                        } else {
+                            ArrayList<String> friends = currentPatient.getFriends();
+                            friends.remove(user.getId());
+                            currentPatient.setFriends(friends);
+                            Communicator.updatePatientInUsersandPatientCollection(currentPatient);
+                        }
+                    }
+                }
+            }
+        });
+
+
+    }
+
+    public static void updateAdminInUsersAndPatientCollection(final Patient mPatient, final String adminTz){
+        Communicator.updatePatientInUsersandPatientCollection(mPatient);
+        db.collection("Users").whereEqualTo("tz", adminTz).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()){
+                    for (QueryDocumentSnapshot doc : task.getResult()){
+                        User user = doc.toObject(User.class);
+                        ArrayList<String> friends = mPatient.getFriends();
+                        friends.add(user.getId());
+                        mPatient.setFriends(friends);
+                        ArrayList<Patient> patients = user.getPatientIds();
+                        patients.add(mPatient);
+                        user.setPatientIds(patients);
+                        db.collection("Users").document(user.getId()).set(user);
+                        Communicator.updatePatientInUsersandPatientCollection(mPatient);
+                    }
+                }
+            }
+        });
+
+    }
+
+    public static void checkNewPatientExistence(final String updateMess, final boolean[] flag, final Patient[] patient, final Context context, final View contextView){
+        // todo there is a pb when I delete a patient and try to add it with the same tz.
+        db.collection("Patients").whereEqualTo("tz", updateMess).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot myDoc : task.getResult()) {
+                        flag[0] = true;
+                        patient[0] = myDoc.toObject(Patient.class);
+                        db.collection("Users").whereEqualTo("id", myUser.getUid())
+                                .get()
+                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        if (task.isSuccessful()) {
+                                            for (QueryDocumentSnapshot doc : task.getResult()) {
+                                                User user = doc.toObject(User.class);
+                                                ArrayList<String> careGivers = patient[0].getCaregiverIds();
+                                                if (!careGivers.contains(user.getId())) {
+                                                    careGivers.add(user.getId());
+                                                    patient[0].setCaregiverIds(careGivers);
+                                                    db.collection("Patients").document(patient[0].getId()).set(patient[0]);
+                                                    ArrayList<Patient> patients = user.getPatientIds();
+                                                    patients.add(patient[0]);
+                                                    user.setPatientIds(patients);
+                                                    db.collection("Users").document(user.getId()).set(user);
+                                                } else {
+                                                    String message = "Already your patient";
+                                                    Snackbar.make(contextView, message, Snackbar.LENGTH_LONG).show();
+                                                }
+                                            }
+                                        }
+                                    }
+                                });
+                    }
+                }
+                if (!flag[0]) {
+                    openActivityAddPatient(context);
+                }
+            }
+        });
+    }
+
+    public static void editUpdateIfCurentUser(final Update update){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        FirebaseAuth myAuth = FirebaseAuth.getInstance();
+        final FirebaseUser myUser = myAuth.getCurrentUser();
+        db.collection("Users").whereEqualTo("id", myUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()){
+                    for (QueryDocumentSnapshot doc: task.getResult()){
+                        User user = doc.toObject(User.class);
+                        if (update.getIssuingCareGiverId().equals(user.getId())) {
+                            //showEditUpdateDialog(update, user);
+                        }
+                    }
+                }
+            }
+        });
+    }
     //todo firebase / local db !! TO TEST
     public static Patient getPatientById(Serializable patientId){
         final Patient[] patient = new Patient[1];
@@ -479,9 +648,7 @@ public class Communicator {
         //}
     }
 
-//    //todo firebase! TO TEST
-    public static ArrayList<Patient> getUsersPatients(String userId){
-        //return Constants.SAMPLE_PATIENTS;
+    public static ArrayList<Patient> getPatientsListForUser(String userId){
         final ArrayList<Patient>[] patientsIds = new ArrayList[]{new ArrayList<Patient>()};
         final User[] user = new User[1];
 
@@ -596,6 +763,11 @@ public class Communicator {
 
     private static void openActivityLogin(Context context) {
         Intent intent = new Intent(context, LoginActivity.class);
+        context.startActivity(intent);
+    }
+
+    public static void openActivityAddPatient(Context context) {
+        Intent intent = new Intent(context, AddPatientActivity.class);
         context.startActivity(intent);
     }
 
