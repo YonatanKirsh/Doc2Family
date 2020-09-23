@@ -12,7 +12,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
-import com.google.android.gms.tasks.Tasks;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
@@ -42,8 +41,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.Semaphore;
-import com.google.android.gms.tasks.Tasks;
 
 public class Communicator {
 
@@ -853,17 +850,17 @@ public class Communicator {
     }
 
 
-    public static void checkTZ(String tz, final DBCallBack dbCallBack) {
+    public static void checkTZ(String tz, final DBCallBackTZ dbCallBackTZ) {
 
         db.collection("Users").whereEqualTo("tz", tz).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
-                        dbCallBack.isTZAlreadyInBD(true);
+                        dbCallBackTZ.isTZAlreadyInBD(true);
 
                 }
                 else{
-                    dbCallBack.isTZAlreadyInBD(false);
+                    dbCallBackTZ.isTZAlreadyInBD(false);
                 }
             }
         });

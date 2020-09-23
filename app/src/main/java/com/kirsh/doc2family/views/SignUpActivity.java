@@ -1,6 +1,5 @@
 package com.kirsh.doc2family.views;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
@@ -10,29 +9,12 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.RadioButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.kirsh.doc2family.logic.Communicator;
-import android.widget.Toast;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.kirsh.doc2family.logic.Constants;
 import com.kirsh.doc2family.R;
-import com.kirsh.doc2family.logic.DBCallBack;
-import com.kirsh.doc2family.logic.User;
-
-import java.util.concurrent.ExecutionException;
+import com.kirsh.doc2family.logic.DBCallBackTZ;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -169,7 +151,7 @@ public class SignUpActivity extends AppCompatActivity {
         final boolean[] checkTZ = new boolean[1];
         final boolean[] checkAll = {true};
 
-        Communicator.checkTZ(tz, new DBCallBack() {
+        Communicator.checkTZ(tz, new DBCallBackTZ() {
             @Override
             public void isTZAlreadyInBD(boolean alreadyIn) {
                 checkTZ[0] = alreadyIn;
