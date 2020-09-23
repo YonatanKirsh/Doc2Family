@@ -9,13 +9,13 @@ public class Question{
     private Friend asker;
     private String question;
     private String answer;
-    private LocalDateTime mDateAsked;
-    private LocalDateTime mDateEdited;
+    private long mDateAsked;
+    private long mDateEdited;
     private boolean mIsAnswered = false;
 
     public Question(){}
 
-    public Question(String question, String answer, LocalDateTime dateAsked, LocalDateTime dateEdited){
+    public Question(String question, String answer, long dateAsked, long dateEdited){
         this.question = question;
         this.answer = answer;
         mDateAsked = dateAsked;
@@ -28,7 +28,7 @@ public class Question{
     public Question(String question, Friend asker){
         this.question = question;
         this.asker = asker;
-        mDateAsked = LocalDateTime.now();
+        mDateAsked = System.currentTimeMillis();
     }
 
     public Question(String question, String answer, Friend asker){
@@ -51,7 +51,7 @@ public class Question{
 
     public void setAnswer(String answer){
         this.answer = answer;
-        mDateEdited = LocalDateTime.now();
+        mDateEdited = System.currentTimeMillis();
         mIsAnswered = true;
     }
 
@@ -59,12 +59,12 @@ public class Question{
         return mIsAnswered;
     }
 
-    public LocalDateTime getDateAsked(){
+    public long getDateAsked(){
         return mDateAsked;
     }
 
-    public LocalDateTime getDateEdited(){
-        if (mDateEdited != null){
+    public long getDateEdited(){
+        if (mDateEdited != 0){
             return mDateEdited;
         }
         return mDateAsked;
@@ -83,7 +83,13 @@ public class Question{
 
         @Override
         public int compare(Question o1, Question o2) {
-            return o2.getDateEdited().compareTo(o1.getDateEdited());
+            if(o1.getDateEdited() > o2.getDateEdited()){
+                return -1;
+            }
+            else if (o1.getDateEdited() < o2.getDateEdited()){
+                return 1;
+            }
+            return 0;
         }
     }
 

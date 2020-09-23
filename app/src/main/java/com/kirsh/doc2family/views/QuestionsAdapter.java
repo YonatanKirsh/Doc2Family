@@ -12,12 +12,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.kirsh.doc2family.R;
 import com.kirsh.doc2family.logic.Question;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.QuestionHolder> {
 
     private ArrayList<Question> mDataset;
     private Context mContext;
+    private SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy HH:mm");
 
     public ArrayList<Question> getmDataset() {
         return mDataset;

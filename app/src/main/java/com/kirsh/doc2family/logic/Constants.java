@@ -57,8 +57,8 @@ public class Constants {
         ArrayList<Question> questions = new ArrayList<>();
         LocalDateTime oldTime = LocalDateTime.now().minusDays(10);
         LocalDateTime now = LocalDateTime.now();
-        questions.add(new Question("How did the operation go??", null, oldTime, null));
-        questions.add(new Question("did you start the new treatment?", "yes, just this morning.", oldTime, now.minusDays(1)));
+//        questions.add(new Question("How did the operation go??", null, oldTime, null));
+//        questions.add(new Question("did you start the new treatment?", "yes, just this morning.", oldTime, now.minusDays(1)));
 
         return questions;
     }
