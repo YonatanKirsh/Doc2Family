@@ -9,24 +9,14 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.RadioButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.kirsh.doc2family.logic.Communicator;
-import android.widget.Toast;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.kirsh.doc2family.logic.Constants;
 import com.kirsh.doc2family.R;
-
+import com.kirsh.doc2family.logic.DBCallBackTZ;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class SignUpActivity extends AppCompatActivity {
@@ -35,6 +25,8 @@ public class SignUpActivity extends AppCompatActivity {
     private static final String ILLEGAL_EMAIL_MESSAGE = "Enter a valid email!";
     private static final String ILLEGAL_NICKNAME_MESSAGE = "Enter a valid nickname! (Or just leave blank for now...)";
     private static final String ILLEGAL_PASSWORD_MESSAGE = "Enter a valid password!";
+    private static final String ILLEGAL_TZ_MESSAGE = "Enter a valid ID number!";
+
 
     private TextInputLayout mFirstNameLayout;
     private TextInputLayout mLastNameLayout;
@@ -130,12 +122,6 @@ public class SignUpActivity extends AppCompatActivity {
         });
     }
 
-    private void attemptSignUp(View v) {
-        if (isLegalInput(v)) {
-            createUserWithEmailAndPassword();
-        }
-    }
-
     private void setErrorLayoutNull(){
         mFirstNameLayout.setError(null);
         mLastNameLayout.setError(null);
@@ -145,60 +131,86 @@ public class SignUpActivity extends AppCompatActivity {
         mTzLayout.setError(null);
     }
 
-    private boolean isLegalInput(View v) {
+    private void attemptSignUp(final View v) {
         // collect input
-        String email = mEmailEditText.getText().toString();
-        String first_name = mFirstNameEditText.getText().toString();
-        String last_name = mLastNameEditText.getText().toString();
-        String password = mPasswordEditText.getText().toString();
-        String repeatPassword = mVerifyPasswordEditText.getText().toString();
+        String tz = mTzEditText.getText().toString();
+        final String email = mEmailEditText.getText().toString();
+        final String first_name = mFirstNameEditText.getText().toString();
+        final String last_name = mLastNameEditText.getText().toString();
+        final String password = mPasswordEditText.getText().toString();
+        final String repeatPassword = mVerifyPasswordEditText.getText().toString();
 
         setErrorLayoutNull();
 
-        // check if first name is legal
-        if (first_name.isEmpty() || !Constants.isLegalNickname(first_name)) {
-            Snackbar.make(v, ILLEGAL_NICKNAME_MESSAGE, Snackbar.LENGTH_LONG).show();
-            mFirstNameLayout.setError(" ");
-            mFirstNameLayout.requestFocus();
-            return false;
-        }
+        //check tz
+        final boolean flagLen = tz.length() != 9;
+        String regex = "[0-9]+";
+        Pattern p = Pattern.compile(regex);
+        Matcher m = p.matcher(tz);
+        final boolean containsLetter = !m.matches();
+        final boolean[] checkTZ = new boolean[1];
+        final boolean[] checkAll = {true};
 
-        // check if last name is legal
-        if (last_name.isEmpty() || !Constants.isLegalNickname(last_name)) {
-            Snackbar.make(v, ILLEGAL_NICKNAME_MESSAGE, Snackbar.LENGTH_LONG).show();
-            mLastNameLayout.setError(" ");
-            mLastNameLayout.requestFocus();
-            return false;
-        }
+        Communicator.checkTZ(tz, new DBCallBackTZ() {
+            @Override
+            public void isTZAlreadyInBD(boolean alreadyIn) {
+                checkTZ[0] = alreadyIn;
 
-        // check if email is legal
-        if (!Constants.isLegalEmail(email)) {
-            Snackbar.make(v, ILLEGAL_EMAIL_MESSAGE, Snackbar.LENGTH_LONG).show();
-            mEmailLayout.setError(" ");
-            mEmailLayout.requestFocus();
-            return false;
-        }
+                // check if first name is legal
+                if (first_name.isEmpty() || !Constants.isLegalNickname(first_name)) {
+                    Snackbar.make(v, ILLEGAL_NICKNAME_MESSAGE, Snackbar.LENGTH_LONG).show();
+                    mFirstNameLayout.setError(" ");
+                    mFirstNameLayout.requestFocus();
+                    checkAll[0] = false;
+                }
 
-        // check if password is valid
-        if (!Constants.isLegalPassword(password)) {
-            Snackbar.make(v, ILLEGAL_PASSWORD_MESSAGE, Snackbar.LENGTH_LONG).show();
-            mPasswordLayout.setError(" ");
-            mPasswordLayout.requestFocus();
-            return false;
-        }
+                // check if last name is legal
+                else if (last_name.isEmpty() || !Constants.isLegalNickname(last_name)) {
+                    Snackbar.make(v, ILLEGAL_NICKNAME_MESSAGE, Snackbar.LENGTH_LONG).show();
+                    mLastNameLayout.setError(" ");
+                    mLastNameLayout.requestFocus();
+                    checkAll[0] = false;
+                }
 
-        // check if passwords match
-        if (!password.equals(repeatPassword)) {
-            Snackbar.make(v, PASSWORD_DOESNT_MATCH_MESSAGE, Snackbar.LENGTH_LONG).show();
-            mPasswordLayout.requestFocus();
-            mConfirmPasswordLayout.requestFocus();
-            mPasswordLayout.setError(" ");
-            mConfirmPasswordLayout.setError(" ");
-            return false;
-        }
+                // check tz
+                else if (flagLen || containsLetter || checkTZ[0]){
+                    Snackbar.make(v, ILLEGAL_TZ_MESSAGE, Snackbar.LENGTH_LONG).show();
+                    mTzLayout.setError(" ");
+                    mTzLayout.requestFocus();
+                    checkAll[0] = false;
+                }
 
-        //todo check if TZ is legal
-        return true;
+                // check if email is legal
+                else if (!Constants.isLegalEmail(email)) {
+                    Snackbar.make(v, ILLEGAL_EMAIL_MESSAGE, Snackbar.LENGTH_LONG).show();
+                    mEmailLayout.setError(" ");
+                    mEmailLayout.requestFocus();
+                    checkAll[0] = false;
+                }
+
+                // check if password is valid
+                else if (!Constants.isLegalPassword(password)) {
+                    Snackbar.make(v, ILLEGAL_PASSWORD_MESSAGE, Snackbar.LENGTH_LONG).show();
+                    mPasswordLayout.setError(" ");
+                    mPasswordLayout.requestFocus();
+                    checkAll[0] = false;
+                }
+
+                // check if passwords match
+                else if (!password.equals(repeatPassword)) {
+                    Snackbar.make(v, PASSWORD_DOESNT_MATCH_MESSAGE, Snackbar.LENGTH_LONG).show();
+                    mPasswordLayout.requestFocus();
+                    mConfirmPasswordLayout.requestFocus();
+                    mPasswordLayout.setError(" ");
+                    mConfirmPasswordLayout.setError(" ");
+                    checkAll[0] = false;
+                }
+
+                if (checkAll[0]){
+                    createUserWithEmailAndPassword();
+                }
+            }
+        });
     }
 
     public void openActivityLogin() {
