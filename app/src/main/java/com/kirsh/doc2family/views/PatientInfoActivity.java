@@ -191,7 +191,7 @@ public class PatientInfoActivity extends AppCompatActivity {
         builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 String updateMess = updateInput.getText().toString();
-                if (updateMess != null){
+                if (!updateMess.equals("")){
                     FirebaseAuth auth = FirebaseAuth.getInstance();
                     String careGiverID = auth.getCurrentUser().getUid();
                     long time = System.currentTimeMillis();
