@@ -591,7 +591,7 @@ public class Communicator {
         });
     }
 
-    public static void editUpdateIfCurentUser(final Update update,final Context context){
+    public static void editUpdateIfCurrentUser(final Update update, final Context context){
         db.collection("Users").whereEqualTo("id", myUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -709,7 +709,6 @@ public class Communicator {
         });
 
     }
-
 
     //todo firebase / local db !! TO TEST
     public static Patient getPatientById(Serializable patientId){

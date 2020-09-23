@@ -1,6 +1,5 @@
 package com.kirsh.doc2family.views;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -14,21 +13,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.gson.Gson;
 import com.kirsh.doc2family.R;
 import com.kirsh.doc2family.logic.Communicator;
-import com.kirsh.doc2family.logic.Friend;
 import com.kirsh.doc2family.logic.Patient;
 
 import com.kirsh.doc2family.logic.Constants;
@@ -36,7 +26,6 @@ import com.kirsh.doc2family.logic.Update;
 import com.kirsh.doc2family.logic.User;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -385,7 +374,7 @@ public class PatientInfoActivity extends AppCompatActivity {
     }
 
     public void onClickUpdate(final Update update) {
-        Communicator.editUpdateIfCurentUser(update, this);
+        Communicator.editUpdateIfCurrentUser(update, this);
     }
 
     public void openActivityQuestions(){
