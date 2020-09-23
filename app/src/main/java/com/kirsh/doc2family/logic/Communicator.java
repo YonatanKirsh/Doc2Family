@@ -599,5 +599,4 @@ public class Communicator {
         context.startActivity(intent);
     }
 
-
 }
