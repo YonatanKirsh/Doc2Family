@@ -11,6 +11,8 @@ import androidx.annotation.Nullable;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
+import com.google.android.gms.tasks.Tasks;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
@@ -38,8 +40,14 @@ import com.kirsh.doc2family.views.UpdatesAdapter;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.Semaphore;
+import com.google.android.gms.tasks.Tasks;
 
 public class Communicator {
+
+    final TaskCompletionSource<List<Objects>> tcs = new TaskCompletionSource<>();
 
     private static FirebaseAuth Auth = FirebaseAuth.getInstance();
     static final FirebaseFirestore[] fireStore = {FirebaseFirestore.getInstance()};
@@ -842,5 +850,28 @@ public class Communicator {
                     }
                 });
         return friend[0];
+    }
+
+    public static boolean checkTZ(String tz) {
+
+        final boolean[] flag = {false};
+
+        db.collection("Users").whereEqualTo("tz", tz).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot doc : task.getResult()) {
+                        User user = doc.toObject(User.class);
+                        DocumentReference document = db.collection("Users").document(user.getId());
+                        flag[0] = true;
+                        break;
+                    }
+
+                }
+            }
+        });
+        return flag[0];
+
+
     }
 }

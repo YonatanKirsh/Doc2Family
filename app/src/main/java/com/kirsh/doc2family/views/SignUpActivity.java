@@ -1,5 +1,6 @@
 package com.kirsh.doc2family.views;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
@@ -12,6 +13,8 @@ import android.widget.ImageButton;
 import android.widget.RadioButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.kirsh.doc2family.logic.Communicator;
 import android.widget.Toast;
 
@@ -26,7 +29,11 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.kirsh.doc2family.logic.Constants;
 import com.kirsh.doc2family.R;
+import com.kirsh.doc2family.logic.User;
 
+import java.util.concurrent.ExecutionException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class SignUpActivity extends AppCompatActivity {
@@ -35,6 +42,8 @@ public class SignUpActivity extends AppCompatActivity {
     private static final String ILLEGAL_EMAIL_MESSAGE = "Enter a valid email!";
     private static final String ILLEGAL_NICKNAME_MESSAGE = "Enter a valid nickname! (Or just leave blank for now...)";
     private static final String ILLEGAL_PASSWORD_MESSAGE = "Enter a valid password!";
+    private static final String ILLEGAL_TZ_MESSAGE = "Enter a valid ID number!";
+
 
     private TextInputLayout mFirstNameLayout;
     private TextInputLayout mLastNameLayout;
@@ -130,8 +139,8 @@ public class SignUpActivity extends AppCompatActivity {
         });
     }
 
-    private void attemptSignUp(View v) {
-        if (isLegalInput(v)) {
+    private void attemptSignUp(final View v) {
+        if (isLegalInput(v) ) {
             createUserWithEmailAndPassword();
         }
     }
@@ -145,8 +154,9 @@ public class SignUpActivity extends AppCompatActivity {
         mTzLayout.setError(null);
     }
 
-    private boolean isLegalInput(View v) {
+    private boolean isLegalInput(final View v) {
         // collect input
+        String tz = mTzEditText.getText().toString();
         String email = mEmailEditText.getText().toString();
         String first_name = mFirstNameEditText.getText().toString();
         String last_name = mLastNameEditText.getText().toString();
@@ -154,6 +164,24 @@ public class SignUpActivity extends AppCompatActivity {
         String repeatPassword = mVerifyPasswordEditText.getText().toString();
 
         setErrorLayoutNull();
+
+        //check tz
+        boolean flagLen = tz.length() != 9;
+        String regex = "[0-9]+";
+        Pattern p = Pattern.compile(regex);
+        Matcher m = p.matcher(tz);
+        boolean containsLetter = !m.matches();
+        boolean checkTZ = Communicator.checkTZ(tz);
+
+        //TODO not working yet the check tz if already in db
+
+        if (flagLen || containsLetter || checkTZ){
+            Snackbar.make(v, ILLEGAL_TZ_MESSAGE, Snackbar.LENGTH_LONG).show();
+            mTzLayout.setError(" ");
+            mTzLayout.requestFocus();
+            return false;
+        }
+
 
         // check if first name is legal
         if (first_name.isEmpty() || !Constants.isLegalNickname(first_name)) {
