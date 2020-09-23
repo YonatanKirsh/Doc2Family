@@ -12,7 +12,6 @@ import com.kirsh.doc2family.R;
 import com.kirsh.doc2family.logic.Communicator;
 import com.kirsh.doc2family.logic.Constants;
 
-import static com.kirsh.doc2family.logic.Communicator.getUsersPatients;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -76,8 +75,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void attemptLogin(){
-        //todo remove openActivity and attempt-message when signup&login work
-        //openActivityListPatients();
         if (checkEmailAndPasswordValidity()){
             signInWithEmailAndPassword();
         };
@@ -119,9 +116,7 @@ public class LoginActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void openActivityListPatients(){
-        // todo
-//        User thisUser = new User();
+    public void openActivityListPatients(){
         Intent intent = new Intent(this, PatientsListActivity.class);
         startActivity(intent);
     }

@@ -39,10 +39,7 @@ public class QuestionsListActivity extends AppCompatActivity {
 
     Button submitQuestionButton;
     AlertDialog dialog;
-
-    static FirebaseFirestore db = FirebaseFirestore.getInstance();
     Gson gson = new Gson();
-
 
 
     @Override
@@ -55,11 +52,8 @@ public class QuestionsListActivity extends AppCompatActivity {
     }
 
     private void initPatient(){
-       // mPatient = (Patient) getIntent().getSerializableExtra(Constants.PATIENT_ID_KEY);
-//        mPatient = Communicator.getPatientById(patientId);
         String patientString = getIntent().getStringExtra(Constants.PATIENT_ID_KEY);
         mPatient = gson.fromJson(patientString, Patient.class);
-
     }
 
     private void initQuestionsAdapter(){
@@ -71,30 +65,7 @@ public class QuestionsListActivity extends AppCompatActivity {
     private void initViews(){
         // submit new question button
         submitQuestionButton = findViewById(R.id.button_submit_question);
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        String userID = auth.getCurrentUser().getUid();
-        final User[] user = new User[1];
-        db.collection("Users")
-                .whereEqualTo("id", userID)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot myDoc : task.getResult()) {
-                                user[0] = myDoc.toObject(User.class);
-                                if (!user[0].isCareGiver()){
-                                    submitQuestionButton.setVisibility(View.VISIBLE);
-                                    setAddQuestionButton();
-                                }
-                            }
-                        }
-                        else {
-                            Log.d("ErrorDoc", "Error getting documents: ", task.getException());
-                            return;
-                        }
-                    }
-                });
+        Communicator.appearNewQuestionIfFriend(submitQuestionButton, this);
 
         // questions adapter
         RecyclerView questionsAdapter = findViewById(R.id.recycler_questions);
@@ -107,7 +78,7 @@ public class QuestionsListActivity extends AppCompatActivity {
 
     }
 
-    private void setAddQuestionButton(){
+    public void setAddQuestionButton(){
         submitQuestionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

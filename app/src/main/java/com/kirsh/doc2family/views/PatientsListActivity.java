@@ -21,20 +21,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.gson.Gson;
 import com.kirsh.doc2family.R;
 import com.kirsh.doc2family.logic.Communicator;
 import com.kirsh.doc2family.logic.Constants;
 import com.kirsh.doc2family.logic.Patient;
-import com.kirsh.doc2family.logic.User;
 
 import java.util.ArrayList;
 
@@ -43,8 +36,8 @@ public class PatientsListActivity extends AppCompatActivity {
 
     PatientsAdapter mAdapter;
     Button addPatientButton;
-    Gson gson = new Gson();
 
+    Gson gson = new Gson();
     ItemTouchHelper.SimpleCallback itemTouchHelper;
     private Paint p = new Paint();
 
@@ -67,37 +60,13 @@ public class PatientsListActivity extends AppCompatActivity {
         new ItemTouchHelper(itemTouchHelper).attachToRecyclerView(patientsRecycler);
         patientsRecycler.setAdapter(mAdapter);
 
-        //DividerItemDecoration itemDecor = new DividerItemDecoration(PatientsListActivity.this, DividerItemDecoration.VERTICAL );
-        //patientsRecycler.addItemDecoration(itemDecor);
-
-        // add-patient button
+        // add-patient button if the user is CareGiver
         addPatientButton = findViewById(R.id.button_goto_add_patient);
-
-        FirebaseAuth myAuth = FirebaseAuth.getInstance();
-        final FirebaseUser myUser = myAuth.getCurrentUser();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        db.collection("Users").whereEqualTo("id", myUser.getUid())
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot myDoc : task.getResult()) {
-                                User user = myDoc.toObject(User.class);
-                                if (user.isCareGiver()) {
-                                    addPatientButton.setVisibility(View.VISIBLE);
-                                }
-                            }
-                        }
-                    }
-                });
-
+        Communicator.appearAddPatientIfCaregiver(addPatientButton);
         addPatientButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 initEnterTzDialog();
-
             }
         });
     }
@@ -111,47 +80,15 @@ public class PatientsListActivity extends AppCompatActivity {
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                // remove the current patient from adapter
                 ArrayList<Patient> mDataset = mAdapter.getmDataset();
-
                 final Patient currentPatient = mDataset.get(viewHolder.getAbsoluteAdapterPosition());
                 mDataset.remove(currentPatient);
                 mAdapter.setmDataset(mDataset);
-                FirebaseAuth auth = FirebaseAuth.getInstance();
-                FirebaseUser userAuth = auth.getCurrentUser();
-                final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-                db.collection("Users").whereEqualTo("id", userAuth.getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot doc : task.getResult()) {
-                                User user = doc.toObject(User.class);
-                                ArrayList<Patient> patients = user.getPatientIds();
-                                ArrayList<Patient> nLstPatient = new ArrayList<>();
-                                for (Patient patient : patients) {
-                                    if (!patient.getId().equals(currentPatient.getId())) {
-                                        nLstPatient.add(patient);
-                                    }
-                                }
-                                user.setPatientIds(nLstPatient);
-                                db.collection("Users").document(user.getId()).set(user);
-
-                                if (user.isCareGiver()) {
-                                    ArrayList<String> careGivers = currentPatient.getCaregiverIds();
-                                    careGivers.remove(user.getId());
-                                    currentPatient.setCaregiverIds(careGivers);
-                                    Communicator.updatePatientInUsersandPatientCollection(currentPatient);
-                                } else {
-                                    ArrayList<String> friends = currentPatient.getFriends();
-                                    friends.remove(user.getId());
-                                    currentPatient.setFriends(friends);
-                                    Communicator.updatePatientInUsersandPatientCollection(currentPatient);
-                                }
-                                mAdapter.notifyDataSetChanged();
-                            }
-                        }
-                    }
-                });
+                // remove the current patient from the db
+                Communicator.removePatientFromUserAndUpdate(currentPatient);
+                mAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -193,59 +130,13 @@ public class PatientsListActivity extends AppCompatActivity {
         // Add the buttons
         final boolean[] flag = {false};
         final Patient[] patient = {null};
-
         builder.setPositiveButton("ENTER", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 String updateMess = updateInput.getText().toString();
                 if (!updateMess.equals("")) {
-                    final FirebaseFirestore db = FirebaseFirestore.getInstance();
-                    db.collection("Patients").whereEqualTo("tz", updateMess).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()) {
-                                for (QueryDocumentSnapshot myDoc : task.getResult()) {
-                                    flag[0] = true;
-                                    patient[0] = myDoc.toObject(Patient.class);
-
-                                    FirebaseAuth myAuth = FirebaseAuth.getInstance();
-                                    final FirebaseUser myUser = myAuth.getCurrentUser();
-                                    db.collection("Users").whereEqualTo("id", myUser.getUid())
-                                            .get()
-                                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                                    if (task.isSuccessful()) {
-                                                        for (QueryDocumentSnapshot doc : task.getResult()) {
-                                                            User user = doc.toObject(User.class);
-                                                            ArrayList<String> careGivers = patient[0].getCaregiverIds();
-                                                            if (!careGivers.contains(user.getId())) {
-                                                                careGivers.add(user.getId());
-                                                                patient[0].setCaregiverIds(careGivers);
-                                                                db.collection("Patients").document(patient[0].getId()).set(patient[0]);
-                                                                ArrayList<Patient> patients = user.getPatientIds();
-                                                                patients.add(patient[0]);
-                                                                user.setPatientIds(patients);
-                                                                db.collection("Users").document(user.getId()).set(user);
-                                                            } else {
-                                                                String message = "Already your patient";
-                                                                Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
-                                                            }
-
-
-                                                        }
-                                                    }
-                                                }
-                                            });
-                                }
-                            }
-                            if (!flag[0]) {
-                                openActivityAddPatient();
-                            }
-                        }
-                    });
-
+                    Communicator.checkNewPatientExistence(updateMess, flag, patient, PatientsListActivity.this, findViewById(android.R.id.content));
+                    mAdapter.notifyDataSetChanged();
                 }
-
             }
         });
 
@@ -255,15 +146,16 @@ public class PatientsListActivity extends AppCompatActivity {
                 dialog.cancel();
             }
         });
+
         // Create the AlertDialog
         builder.show();
     }
 
     private void initPatientAdapter() {
-        //todo userId? here? from where?
+        //todo maybe send a null array in patients instead of communicator.
         FirebaseAuth myAuth = FirebaseAuth.getInstance();
         final FirebaseUser myUser = myAuth.getCurrentUser();
-        ArrayList<Patient> patients = Communicator.getUsersPatients(myUser.getUid());
+        ArrayList<Patient> patients = Communicator.getPatientsListForUser(myUser.getUid());
         mAdapter = new PatientsAdapter(this, patients);
         Communicator.createLiveQueryPatientList(mAdapter, mAdapter.getmDataset());
         mAdapter.notifyDataSetChanged();
@@ -282,7 +174,6 @@ public class PatientsListActivity extends AppCompatActivity {
 
     private void openActivityPatientInfo(Patient patient) {
         Intent intent = new Intent(this, PatientInfoActivity.class);
-
         String patientString = gson.toJson(patient);
         intent.putExtra(Constants.PATIENT_ID_KEY, patientString);
         startActivity(intent);

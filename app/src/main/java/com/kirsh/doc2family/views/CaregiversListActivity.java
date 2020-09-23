@@ -40,8 +40,6 @@ public class CaregiversListActivity extends AppCompatActivity {
     }
 
     private void initPatient(){
-        //String patientId = getIntent().getStringExtra(Constants.PATIENT_ID_KEY);
-        //mPatient = Communicator.getPatientById(patientId);
         String patientString = getIntent().getStringExtra(Constants.PATIENT_ID_KEY);
         mPatient = gson.fromJson(patientString, Patient.class);
     }

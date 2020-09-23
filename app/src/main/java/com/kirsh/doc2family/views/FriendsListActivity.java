@@ -71,24 +71,7 @@ public class FriendsListActivity extends AppCompatActivity {
     private void initViews(){
         // add friend button
         addFriendButton = findViewById(R.id.button_add_friend);
-
-        final FirebaseAuth auth = FirebaseAuth.getInstance();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        db.collection("Users").whereEqualTo("id", auth.getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()){
-                    for (QueryDocumentSnapshot doc : task.getResult()){
-                        User user = doc.toObject(User.class);
-                        if (user.getTz().equals(mPatient.getAdminTz())){
-                            addFriendButton.setVisibility(View.VISIBLE);
-                        }
-                    }
-                }
-            }
-        });
-
+        Communicator.appearAddFriendIfAdmin(addFriendButton, mPatient);
         addFriendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -119,52 +102,8 @@ public class FriendsListActivity extends AppCompatActivity {
         // Add the buttons
         builder.setPositiveButton(R.string.add, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                // User clicked add button - todo add friend
                 String newFriend = emailInput.getText().toString();
-
-                final FirebaseFirestore db = FirebaseFirestore.getInstance();
-                final boolean[] flag = {false};
-
-                db.collection("Users").whereEqualTo("tz", newFriend).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()){
-                            for (QueryDocumentSnapshot doc : task.getResult()){
-
-
-                                User user = doc.toObject(User.class);
-
-                                if (mPatient.getFriends().contains(user.getId())){
-                                    Toast.makeText(FriendsListActivity.this, "Already his friend !",
-                                            Toast.LENGTH_SHORT).show();
-                                    break;
-                                }
-                                flag[0] = true;
-                                ArrayList<Patient> patients = user.getPatientIds();
-                                patients.add(mPatient);
-                                user.setPatientIds(patients);
-                                db.collection("Users").document(user.getId()).set(user);
-                                ArrayList<String> friends = mPatient.getFriends();
-                                friends.add(user.getId());
-                                mPatient.setFriends(friends);
-                                Communicator.updatePatientInUsersandPatientCollection(mPatient);
-                                Toast.makeText(FriendsListActivity.this, "Friend added !",
-                                        Toast.LENGTH_SHORT).show();
-                                ArrayList<User> users = mAdapter.getmDataset();
-                                users.add(user);
-                                mAdapter.setmDataset(users);
-                                mAdapter.notifyDataSetChanged();
-                            }
-                        }
-                        if (!flag[0]){
-                            Toast.makeText(FriendsListActivity.this, "Not a valid User !",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-
-                //String message = "added friend:\n" + newFriend;
-                //Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
+                Communicator.addFriendAndUpdateCollections(newFriend, mPatient, FriendsListActivity.this, mAdapter);
                 emailInput.setText("");
                 dialog.dismiss();
             }

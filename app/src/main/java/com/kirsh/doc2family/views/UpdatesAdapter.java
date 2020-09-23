@@ -9,15 +9,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.kirsh.doc2family.R;
 import com.kirsh.doc2family.logic.Communicator;
 import com.kirsh.doc2family.logic.Update;
-import com.kirsh.doc2family.logic.User;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -60,21 +54,7 @@ public class UpdatesAdapter extends RecyclerView.Adapter<UpdatesAdapter.UpdateHo
         holder.textViewDate.setText(sdf.format(resultdate));
         holder.textViewContent.setText(update.getContent());
         String userID = update.getIssuingCareGiverId();
-
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("Users").whereEqualTo("id", userID).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()){
-                    for (QueryDocumentSnapshot doc: task.getResult()){
-                        User user = doc.toObject(User.class);
-                        String fullName = "by " + user.getFullName();
-                        holder.texViewIssuer.setText(fullName);
-                    }
-                }
-            }
-        });
-
+        Communicator.updateUpdateAdapter(userID, holder);
     }
 
     @Override
@@ -90,10 +70,10 @@ public class UpdatesAdapter extends RecyclerView.Adapter<UpdatesAdapter.UpdateHo
         this.mDataset = mDataset;
     }
 
-    static class UpdateHolder extends RecyclerView.ViewHolder{
+    public static class UpdateHolder extends RecyclerView.ViewHolder{
 
         TextView textViewContent;
-        TextView texViewIssuer;
+        public TextView texViewIssuer;
         TextView textViewDate;
 
         public UpdateHolder(@NonNull View itemView) {
