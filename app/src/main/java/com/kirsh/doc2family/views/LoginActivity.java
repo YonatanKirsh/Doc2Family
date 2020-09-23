@@ -116,7 +116,7 @@ public class LoginActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void openActivityListPatients(){
+    public void openActivityListPatients(){
         Intent intent = new Intent(this, PatientsListActivity.class);
         startActivity(intent);
     }

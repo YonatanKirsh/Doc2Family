@@ -385,24 +385,7 @@ public class PatientInfoActivity extends AppCompatActivity {
     }
 
     public void onClickUpdate(final Update update) {
-        // todo communicator
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        FirebaseAuth myAuth = FirebaseAuth.getInstance();
-        final FirebaseUser myUser = myAuth.getCurrentUser();
-        db.collection("Users").whereEqualTo("id", myUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()){
-                    for (QueryDocumentSnapshot doc: task.getResult()){
-                        User user = doc.toObject(User.class);
-                        if (update.getIssuingCareGiverId().equals(user.getId())) {
-                            showEditUpdateDialog(update, user);
-                        }
-                    }
-                }
-            }
-        });
+        Communicator.editUpdateIfCurentUser(update, this);
     }
 
     public void openActivityQuestions(){

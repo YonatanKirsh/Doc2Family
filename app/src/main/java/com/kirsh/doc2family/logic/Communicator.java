@@ -1,20 +1,13 @@
 package com.kirsh.doc2family.logic;
-
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.ActionBarContextView;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -30,16 +23,18 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.SetOptions;
-import com.google.firestore.v1.ArrayValue;
 import com.kirsh.doc2family.views.AddPatientActivity;
 import com.kirsh.doc2family.views.CaregiversAdapter;
+import com.kirsh.doc2family.views.ForgotPasswordActivity;
 import com.kirsh.doc2family.views.FriendsAdapter;
 import com.kirsh.doc2family.views.LoginActivity;
 import com.kirsh.doc2family.views.PatientInfoActivity;
 import com.kirsh.doc2family.views.PatientsAdapter;
 import com.kirsh.doc2family.views.PatientsListActivity;
 import com.kirsh.doc2family.views.QuestionsAdapter;
+import com.kirsh.doc2family.views.QuestionsListActivity;
+import com.kirsh.doc2family.views.SignUpActivity;
+import com.kirsh.doc2family.views.UpdatesAdapter;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -104,7 +99,7 @@ public class Communicator {
                                 }
                             });
 
-                            openActivityLogin(context);
+                            ((SignUpActivity)context).openActivityLogin();
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("SIGN_UP_ERR", "createUserWithEmail: failure", task.getException());
@@ -133,7 +128,7 @@ public class Communicator {
                             // Sign in success, update UI with the signed-in user's information
                             if (Auth.getCurrentUser().isEmailVerified()){
                                 Log.d("SIGN_IN_SUCCESS", "signInWithEmail: success");
-                                openActivityListPatients(context);
+                                ((LoginActivity)context).openActivityListPatients();
                             }
                             else{
                                 Toast.makeText(context, "Please verify your email address.", Toast.LENGTH_LONG).show();
@@ -154,7 +149,7 @@ public class Communicator {
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
                     Toast.makeText(context, "Reset password sent to your email.", Toast.LENGTH_LONG).show();
-                    openActivityLogin(context);
+                    ((ForgotPasswordActivity)context).openActivityLogin();
                 } else {
                     Toast.makeText(context, task.getException().getMessage(), Toast.LENGTH_LONG).show();
                 }
@@ -182,11 +177,6 @@ public class Communicator {
                                 User user = myDoc.toObject(User.class);
                                 ArrayList<Patient> myPatients = user.getPatientIds();
 
-//                                if (user.isCareGiver()){
-//                                    db.collection("Users").document(user.getId()).set(user, SetOptions.merge());
-//                                }
-//                                else {
-//                                }
                                 if (user.isCareGiver()){
                                     ArrayList<String> careGivers = myPatient.getCaregiverIds();
                                     careGivers.add(myUser.getUid());
@@ -204,7 +194,7 @@ public class Communicator {
                                 myPatients.add(myPatient);
                                 user.setPatientIds(myPatients);
                                 db.collection("Users").document(user.getId()).set(user);
-                                openActivityListPatients(context);
+                                ((AddPatientActivity)context).openActivityListPatients();
                             }
                         }
                     }
@@ -595,17 +585,13 @@ public class Communicator {
                     }
                 }
                 if (!flag[0]) {
-                    openActivityAddPatient(context);
+                    ((PatientsListActivity)context).openActivityAddPatient();
                 }
             }
         });
     }
 
-    public static void editUpdateIfCurentUser(final Update update){
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        FirebaseAuth myAuth = FirebaseAuth.getInstance();
-        final FirebaseUser myUser = myAuth.getCurrentUser();
+    public static void editUpdateIfCurentUser(final Update update,final Context context){
         db.collection("Users").whereEqualTo("id", myUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -613,13 +599,118 @@ public class Communicator {
                     for (QueryDocumentSnapshot doc: task.getResult()){
                         User user = doc.toObject(User.class);
                         if (update.getIssuingCareGiverId().equals(user.getId())) {
-                            //showEditUpdateDialog(update, user);
+                            ((PatientInfoActivity)context).showEditUpdateDialog(update, user);
                         }
                     }
                 }
             }
         });
     }
+
+    public static void appearNewQuestionIfFriend(final Button submitQuestionButton, final Context context){
+        String userID = myUser.getUid();
+        final User[] user = new User[1];
+        db.collection("Users")
+                .whereEqualTo("id", userID)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot myDoc : task.getResult()) {
+                                user[0] = myDoc.toObject(User.class);
+                                if (!user[0].isCareGiver()){
+                                    submitQuestionButton.setVisibility(View.VISIBLE);
+                                    ((QuestionsListActivity)context).setAddQuestionButton();
+                                }
+                            }
+                        }
+                        else {
+                            Log.d("ErrorDoc", "Error getting documents: ", task.getException());
+                            return;
+                        }
+                    }
+                });
+    }
+
+    public static void appearAddFriendIfAdmin(final Button addFriendButton, final Patient mPatient){
+        final FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("Users").whereEqualTo("id", auth.getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()){
+                    for (QueryDocumentSnapshot doc : task.getResult()){
+                        User user = doc.toObject(User.class);
+                        if (user.getTz().equals(mPatient.getAdminTz())){
+                            addFriendButton.setVisibility(View.VISIBLE);
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    public static void addFriendAndUpdateCollections(final String newFriend, final Patient mPatient, final Context context, final  FriendsAdapter mAdapter){
+        final boolean[] flag = {false};
+
+        db.collection("Users").whereEqualTo("tz", newFriend).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()){
+                    for (QueryDocumentSnapshot doc : task.getResult()){
+
+
+                        User user = doc.toObject(User.class);
+
+                        if (mPatient.getFriends().contains(user.getId())){
+                            Toast.makeText(context, "Already his friend !",
+                                    Toast.LENGTH_SHORT).show();
+                            break;
+                        }
+                        flag[0] = true;
+                        ArrayList<Patient> patients = user.getPatientIds();
+                        patients.add(mPatient);
+                        user.setPatientIds(patients);
+                        db.collection("Users").document(user.getId()).set(user);
+                        ArrayList<String> friends = mPatient.getFriends();
+                        friends.add(user.getId());
+                        mPatient.setFriends(friends);
+                        Communicator.updatePatientInUsersandPatientCollection(mPatient);
+                        Toast.makeText(context, "Friend added !",
+                                Toast.LENGTH_SHORT).show();
+                        ArrayList<User> users = mAdapter.getmDataset();
+                        users.add(user);
+                        mAdapter.setmDataset(users);
+                        mAdapter.notifyDataSetChanged();
+                    }
+                }
+                if (!flag[0]){
+                    Toast.makeText(context, "Not a valid User !",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    public static void updateUpdateAdapter(final String userID, final UpdatesAdapter.UpdateHolder holder ){
+        db.collection("Users").whereEqualTo("id", userID).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()){
+                    for (QueryDocumentSnapshot doc: task.getResult()){
+                        User user = doc.toObject(User.class);
+                        String fullName = "by " + user.getFullName();
+                        holder.texViewIssuer.setText(fullName);
+                    }
+                }
+            }
+        });
+
+    }
+
+
     //todo firebase / local db !! TO TEST
     public static Patient getPatientById(Serializable patientId){
         final Patient[] patient = new Patient[1];
@@ -753,23 +844,4 @@ public class Communicator {
                 });
         return friend[0];
     }
-
-    private static void openActivityListPatients(Context context){
-        // todo
-//        User thisUser = new User();
-        Intent intent = new Intent(context, PatientsListActivity.class);
-        context.startActivity(intent);
-    }
-
-    private static void openActivityLogin(Context context) {
-        Intent intent = new Intent(context, LoginActivity.class);
-        context.startActivity(intent);
-    }
-
-    public static void openActivityAddPatient(Context context) {
-        Intent intent = new Intent(context, AddPatientActivity.class);
-        context.startActivity(intent);
-    }
-
-
 }
