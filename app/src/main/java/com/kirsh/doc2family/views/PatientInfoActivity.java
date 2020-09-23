@@ -233,6 +233,7 @@ public class PatientInfoActivity extends AppCompatActivity {
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
         adminTzInput.setLayoutParams(lp);
+        adminTzInput.setHint("Enter admin's tz");
         builder.setView(adminTzInput);
 
         // Add the buttons
