@@ -852,26 +852,21 @@ public class Communicator {
         return friend[0];
     }
 
-    public static boolean checkTZ(String tz) {
 
-        final boolean[] flag = {false};
+    public static void checkTZ(String tz, final DBCallBack dbCallBack) {
 
         db.collection("Users").whereEqualTo("tz", tz).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot doc : task.getResult()) {
-                        User user = doc.toObject(User.class);
-                        DocumentReference document = db.collection("Users").document(user.getId());
-                        flag[0] = true;
-                        break;
-                    }
+                        dbCallBack.isTZAlreadyInBD(true);
 
+                }
+                else{
+                    dbCallBack.isTZAlreadyInBD(false);
                 }
             }
         });
-        return flag[0];
-
 
     }
 }

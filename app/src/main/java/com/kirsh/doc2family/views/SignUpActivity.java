@@ -29,6 +29,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.kirsh.doc2family.logic.Constants;
 import com.kirsh.doc2family.R;
+import com.kirsh.doc2family.logic.DBCallBack;
 import com.kirsh.doc2family.logic.User;
 
 import java.util.concurrent.ExecutionException;
@@ -139,12 +140,6 @@ public class SignUpActivity extends AppCompatActivity {
         });
     }
 
-    private void attemptSignUp(final View v) {
-        if (isLegalInput(v) ) {
-            createUserWithEmailAndPassword();
-        }
-    }
-
     private void setErrorLayoutNull(){
         mFirstNameLayout.setError(null);
         mLastNameLayout.setError(null);
@@ -154,79 +149,86 @@ public class SignUpActivity extends AppCompatActivity {
         mTzLayout.setError(null);
     }
 
-    private boolean isLegalInput(final View v) {
+    private void attemptSignUp(final View v) {
         // collect input
         String tz = mTzEditText.getText().toString();
-        String email = mEmailEditText.getText().toString();
-        String first_name = mFirstNameEditText.getText().toString();
-        String last_name = mLastNameEditText.getText().toString();
-        String password = mPasswordEditText.getText().toString();
-        String repeatPassword = mVerifyPasswordEditText.getText().toString();
+        final String email = mEmailEditText.getText().toString();
+        final String first_name = mFirstNameEditText.getText().toString();
+        final String last_name = mLastNameEditText.getText().toString();
+        final String password = mPasswordEditText.getText().toString();
+        final String repeatPassword = mVerifyPasswordEditText.getText().toString();
 
         setErrorLayoutNull();
 
         //check tz
-        boolean flagLen = tz.length() != 9;
+        final boolean flagLen = tz.length() != 9;
         String regex = "[0-9]+";
         Pattern p = Pattern.compile(regex);
         Matcher m = p.matcher(tz);
-        boolean containsLetter = !m.matches();
-        boolean checkTZ = Communicator.checkTZ(tz);
+        final boolean containsLetter = !m.matches();
+        final boolean[] checkTZ = new boolean[1];
+        final boolean[] checkAll = {true};
 
-        //TODO not working yet the check tz if already in db
+        Communicator.checkTZ(tz, new DBCallBack() {
+            @Override
+            public void isTZAlreadyInBD(boolean alreadyIn) {
+                checkTZ[0] = alreadyIn;
 
-        if (flagLen || containsLetter || checkTZ){
-            Snackbar.make(v, ILLEGAL_TZ_MESSAGE, Snackbar.LENGTH_LONG).show();
-            mTzLayout.setError(" ");
-            mTzLayout.requestFocus();
-            return false;
-        }
+                // check if first name is legal
+                if (first_name.isEmpty() || !Constants.isLegalNickname(first_name)) {
+                    Snackbar.make(v, ILLEGAL_NICKNAME_MESSAGE, Snackbar.LENGTH_LONG).show();
+                    mFirstNameLayout.setError(" ");
+                    mFirstNameLayout.requestFocus();
+                    checkAll[0] = false;
+                }
 
+                // check if last name is legal
+                else if (last_name.isEmpty() || !Constants.isLegalNickname(last_name)) {
+                    Snackbar.make(v, ILLEGAL_NICKNAME_MESSAGE, Snackbar.LENGTH_LONG).show();
+                    mLastNameLayout.setError(" ");
+                    mLastNameLayout.requestFocus();
+                    checkAll[0] = false;
+                }
 
-        // check if first name is legal
-        if (first_name.isEmpty() || !Constants.isLegalNickname(first_name)) {
-            Snackbar.make(v, ILLEGAL_NICKNAME_MESSAGE, Snackbar.LENGTH_LONG).show();
-            mFirstNameLayout.setError(" ");
-            mFirstNameLayout.requestFocus();
-            return false;
-        }
+                // check tz
+                else if (flagLen || containsLetter || checkTZ[0]){
+                    Snackbar.make(v, ILLEGAL_TZ_MESSAGE, Snackbar.LENGTH_LONG).show();
+                    mTzLayout.setError(" ");
+                    mTzLayout.requestFocus();
+                    checkAll[0] = false;
+                }
 
-        // check if last name is legal
-        if (last_name.isEmpty() || !Constants.isLegalNickname(last_name)) {
-            Snackbar.make(v, ILLEGAL_NICKNAME_MESSAGE, Snackbar.LENGTH_LONG).show();
-            mLastNameLayout.setError(" ");
-            mLastNameLayout.requestFocus();
-            return false;
-        }
+                // check if email is legal
+                else if (!Constants.isLegalEmail(email)) {
+                    Snackbar.make(v, ILLEGAL_EMAIL_MESSAGE, Snackbar.LENGTH_LONG).show();
+                    mEmailLayout.setError(" ");
+                    mEmailLayout.requestFocus();
+                    checkAll[0] = false;
+                }
 
-        // check if email is legal
-        if (!Constants.isLegalEmail(email)) {
-            Snackbar.make(v, ILLEGAL_EMAIL_MESSAGE, Snackbar.LENGTH_LONG).show();
-            mEmailLayout.setError(" ");
-            mEmailLayout.requestFocus();
-            return false;
-        }
+                // check if password is valid
+                else if (!Constants.isLegalPassword(password)) {
+                    Snackbar.make(v, ILLEGAL_PASSWORD_MESSAGE, Snackbar.LENGTH_LONG).show();
+                    mPasswordLayout.setError(" ");
+                    mPasswordLayout.requestFocus();
+                    checkAll[0] = false;
+                }
 
-        // check if password is valid
-        if (!Constants.isLegalPassword(password)) {
-            Snackbar.make(v, ILLEGAL_PASSWORD_MESSAGE, Snackbar.LENGTH_LONG).show();
-            mPasswordLayout.setError(" ");
-            mPasswordLayout.requestFocus();
-            return false;
-        }
+                // check if passwords match
+                else if (!password.equals(repeatPassword)) {
+                    Snackbar.make(v, PASSWORD_DOESNT_MATCH_MESSAGE, Snackbar.LENGTH_LONG).show();
+                    mPasswordLayout.requestFocus();
+                    mConfirmPasswordLayout.requestFocus();
+                    mPasswordLayout.setError(" ");
+                    mConfirmPasswordLayout.setError(" ");
+                    checkAll[0] = false;
+                }
 
-        // check if passwords match
-        if (!password.equals(repeatPassword)) {
-            Snackbar.make(v, PASSWORD_DOESNT_MATCH_MESSAGE, Snackbar.LENGTH_LONG).show();
-            mPasswordLayout.requestFocus();
-            mConfirmPasswordLayout.requestFocus();
-            mPasswordLayout.setError(" ");
-            mConfirmPasswordLayout.setError(" ");
-            return false;
-        }
-
-        //todo check if TZ is legal
-        return true;
+                if (checkAll[0]){
+                    createUserWithEmailAndPassword();
+                }
+            }
+        });
     }
 
     public void openActivityLogin() {
