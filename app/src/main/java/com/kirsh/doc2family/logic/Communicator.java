@@ -216,7 +216,7 @@ public class Communicator {
                 if (task.isSuccessful()){
                     for (QueryDocumentSnapshot doc : task.getResult()){
                         User asker = doc.toObject(User.class);
-                        Question question = new Question(questions, null, System.currentTimeMillis(), System.currentTimeMillis(), asker);
+                        Question question = new Question(questions, System.currentTimeMillis(), System.currentTimeMillis(), asker);
                         ArrayList<Question> oldQuestions = patient.getQuestions();
                         oldQuestions.add(question);
                         patient.setQuestions(oldQuestions);

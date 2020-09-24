@@ -13,15 +13,14 @@ public class Question{
 
     public Question(){}
 
-    public Question(String question, String answer, long dateAsked, long dateEdited, User asker){
+    public Question(String question, long dateAsked, long dateEdited, User asker){
         this.question = question;
-        this.answer = answer;
+        this.answer = null;
         mDateAsked = dateAsked;
         mDateEdited = dateEdited;
         this.asker = asker;
-        if (answer != null && !answer.isEmpty()){
-            mIsAnswered = true;
-        }
+        mIsAnswered = false;
+
     }
 
     public Question(String question, User asker){
