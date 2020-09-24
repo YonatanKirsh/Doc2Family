@@ -206,17 +206,28 @@ public class Communicator {
                 });
     }
 
-    public static void cAddQuestionForPatient(Context context, final Patient patient, String questions, Friend asker){
+    public static void cAddQuestionForPatient(Context context, final Patient patient, final String questions){
 
         // update the list of questions of given patient in the Patient collection
         //todo test remove answer
-        final Question question = new Question(questions, asker);
-        final ArrayList<Question> oldQuestions = patient.getQuestions();
-        oldQuestions.add(question);
-        patient.setQuestions(oldQuestions);
+        db.collection("Users").whereEqualTo("id", myUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()){
+                    for (QueryDocumentSnapshot doc : task.getResult()){
+                        User asker = doc.toObject(User.class);
+                        Question question = new Question(questions, null, System.currentTimeMillis(), System.currentTimeMillis(), asker);
+                        ArrayList<Question> oldQuestions = patient.getQuestions();
+                        oldQuestions.add(question);
+                        patient.setQuestions(oldQuestions);
 
-        // update the Patient in the User collection and in the Patient collection
-        updatePatientInUsersandPatientCollection(patient);
+                        // update the Patient in the User collection and in the Patient collection
+                        updatePatientInUsersandPatientCollection(patient);
+                    }
+                }
+            }
+        });
+
     }
 
     public static void updatePatientInUsersandPatientCollection(final Patient patient){
@@ -474,24 +485,31 @@ public class Communicator {
 
     public static void appearAddAdminAndUpdate(final Button addAdminButton, final Button addUpdateButton, final Patient mPatient){
 
-        db.collection("Users").whereEqualTo("id", myUser.getUid())
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if(task.isSuccessful()){
-                            for (QueryDocumentSnapshot myDoc : task.getResult()){
-                                User user = myDoc.toObject(User.class);
-                                if(user.isCareGiver()){
-                                    if (mPatient.getAdminTz().equals("")){
-                                        addAdminButton.setVisibility(View.VISIBLE); //todo to test
-                                    }
-                                    addUpdateButton.setVisibility(View.VISIBLE);
-                                }
-                            }
-                        }
-                    }
-                });
+        if (mPatient.getCaregiverIds().contains(myUser.getUid())){
+            addUpdateButton.setVisibility(View.VISIBLE);
+        }
+        if (mPatient.getAdminTz().equals("")){
+            addAdminButton.setVisibility(View.VISIBLE); //todo to test
+        }
+
+//        db.collection("Users").whereEqualTo("id", myUser.getUid())
+//                .get()
+//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                        if(task.isSuccessful()){
+//                            for (QueryDocumentSnapshot myDoc : task.getResult()){
+//                                User user = myDoc.toObject(User.class);
+//                                if(user.isCareGiver()){
+//                                    if (mPatient.getAdminTz().equals("")){
+//                                        addAdminButton.setVisibility(View.VISIBLE);
+//                                    }
+//                                    addUpdateButton.setVisibility(View.VISIBLE);
+//                                }
+//                            }
+//                        }
+//                    }
+//                });
     }
 
     public static void removePatientFromUserAndUpdate(final Patient currentPatient){
@@ -612,30 +630,35 @@ public class Communicator {
         });
     }
 
-    public static void appearNewQuestionIfFriend(final Button submitQuestionButton, final Context context){
+    public static void appearNewQuestionIfFriend(final Button submitQuestionButton, final Context context, Patient patient){
         String userID = myUser.getUid();
-        final User[] user = new User[1];
-        db.collection("Users")
-                .whereEqualTo("id", userID)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot myDoc : task.getResult()) {
-                                user[0] = myDoc.toObject(User.class);
-                                if (!user[0].isCareGiver()){
-                                    submitQuestionButton.setVisibility(View.VISIBLE);
-                                    ((QuestionsListActivity)context).setAddQuestionButton();
-                                }
-                            }
-                        }
-                        else {
-                            Log.d("ErrorDoc", "Error getting documents: ", task.getException());
-                            return;
-                        }
-                    }
-                });
+//        final User[] user = new User[1];
+
+        if (patient.getFriends().contains(userID)){
+            submitQuestionButton.setVisibility(View.VISIBLE);
+            ((QuestionsListActivity)context).setAddQuestionButton();
+        }
+//        db.collection("Users")
+//                .whereEqualTo("id", userID)
+//                .get()
+//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                        if (task.isSuccessful()) {
+//                            for (QueryDocumentSnapshot myDoc : task.getResult()) {
+//                                user[0] = myDoc.toObject(User.class);
+//                                if (!user[0].isCareGiver()){
+//                                    submitQuestionButton.setVisibility(View.VISIBLE);
+//                                    ((QuestionsListActivity)context).setAddQuestionButton();
+//                                }
+//                            }
+//                        }
+//                        else {
+//                            Log.d("ErrorDoc", "Error getting documents: ", task.getException());
+//                            return;
+//                        }
+//                    }
+//                });
     }
 
     public static void appearAddFriendIfAdmin(final Button addFriendButton, final Patient mPatient){
@@ -864,6 +887,29 @@ public class Communicator {
                 }
             }
         });
+
+    }
+
+    public static void updateanswerToQuestion(String answer, long edited, Question question, Patient patient) {
+
+        ArrayList<Question> questionsPatient = patient.getQuestions();
+
+
+        for(Question q : questionsPatient){
+
+            //TODO how to check in a better way
+            if( q.getQuestion().equals(question.getQuestion()) && q.getAsker().getTz().equals(question.getAsker().getTz()) &&
+            q.getDateAsked() == question.getDateAsked()){
+                questionsPatient.remove(q);
+                q.setAnswer(answer);
+                q.setmDateEdited(edited);
+                q.setmIsAnswered(true);
+                questionsPatient.add(q);
+                patient.setQuestions(questionsPatient);
+                updatePatientInUsersandPatientCollection(patient);
+                break;
+            }
+        }
 
     }
 }
