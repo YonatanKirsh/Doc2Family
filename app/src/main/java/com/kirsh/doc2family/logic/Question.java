@@ -1,12 +1,10 @@
 package com.kirsh.doc2family.logic;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.Comparator;
 
 public class Question{
 
-    private Friend asker;
+    private User asker;
     private String question;
     private String answer;
     private long mDateAsked;
@@ -15,25 +13,27 @@ public class Question{
 
     public Question(){}
 
-    public Question(String question, String answer, long dateAsked, long dateEdited){
+    public Question(String question, String answer, long dateAsked, long dateEdited, User asker){
         this.question = question;
         this.answer = answer;
         mDateAsked = dateAsked;
         mDateEdited = dateEdited;
+        this.asker = asker;
         if (answer != null && !answer.isEmpty()){
             mIsAnswered = true;
         }
     }
 
-    public Question(String question, Friend asker){
+    public Question(String question, User asker){
         this.question = question;
         this.asker = asker;
         mDateAsked = System.currentTimeMillis();
     }
 
-    public Question(String question, String answer, Friend asker){
+    public Question(String question, String answer, User asker){
         this(question, asker);
         this.answer = answer;
+        mDateAsked = System.currentTimeMillis();
         mIsAnswered = true;
     }
 
@@ -51,7 +51,7 @@ public class Question{
 
     public void setAnswer(String answer){
         this.answer = answer;
-        mDateEdited = System.currentTimeMillis();
+//        mDateEdited = System.currentTimeMillis();
         mIsAnswered = true;
     }
 
@@ -63,19 +63,32 @@ public class Question{
         return mDateAsked;
     }
 
-    public long getDateEdited(){
+    public long getmDateEdited(){
         if (mDateEdited != 0){
             return mDateEdited;
         }
         return mDateAsked;
     }
 
-    public Friend getAsker() {
+    public boolean ismIsAnswered() {
+        return mIsAnswered;
+    }
+
+    public void setmIsAnswered(boolean mIsAnswered) {
+        this.mIsAnswered = mIsAnswered;
+    }
+
+    public User getAsker() {
         return asker;
     }
 
-    public void setAsker(Friend asker) {
+    public void setAsker(User asker) {
         this.asker = asker;
+    }
+
+
+    public void setmDateEdited(long mDateEdited) {
+        this.mDateEdited = mDateEdited;
     }
 
 
@@ -83,10 +96,10 @@ public class Question{
 
         @Override
         public int compare(Question o1, Question o2) {
-            if(o1.getDateEdited() > o2.getDateEdited()){
+            if(o1.getmDateEdited() > o2.getmDateEdited()){
                 return -1;
             }
-            else if (o1.getDateEdited() < o2.getDateEdited()){
+            else if (o1.getmDateEdited() < o2.getmDateEdited()){
                 return 1;
             }
             return 0;
