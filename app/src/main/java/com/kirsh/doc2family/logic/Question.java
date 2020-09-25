@@ -4,7 +4,7 @@ import java.util.Comparator;
 
 public class Question{
 
-    private User asker;
+    private String asker;
     private String question;
     private String answer;
     private long mDateAsked;
@@ -13,7 +13,7 @@ public class Question{
 
     public Question(){}
 
-    public Question(String question, long dateAsked, long dateEdited, User asker){
+    public Question(String question, long dateAsked, long dateEdited, String asker){
         this.question = question;
         this.answer = null;
         mDateAsked = dateAsked;
@@ -23,13 +23,13 @@ public class Question{
 
     }
 
-    public Question(String question, User asker){
+    public Question(String question, String asker){
         this.question = question;
         this.asker = asker;
         mDateAsked = System.currentTimeMillis();
     }
 
-    public Question(String question, String answer, User asker){
+    public Question(String question, String answer, String asker){
         this(question, asker);
         this.answer = answer;
         mDateAsked = System.currentTimeMillis();
@@ -77,11 +77,11 @@ public class Question{
         this.mIsAnswered = mIsAnswered;
     }
 
-    public User getAsker() {
+    public String getAsker() {
         return asker;
     }
 
-    public void setAsker(User asker) {
+    public void setAsker(String asker) {
         this.asker = asker;
     }
 

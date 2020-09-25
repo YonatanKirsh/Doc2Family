@@ -210,23 +210,23 @@ public class Communicator {
 
         // update the list of questions of given patient in the Patient collection
         //todo test remove answer
-        db.collection("Users").whereEqualTo("id", myUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()){
-                    for (QueryDocumentSnapshot doc : task.getResult()){
-                        User asker = doc.toObject(User.class);
-                        Question question = new Question(questions, System.currentTimeMillis(), System.currentTimeMillis(), asker);
+//        db.collection("Users").whereEqualTo("id", myUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//            @Override
+//            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                if (task.isSuccessful()){
+//                    for (QueryDocumentSnapshot doc : task.getResult()){
+//                        User asker = doc.toObject(User.class);
+                        Question question = new Question(questions, System.currentTimeMillis(), System.currentTimeMillis(), myUser.getUid());
                         ArrayList<Question> oldQuestions = patient.getQuestions();
                         oldQuestions.add(question);
                         patient.setQuestions(oldQuestions);
 
                         // update the Patient in the User collection and in the Patient collection
                         updatePatientInUsersandPatientCollection(patient);
-                    }
-                }
-            }
-        });
+//                    }
+//                }
+//            }
+//        });
 
     }
 
@@ -793,38 +793,38 @@ public class Communicator {
     }
 
     //todo firebase!
-    public static ArrayList<String> getPatientsCaregivers(String patientId){
-        //ArrayList<User> caregivers = new ArrayList<>();
-        //Patient patient = getPatientById(patientId);
-        //final ArrayList<String> caregiverIds = patient.getCaregiverIds();
-        //for (String userId : caregiverIds) {
-        //    caregivers.add(getUserById(userId));
-        //}
-        //return caregivers;
-
-        final ArrayList<String>[] careGivers = new ArrayList[]{new ArrayList<>()};
-
-        fireStore[0].collection("Users")
-                .whereEqualTo("id", patientId)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot myDoc : task.getResult()) {
-                                Patient patient = myDoc.toObject(Patient.class);
-                                careGivers[0] = patient.getCaregiverIds();
-                            }
-                        }
-                        else {
-                            Log.d("ErrorDoc", "Error getting documents: ", task.getException());
-                            return;
-                        }
-                    }
-                });
-        return null;
-    }
+//    public static ArrayList<String> getPatientsCaregivers(String patientId){
+//        //ArrayList<User> caregivers = new ArrayList<>();
+//        //Patient patient = getPatientById(patientId);
+//        //final ArrayList<String> caregiverIds = patient.getCaregiverIds();
+//        //for (String userId : caregiverIds) {
+//        //    caregivers.add(getUserById(userId));
+//        //}
+//        //return caregivers;
+//
+//        final ArrayList<String>[] careGivers = new ArrayList[]{new ArrayList<>()};
+//
+//        fireStore[0].collection("Users")
+//                .whereEqualTo("id", patientId)
+//                .get()
+//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//
+//                    @Override
+//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                        if (task.isSuccessful()) {
+//                            for (QueryDocumentSnapshot myDoc : task.getResult()) {
+//                                Patient patient = myDoc.toObject(Patient.class);
+//                                careGivers[0] = patient.getCaregiverIds();
+//                            }
+//                        }
+//                        else {
+//                            Log.d("ErrorDoc", "Error getting documents: ", task.getException());
+//                            return;
+//                        }
+//                    }
+//                });
+//        return null;
+//    }
 
     // todo firebase!
     public static User getUserById(String userId){
@@ -898,7 +898,7 @@ public class Communicator {
         for(Question q : questionsPatient){
 
             //TODO how to check in a better way
-            if( q.getQuestion().equals(question.getQuestion()) && q.getAsker().getTz().equals(question.getAsker().getTz()) &&
+            if( q.getQuestion().equals(question.getQuestion()) && q.getAsker().equals(question.getAsker()) &&
             q.getDateAsked() == question.getDateAsked()){
                 questionsPatient.remove(q);
                 q.setAnswer(answer);
