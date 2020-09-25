@@ -45,8 +45,9 @@ public class QuestionsListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_questions_list);
+        // Init patient before deciding if we need tp show add question button
         initPatient();
+        setContentView(R.layout.activity_questions_list);
         initQuestionsAdapter();
         initViews();
     }
@@ -65,7 +66,8 @@ public class QuestionsListActivity extends AppCompatActivity {
     private void initViews(){
         // submit new question button
         submitQuestionButton = findViewById(R.id.button_submit_question);
-        Communicator.appearNewQuestionIfFriend(submitQuestionButton, this);
+
+        Communicator.appearNewQuestionIfFriend(submitQuestionButton, this, mPatient);
 
         // questions adapter
         RecyclerView questionsAdapter = findViewById(R.id.recycler_questions);
@@ -89,7 +91,7 @@ public class QuestionsListActivity extends AppCompatActivity {
 
     private void initNewQuestionDialog(){
         AlertDialog.Builder builder = new AlertDialog.Builder(QuestionsListActivity.this);
-        builder.setTitle("Add Question");
+        builder.setTitle("ADD QUESTION");
 
         // add edit text
         final EditText questionInput = new EditText(QuestionsListActivity.this);
@@ -104,20 +106,19 @@ public class QuestionsListActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked submit button - todo submit question
                 String newQuestion = questionInput.getText().toString();
-                if (newQuestion != null){
-                    FirebaseAuth auth = FirebaseAuth.getInstance();
-                    String askerID = auth.getCurrentUser().getUid();
-                    Friend asker = Communicator.getFriendById(askerID);
+                if (!newQuestion.equals("")){
 
                     //todo add to list of questions of the patients  ?
 
-                    Communicator.cAddQuestionForPatient(QuestionsListActivity.this, mPatient, newQuestion, asker);
+                    Communicator.cAddQuestionForPatient(QuestionsListActivity.this, mPatient, newQuestion);
+                    String message = "added question:\n" + newQuestion;
+                    Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
+                    questionInput.setText("");
+                    dialog.dismiss();
                     mAdapter.notifyDataSetChanged();
+
                 }
-                String message = "added question:\n" + newQuestion;
-                Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
-                questionInput.setText("");
-                dialog.dismiss();
+
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -130,7 +131,7 @@ public class QuestionsListActivity extends AppCompatActivity {
         dialog = builder.create();
     }
 
-    private void showFriendEditQuestionDialog(Question question){
+    private void showFriendEditQuestionDialog(final Question question){
         AlertDialog.Builder builder = new AlertDialog.Builder(QuestionsListActivity.this);
         // set view
         View view = getLayoutInflater().inflate(R.layout.question_friend_dialog, null);
@@ -164,7 +165,7 @@ public class QuestionsListActivity extends AppCompatActivity {
         questionsDialog.show();
     }
 
-    private void showCaregiverEditQuestionDialog(Question question){
+    private void showCaregiverEditQuestionDialog(final Question question){
         AlertDialog.Builder builder = new AlertDialog.Builder(QuestionsListActivity.this);
         // set view
         View view = getLayoutInflater().inflate(R.layout.question_caregiver_dialog, null);
@@ -182,9 +183,12 @@ public class QuestionsListActivity extends AppCompatActivity {
                 // User clicked update button - todo change the update's content
                 String newUpdate = answerEditText.getText().toString();
                 String message = "updated to:\n" + newUpdate;
+                long edited = System.currentTimeMillis();
+                Communicator.updateanswerToQuestion(newUpdate, edited, question, mPatient);
                 Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
                 answerEditText.setText("");
                 dialog.dismiss();
+                mAdapter.notifyDataSetChanged();
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

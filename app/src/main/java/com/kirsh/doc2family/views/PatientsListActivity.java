@@ -63,6 +63,7 @@ public class PatientsListActivity extends AppCompatActivity {
         // add-patient button if the user is CareGiver
         addPatientButton = findViewById(R.id.button_goto_add_patient);
         Communicator.appearAddPatientIfCaregiver(addPatientButton);
+//        addPatientButton.setVisibility(View.VISIBLE);
         addPatientButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
