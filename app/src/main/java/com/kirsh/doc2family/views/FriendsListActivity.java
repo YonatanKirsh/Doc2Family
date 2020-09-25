@@ -56,6 +56,19 @@ public class FriendsListActivity extends AppCompatActivity {
         //todo unite with QuestionsActivity? move to Constants?
         String patientString = getIntent().getStringExtra(Constants.PATIENT_ID_KEY);
         mPatient = gson.fromJson(patientString, Patient.class);
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("Patients").whereEqualTo("id", mPatient.getId()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()){
+                    for (QueryDocumentSnapshot doc: task.getResult()){
+                        Patient patient = doc.toObject(Patient.class);
+                        mPatient = patient;
+                    }
+                }
+            }
+        });
     }
 
     private void initFriendsadapter(){
@@ -203,5 +216,12 @@ public class FriendsListActivity extends AppCompatActivity {
 
     public void onClickFriend(User friend) {
         //showEditFriendDialog(friend);
+    }
+
+    @Override
+    public void onRestart() {
+        super.onRestart();
+        //Communicator.createLiveQueryPatientList(mAdapter, mAdapter.getmDataset());
+        mAdapter.notifyDataSetChanged();
     }
 }

@@ -707,7 +707,22 @@ public class Communicator {
                 }
             }
         });
+    }
 
+    public static ArrayList<Patient> getPatient (String patientID){
+        final ArrayList<Patient> updatedPatient = new ArrayList<>();
+        db.collection("Patients").whereEqualTo("id", patientID).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()){
+                    for (QueryDocumentSnapshot doc: task.getResult()){
+                        Patient patient = doc.toObject(Patient.class);
+                        updatedPatient.add(patient);
+                    }
+                }
+            }
+        });
+        return updatedPatient;
     }
 
     //todo firebase / local db !! TO TEST
@@ -843,4 +858,5 @@ public class Communicator {
                 });
         return friend[0];
     }
+
 }

@@ -1,5 +1,6 @@
 package com.kirsh.doc2family.views;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
@@ -12,6 +13,8 @@ import android.widget.ImageButton;
 import android.widget.RadioButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.kirsh.doc2family.logic.Communicator;
 import android.widget.Toast;
 
@@ -26,7 +29,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.kirsh.doc2family.logic.Constants;
 import com.kirsh.doc2family.R;
-
+import com.kirsh.doc2family.logic.User;
 
 
 public class SignUpActivity extends AppCompatActivity {
@@ -35,6 +38,8 @@ public class SignUpActivity extends AppCompatActivity {
     private static final String ILLEGAL_EMAIL_MESSAGE = "Enter a valid email!";
     private static final String ILLEGAL_NICKNAME_MESSAGE = "Enter a valid nickname! (Or just leave blank for now...)";
     private static final String ILLEGAL_PASSWORD_MESSAGE = "Enter a valid password!";
+    private static final String ILLEGAL_TEOUDAT_ZEOUT_MESSAGE = "Enter a valid teoudat zeout!";
+    private static final String UNAVAILABLE_TEOUDAT_ZEOUT_MESSAGE = "Teoudat zeout is already used for an other account!";
 
     private TextInputLayout mFirstNameLayout;
     private TextInputLayout mLastNameLayout;
@@ -51,6 +56,8 @@ public class SignUpActivity extends AppCompatActivity {
     private EditText mVerifyPasswordEditText;
     private CheckBox mCaregiverCheckbox;
     private Button mSignUpButton;
+
+    private View v;
 
 
     @Override
@@ -132,8 +139,36 @@ public class SignUpActivity extends AppCompatActivity {
 
     private void attemptSignUp(View v) {
         if (isLegalInput(v)) {
-            createUserWithEmailAndPassword();
+            checkTeoudatZeout(v, mTzEditText.getText().toString().trim());
+            //createUserWithEmailAndPassword();
         }
+    }
+
+    private void checkTeoudatZeout(final View v, String teoudatZeout) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("Users")
+                .whereEqualTo("tz", teoudatZeout)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            if(task.getResult().size()== 0) {
+                                createUserWithEmailAndPassword();
+                            }
+                            else {
+                                for (QueryDocumentSnapshot myDoc : task.getResult()) {
+                                    if(myDoc.exists()) {
+                                        Snackbar.make(v, UNAVAILABLE_TEOUDAT_ZEOUT_MESSAGE, Snackbar.LENGTH_LONG).show();
+                                        mTzLayout.requestFocus();
+                                        mTzLayout.setError(" ");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
     }
 
     private void setErrorLayoutNull(){
@@ -147,11 +182,12 @@ public class SignUpActivity extends AppCompatActivity {
 
     private boolean isLegalInput(View v) {
         // collect input
-        String email = mEmailEditText.getText().toString();
-        String first_name = mFirstNameEditText.getText().toString();
-        String last_name = mLastNameEditText.getText().toString();
+        String email = mEmailEditText.getText().toString().trim();
+        String first_name = mFirstNameEditText.getText().toString().trim();
+        String last_name = mLastNameEditText.getText().toString().trim();
         String password = mPasswordEditText.getText().toString();
         String repeatPassword = mVerifyPasswordEditText.getText().toString();
+        String teoudatZeout = mTzEditText.getText().toString().trim();
 
         setErrorLayoutNull();
 
@@ -197,7 +233,15 @@ public class SignUpActivity extends AppCompatActivity {
             return false;
         }
 
+        if(teoudatZeout.isEmpty()) { // TZ is illegal
+            Snackbar.make(v, ILLEGAL_TEOUDAT_ZEOUT_MESSAGE, Snackbar.LENGTH_LONG).show();
+            mTzLayout.requestFocus();
+            mTzLayout.setError(" ");
+            return false;
+        }
+
         //todo check if TZ is legal
+
         return true;
     }
 
