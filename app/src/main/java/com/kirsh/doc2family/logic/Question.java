@@ -79,10 +79,6 @@ public class Question{
     }
 
 
-
-
-
-
     public void setmDateEdited(long mDateEdited) {
         this.mDateEdited = mDateEdited;
     }
