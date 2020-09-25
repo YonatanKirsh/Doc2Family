@@ -8,6 +8,7 @@
 
     <TextView
         android:id="@+id/text_view_patient_info_title"
+        android:textColor="@color/green"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
@@ -31,9 +32,13 @@
 
     <Button
         android:id="@+id/add_an_update_button"
+        android:background="@drawable/customized_button"
+        android:textColor="@color/white"
         android:visibility="invisible"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
         android:text="@string/add_update"
         android:layout_margin="20dp"
         app:layout_constraintRight_toRightOf="parent"
@@ -44,6 +49,8 @@
 
     <Button
         android:id="@+id/add_an_admin_button"
+        android:background="@drawable/customized_button"
+        android:textColor="@color/white"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
@@ -66,7 +73,11 @@
 
     <Button
         android:id="@+id/activity_patient_info_button_goto_questions"
+        android:background="@drawable/customized_button"
+        android:textColor="@color/white"
         android:layout_width="wrap_content"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
         android:layout_height="50dp"
         android:text="@string/questions"
         android:layout_marginBottom="20dp"
@@ -75,6 +86,8 @@
 
     <Button
         android:id="@+id/activity_patient_info_button_goto_caregivers"
+        android:background="@drawable/customized_button"
+        android:textColor="@color/white"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
         android:text="@string/caregivers_plural"
@@ -86,6 +99,8 @@
 
     <Button
         android:id="@+id/activity_patient_info_button_goto_friends"
+        android:background="@drawable/customized_button"
+        android:textColor="@color/white"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
         android:text="@string/friends"
