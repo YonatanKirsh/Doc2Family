@@ -159,7 +159,7 @@ public class PatientsListActivity extends AppCompatActivity {
         ArrayList<Patient> patients = Communicator.getPatientsListForUser(myUser.getUid());
         mAdapter = new PatientsAdapter(this, patients);
         Communicator.createLiveQueryPatientList(mAdapter, mAdapter.getmDataset());
-        mAdapter.notifyDataSetChanged();
+        //mAdapter.notifyDataSetChanged();
     }
 
     public void onClickPatient(Patient patient) {

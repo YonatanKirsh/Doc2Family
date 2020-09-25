@@ -1,5 +1,6 @@
 package com.kirsh.doc2family.views;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -14,8 +15,13 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.gson.Gson;
 import com.kirsh.doc2family.R;
 import com.kirsh.doc2family.logic.Communicator;
@@ -41,6 +47,8 @@ public class PatientInfoActivity extends AppCompatActivity {
     Button addAdminButton;
     Button addUpdateButton;
     Gson gson = new Gson();
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+
     private SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy HH:mm");
 
 
@@ -51,6 +59,7 @@ public class PatientInfoActivity extends AppCompatActivity {
         String patientString = getIntent().getStringExtra(Constants.PATIENT_ID_KEY);
         mPatient = gson.fromJson(patientString, Patient.class);
         initUpdatesAdapter();
+        Communicator.createLiveQueryUpdatesList(mPatient, mAdapter);
         initViews();
     }
 
@@ -164,15 +173,16 @@ public class PatientInfoActivity extends AppCompatActivity {
                     long time = System.currentTimeMillis();
                     Update newUpdate = new Update(careGiverID, updateMess, time);
 
-                    //update the list of updates of the patient
+                    //update the list of updates of the patient locally
                     ArrayList<Update> updates = mPatient.getUpdates();
                     updates.add(newUpdate);
                     updates.sort(new Update.UpdateSorter());
                     mPatient.setUpdates(updates);
+                    mAdapter.setmDataset(updates);
+                    mAdapter.notifyDataSetChanged();
 
                     // update the db
                     Communicator.updatePatientInUsersandPatientCollection(mPatient);
-                    mAdapter.notifyDataSetChanged();
                 }
                 String message = "added update:\n" + updateMess;
                 Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
@@ -397,6 +407,24 @@ public class PatientInfoActivity extends AppCompatActivity {
         String patientString = gson.toJson(mPatient);
         intent.putExtra(Constants.PATIENT_ID_KEY, patientString);
         startActivity(intent);
+    }
+
+    @Override
+    public void onRestart() {
+        super.onRestart();
+        //Communicator.updatePatient(mPatient);
+        db.collection("Patients").whereEqualTo("id", mPatient.getId()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()){
+                    for (QueryDocumentSnapshot doc: task.getResult()){
+                        Patient patient = doc.toObject(Patient.class);
+                        mPatient = patient;
+                    }
+                }
+            }
+        });
+        mAdapter.notifyDataSetChanged();
     }
 
 }

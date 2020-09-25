@@ -54,7 +54,7 @@ public class UpdatesAdapter extends RecyclerView.Adapter<UpdatesAdapter.UpdateHo
         holder.textViewDate.setText(sdf.format(resultdate));
         holder.textViewContent.setText(update.getContent());
         String userID = update.getIssuingCareGiverId();
-        Communicator.updateUpdateAdapter(userID, holder);
+        Communicator.updateUpdateAdapterFullname(userID, holder);
     }
 
     @Override

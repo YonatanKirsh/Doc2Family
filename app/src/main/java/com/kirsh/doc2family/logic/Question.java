@@ -3,37 +3,35 @@ package com.kirsh.doc2family.logic;
 import java.util.Comparator;
 
 public class Question{
-
-    private String asker;
+    private String askerID;
     private String question;
     private String answer;
     private long mDateAsked;
     private long mDateEdited;
-    private boolean mIsAnswered = false;
+    private boolean isAnswered = false;
 
     public Question(){}
 
-    public Question(String question, long dateAsked, long dateEdited, String asker){
+    public Question(String question, long dateAsked, long dateEdited, String askerID){
         this.question = question;
         this.answer = null;
         mDateAsked = dateAsked;
         mDateEdited = dateEdited;
-        this.asker = asker;
-        mIsAnswered = false;
-
+        this.askerID = askerID;
+        isAnswered = false;
     }
 
-    public Question(String question, String asker){
+    public Question(String question, String askerID){
         this.question = question;
-        this.asker = asker;
+        this.askerID = askerID;
         mDateAsked = System.currentTimeMillis();
     }
 
-    public Question(String question, String answer, String asker){
-        this(question, asker);
+    public Question(String question, String answer, String askerID){
+        this(question, askerID);
         this.answer = answer;
         mDateAsked = System.currentTimeMillis();
-        mIsAnswered = true;
+        isAnswered = true;
     }
 
     public String getQuestion(){
@@ -44,18 +42,29 @@ public class Question{
         return answer;
     }
 
+    public boolean isAnswered() {
+        return isAnswered;
+    }
+
+    public void setAnswered(boolean answered) {
+        isAnswered = answered;
+    }
+
     public void setQuestion(String question) {
         this.question = question;
     }
 
     public void setAnswer(String answer){
         this.answer = answer;
-//        mDateEdited = System.currentTimeMillis();
-        mIsAnswered = true;
+        isAnswered = true;
     }
 
-    public boolean isAnswered(){
-        return mIsAnswered;
+    public String getAskerID() {
+        return askerID;
+    }
+
+    public void setAskerID(String askerID) {
+        this.askerID = askerID;
     }
 
     public long getDateAsked(){
@@ -67,22 +76,6 @@ public class Question{
             return mDateEdited;
         }
         return mDateAsked;
-    }
-
-    public boolean ismIsAnswered() {
-        return mIsAnswered;
-    }
-
-    public void setmIsAnswered(boolean mIsAnswered) {
-        this.mIsAnswered = mIsAnswered;
-    }
-
-    public String getAsker() {
-        return asker;
-    }
-
-    public void setAsker(String asker) {
-        this.asker = asker;
     }
 
 

@@ -110,12 +110,12 @@ public class QuestionsListActivity extends AppCompatActivity {
 
                     //todo add to list of questions of the patients  ?
 
-                    Communicator.cAddQuestionForPatient(QuestionsListActivity.this, mPatient, newQuestion);
+                    Communicator.cAddQuestionForPatient(QuestionsListActivity.this, mPatient, newQuestion, mAdapter);
                     String message = "added question:\n" + newQuestion;
                     Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
                     questionInput.setText("");
                     dialog.dismiss();
-                    mAdapter.notifyDataSetChanged();
+                    //mAdapter.notifyDataSetChanged();
 
                 }
 
@@ -180,15 +180,22 @@ public class QuestionsListActivity extends AppCompatActivity {
         // Add the buttons
         builder.setPositiveButton("Update", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                // User clicked update button - todo change the update's content
-                String newUpdate = answerEditText.getText().toString();
-                String message = "updated to:\n" + newUpdate;
+                String newAnswer = answerEditText.getText().toString();
+                String message = "updated to:\n" + newAnswer;
                 long edited = System.currentTimeMillis();
-                Communicator.updateanswerToQuestion(newUpdate, edited, question, mPatient);
+
+                // update the question locally
+                question.setAnswered(true);
+                question.setAnswer(newAnswer);
+                question.setmDateEdited(edited);
+                mAdapter.notifyDataSetChanged();
+
+                // update the db
+                Communicator.updateanswerToQuestion(newAnswer, edited, question, mPatient);
+
                 Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
                 answerEditText.setText("");
                 dialog.dismiss();
-                mAdapter.notifyDataSetChanged();
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
