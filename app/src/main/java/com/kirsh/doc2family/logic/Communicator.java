@@ -218,7 +218,7 @@ public class Communicator {
                     for (QueryDocumentSnapshot doc : task.getResult()){
                         User asker = doc.toObject(User.class);
                         Question question = new Question(questions, System.currentTimeMillis(), System.currentTimeMillis(), asker.getId());
-                      
+
                         ArrayList<Question> oldQuestions = patient.getQuestions();
                         oldQuestions.add(question);
                         patient.setQuestions(oldQuestions);
@@ -227,10 +227,10 @@ public class Communicator {
                         adpater.notifyDataSetChanged();
                         // update the Patient in the User collection and in the Patient collection
                         updatePatientInUsersandPatientCollection(patient);
-//                    }
-//                }
-//            }
-//        });
+                    }
+                }
+            }
+        });
 
     }
 
