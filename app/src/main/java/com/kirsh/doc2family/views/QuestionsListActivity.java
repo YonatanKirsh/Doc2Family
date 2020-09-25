@@ -110,12 +110,12 @@ public class QuestionsListActivity extends AppCompatActivity {
 
                     //todo add to list of questions of the patients  ?
 
-                    Communicator.cAddQuestionForPatient(QuestionsListActivity.this, mPatient, newQuestion);
+                    Communicator.cAddQuestionForPatient(QuestionsListActivity.this, mPatient, newQuestion, mAdapter);
                     String message = "added question:\n" + newQuestion;
                     Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
                     questionInput.setText("");
                     dialog.dismiss();
-                    mAdapter.notifyDataSetChanged();
+                    //mAdapter.notifyDataSetChanged();
 
                 }
 

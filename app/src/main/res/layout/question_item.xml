@@ -17,15 +17,32 @@
         app:layout_constraintLeft_toLeftOf="parent"/>
 
     <TextView
+        android:id="@+id/text_view_question_issuer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="15sp"
+        android:textColor="@color/textPrimary"
+        app:layout_constraintTop_toBottomOf="@+id/text_view_question_content"
+        app:layout_constraintLeft_toLeftOf="parent"/>
+
+    <TextView
         android:id="@+id/text_view_answer_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="20sp"
         android:textColor="@color/textFaded"
         android:hint="@string/doctors_answer_hint"
-        app:layout_constraintTop_toBottomOf="@+id/text_view_question_content"
+        app:layout_constraintTop_toBottomOf="@+id/text_view_question_issuer"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"/>
 
+    <TextView
+        android:id="@+id/text_view_answer_issuer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="15sp"
+        android:textColor="@color/textPrimary"
+        app:layout_constraintTop_toBottomOf="@+id/text_view_answer_content"
+        app:layout_constraintLeft_toLeftOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

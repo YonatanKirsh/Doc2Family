@@ -206,7 +206,7 @@ public class Communicator {
                 });
     }
 
-    public static void cAddQuestionForPatient(Context context, final Patient patient, final String questions){
+    public static void cAddQuestionForPatient(Context context, final Patient patient, final String questions, final QuestionsAdapter adpater){
 
         // update the list of questions of given patient in the Patient collection
         //todo test remove answer
@@ -216,11 +216,13 @@ public class Communicator {
                 if (task.isSuccessful()){
                     for (QueryDocumentSnapshot doc : task.getResult()){
                         User asker = doc.toObject(User.class);
-                        Question question = new Question(questions, System.currentTimeMillis(), System.currentTimeMillis(), asker);
+                        Question question = new Question(questions, System.currentTimeMillis(), System.currentTimeMillis(), asker.getId());
                         ArrayList<Question> oldQuestions = patient.getQuestions();
                         oldQuestions.add(question);
                         patient.setQuestions(oldQuestions);
-
+                        //todo just added now
+                        adpater.setmDataset(oldQuestions);
+                        adpater.notifyDataSetChanged();
                         // update the Patient in the User collection and in the Patient collection
                         updatePatientInUsersandPatientCollection(patient);
                     }
@@ -262,23 +264,6 @@ public class Communicator {
         final ArrayList<Patient>[] patientsIds = new ArrayList[]{new ArrayList<Patient>()};
         final User[] user = new User[1];
         CollectionReference referenceToCollection = firestore.collection("Users");
-        referenceToCollection.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                if (e != null){
-                    Log.d("FirestoreManager", "exception in snapshot :(" + e.getMessage());
-                    return;
-                }
-                if (queryDocumentSnapshots == null){
-                    Log.d("FirestoreManager", "value is null");
-                    return;
-                }
-                // let's refresh the local array list
-                patientsList.clear();
-                //adapter.setmDataset(getUsersPatients(myUser.getUid()));
-                adapter.notifyDataSetChanged();
-            }
-        });
 
         referenceToCollection.whereEqualTo("id", userID).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
@@ -722,7 +707,7 @@ public class Communicator {
         });
     }
 
-    public static void updateUpdateAdapter(final String userID, final UpdatesAdapter.UpdateHolder holder ){
+    public static void updateUpdateAdapterFullname(final String userID, final UpdatesAdapter.UpdateHolder holder ){
         db.collection("Users").whereEqualTo("id", userID).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -736,6 +721,7 @@ public class Communicator {
             }
         });
     }
+
 
     public static ArrayList<Patient> getPatient (String patientID){
         final ArrayList<Patient> updatedPatient = new ArrayList<>();
@@ -913,12 +899,12 @@ public class Communicator {
         for(Question q : questionsPatient){
 
             //TODO how to check in a better way
-            if( q.getQuestion().equals(question.getQuestion()) && q.getAsker().getTz().equals(question.getAsker().getTz()) &&
+            if( q.getQuestion().equals(question.getQuestion()) && q.getAskerID().equals(question.getAskerID()) &&
             q.getDateAsked() == question.getDateAsked()){
                 questionsPatient.remove(q);
                 q.setAnswer(answer);
                 q.setmDateEdited(edited);
-                q.setmIsAnswered(true);
+                q.setAnswered(true);
                 questionsPatient.add(q);
                 patient.setQuestions(questionsPatient);
                 updatePatientInUsersandPatientCollection(patient);
@@ -926,5 +912,20 @@ public class Communicator {
             }
         }
 
+    }
+
+    public static void updateAskerFullname(String askerID, final QuestionsAdapter.QuestionHolder holder) {
+        db.collection("Users").whereEqualTo("id", askerID).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()){
+                    for (QueryDocumentSnapshot doc: task.getResult()){
+                        User user = doc.toObject(User.class);
+                        String fullName = "questioned by " + user.getFullName();
+                        holder.textViewIssuerQuestion.setText(fullName);
+                    }
+                }
+            }
+        });
     }
 }

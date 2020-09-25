@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.kirsh.doc2family.R;
+import com.kirsh.doc2family.logic.Communicator;
 import com.kirsh.doc2family.logic.Question;
 
 import java.text.SimpleDateFormat;
@@ -57,8 +58,10 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.Ques
     public void onBindViewHolder(@NonNull QuestionHolder holder, int position) {
         Question question = mDataset.get(position);
         holder.textViewQuestion.setText(question.getQuestion());
+        Communicator.updateAskerFullname(question.getAskerID(), holder);
         if (question.isAnswered()){
             holder.textViewAnswer.setText(question.getAnswer());
+            //todo maybe want to add the name of the doctor that answers
         }
     }
 
@@ -68,15 +71,20 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.Ques
     }
 
 
-    static class QuestionHolder extends RecyclerView.ViewHolder{
+    public static class QuestionHolder extends RecyclerView.ViewHolder{
 
         TextView textViewQuestion;
         TextView textViewAnswer;
+        public TextView textViewIssuerQuestion;
+        public TextView textViewIssuerAnswer;
+
 
         public QuestionHolder(@NonNull View itemView) {
             super(itemView);
             textViewQuestion = itemView.findViewById(R.id.text_view_question_content);
             textViewAnswer = itemView.findViewById(R.id.text_view_answer_content);
+            textViewIssuerQuestion = itemView.findViewById(R.id.text_view_question_issuer);
+            textViewIssuerAnswer = itemView.findViewById(R.id.text_view_answer_issuer);
         }
     }
 }
