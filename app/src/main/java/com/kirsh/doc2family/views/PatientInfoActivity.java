@@ -58,18 +58,8 @@ public class PatientInfoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_patient_info);
         String patientString = getIntent().getStringExtra(Constants.PATIENT_ID_KEY);
         mPatient = gson.fromJson(patientString, Patient.class);
-        db.collection("Patients").whereEqualTo("id", mPatient.getId()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()){
-                    for (QueryDocumentSnapshot doc: task.getResult()){
-                        Patient patient = doc.toObject(Patient.class);
-                        mPatient = patient;
-                    }
-                }
-            }
-        });
         initUpdatesAdapter();
+        Communicator.createLiveQueryUpdatesList(mPatient, mAdapter);
         initViews();
     }
 
@@ -183,15 +173,16 @@ public class PatientInfoActivity extends AppCompatActivity {
                     long time = System.currentTimeMillis();
                     Update newUpdate = new Update(careGiverID, updateMess, time);
 
-                    //update the list of updates of the patient
+                    //update the list of updates of the patient locally
                     ArrayList<Update> updates = mPatient.getUpdates();
                     updates.add(newUpdate);
                     updates.sort(new Update.UpdateSorter());
                     mPatient.setUpdates(updates);
+                    mAdapter.setmDataset(updates);
+                    mAdapter.notifyDataSetChanged();
 
                     // update the db
                     Communicator.updatePatientInUsersandPatientCollection(mPatient);
-                    mAdapter.notifyDataSetChanged();
                 }
                 String message = "added update:\n" + updateMess;
                 Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();

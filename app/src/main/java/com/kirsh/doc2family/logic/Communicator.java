@@ -925,4 +925,20 @@ public class Communicator {
             }
         });
     }
+
+    public static void createLiveQueryUpdatesList(final Patient mPatient, final UpdatesAdapter mAdapter){
+        db.collection("Patients").whereEqualTo("id", mPatient.getId()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()){
+                    for (QueryDocumentSnapshot doc: task.getResult()){
+                        Patient patient = doc.toObject(Patient.class);
+                        //mPatient = patient; //todo maybe have to update the patient in PatientInfoActivity
+                        mAdapter.setmDataset(patient.getUpdates());
+                        mAdapter.notifyDataSetChanged();
+                    }
+                }
+            }
+        });
+    }
 }
