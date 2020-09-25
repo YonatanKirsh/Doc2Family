@@ -894,10 +894,7 @@ public class Communicator {
     public static void updateanswerToQuestion(String answer, long edited, Question question, Patient patient) {
 
         ArrayList<Question> questionsPatient = patient.getQuestions();
-
-
         for(Question q : questionsPatient){
-
             //TODO how to check in a better way
             if( q.getQuestion().equals(question.getQuestion()) && q.getAskerID().equals(question.getAskerID()) &&
             q.getDateAsked() == question.getDateAsked()){
