@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,16 +20,13 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.gson.Gson;
 import com.kirsh.doc2family.R;
 import com.kirsh.doc2family.logic.Communicator;
 import com.kirsh.doc2family.logic.Constants;
-import com.kirsh.doc2family.logic.Friend;
 import com.kirsh.doc2family.logic.Patient;
 import com.kirsh.doc2family.logic.Question;
-import com.kirsh.doc2family.logic.User;
 
 public class QuestionsListActivity extends AppCompatActivity {
 
@@ -142,6 +138,7 @@ public class QuestionsListActivity extends AppCompatActivity {
         final TextView answerTexView = view.findViewById(R.id.question_dialog_text_view_answer_content);
         if (question.isAnswered()){
             answerTexView.setText(question.getAnswer());
+            return;
         }
         // Add the buttons
         builder.setPositiveButton("Update", new DialogInterface.OnClickListener() {
@@ -149,6 +146,20 @@ public class QuestionsListActivity extends AppCompatActivity {
                 // User clicked update button - todo change the update's content
                 String newUpdate = questionEditText.getText().toString();
                 String message = "updated to:\n" + newUpdate;
+                Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
+                questionEditText.setText("");
+                dialog.dismiss();
+                long edited = System.currentTimeMillis();
+
+                // update the question locally
+                question.setAnswered(true);
+                question.setAnswer(newUpdate);
+                question.setmDateEdited(edited);
+                mAdapter.notifyDataSetChanged();
+
+                // update the db
+                Communicator.updateQuestionChange(newUpdate, edited, question, mPatient);
+
                 Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
                 questionEditText.setText("");
                 dialog.dismiss();
@@ -209,12 +220,29 @@ public class QuestionsListActivity extends AppCompatActivity {
         questionsDialog.show();
     }
 
-    public void onClickQuestion(Question question) {
-//        if (Communicator.isCareGiverUser()){
-            showCaregiverEditQuestionDialog(question);
+    public void onClickQuestion(final Question question) {
+//        if (Communicator.isCareGiverOfPatient(mPatient)){
+//            showCaregiverEditQuestionDialog(question);
 //        }
 //        else{
 //            showFriendEditQuestionDialog(question);
 //        }
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseAuth myAUth = FirebaseAuth.getInstance();
+        final FirebaseUser myUser = myAUth.getCurrentUser();
+        db.collection("Users").whereEqualTo("id", myUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()){
+                    if (mPatient.getCaregiverIds().contains(myUser.getUid())){
+                        showCaregiverEditQuestionDialog(question);
+                    }
+                    else{
+                        showFriendEditQuestionDialog(question);
+                    }
+
+                }
+            }
+        });
     }
 }

@@ -955,4 +955,41 @@ public class Communicator {
             }
         });
     }
+
+
+    public static boolean isCareGiverOfPatient(final Patient patient) {
+        final boolean[] flag = {false};
+        db.collection("Users").whereEqualTo("id", myUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()){
+                    if (patient.getCaregiverIds().contains(myUser.getUid())){
+                        flag[0] = true;
+                    }
+
+                }
+            }
+        });
+        return flag[0];
+    }
+
+    public static void updateQuestionChange(String newUpdate, long edited, Question question, Patient mPatient) {
+
+        ArrayList<Question> questionsPatient = mPatient.getQuestions();
+        for(Question q : questionsPatient){
+            //TODO how to check in a better way
+
+            if( q.getQuestion().equals(question.getQuestion()) && q.getAskerID().equals(question.getAskerID()) &&
+                    q.getDateAsked() == question.getDateAsked()){
+                questionsPatient.remove(q);
+                q.setQuestion(newUpdate);
+                q.setmDateEdited(edited);
+                q.setAnswered(true);
+                questionsPatient.add(q);
+                mPatient.setQuestions(questionsPatient);
+                updatePatientInUsersandPatientCollection(mPatient);
+                break;
+            }
+        }
+    }
 }

@@ -239,7 +239,7 @@ public class PatientInfoActivity extends AppCompatActivity {
     }
 
     public void showEditUpdateDialog(final Update update, User user){
-        AlertDialog.Builder builder = new AlertDialog.Builder(PatientInfoActivity.this);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(PatientInfoActivity.this);
         // set view
         View view = getLayoutInflater().inflate(R.layout.update_dialog, null);
         builder.setView(view);
@@ -270,6 +270,13 @@ public class PatientInfoActivity extends AppCompatActivity {
             }
         });
 
+        builder.setNeutralButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+
         // Create the AlertDialog
         AlertDialog updatesDialog = builder.create();
         updatesDialog.show();
@@ -283,13 +290,17 @@ public class PatientInfoActivity extends AppCompatActivity {
                 switch (which) {
                     case DialogInterface.BUTTON_POSITIVE:
                         ArrayList<Update> updates = mPatient.getUpdates();
-                        updates.remove(update);
-                        updates.sort(new Update.UpdateSorter());
-                        mPatient.setUpdates(updates);
-                        Communicator.updatePatientInUsersandPatientCollection(mPatient);
-                        mAdapter.notifyDataSetChanged();
-                        callDialog.dismiss();
-                        break;
+                        for (Update updateOld : mPatient.getUpdates()){
+                            if (updateOld.getContent().equals(update.getContent()) && updateOld.getDateCreated() == update.getDateCreated()){
+                                updates.remove(updateOld);
+                                updates.sort(new Update.UpdateSorter());
+                                mPatient.setUpdates(updates);
+                                Communicator.updatePatientInUsersandPatientCollection(mPatient);
+                                mAdapter.notifyDataSetChanged();
+                                dialog.dismiss();
+                                break;
+                            }
+                        }
 
                     case DialogInterface.BUTTON_NEGATIVE:
                         // No button clicked
@@ -308,16 +319,22 @@ public class PatientInfoActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 switch (which) {
                     case DialogInterface.BUTTON_POSITIVE:
+
                         ArrayList<Update> updates = mPatient.getUpdates();
-                        Update newUpdate = new Update(update.getIssuingCareGiverId(), nUpdateContent, System.currentTimeMillis());
-                        updates.remove(update);
-                        updates.add(newUpdate);
-                        updates.sort(new Update.UpdateSorter());
-                        mPatient.setUpdates(updates);
-                        Communicator.updatePatientInUsersandPatientCollection(mPatient);
-                        mAdapter.notifyDataSetChanged();
-                        callingDialog.dismiss();
-                        break;
+                        for (Update updateOld : mPatient.getUpdates()){
+                            if (updateOld.getContent().equals(update.getContent()) && updateOld.getDateCreated() == update.getDateCreated()){
+                                updates.remove(updateOld);
+                                Update newUpdate = new Update(update.getIssuingCareGiverId(), nUpdateContent, System.currentTimeMillis());
+                                updates.add(newUpdate);
+                                updates.sort(new Update.UpdateSorter());
+                                mPatient.setUpdates(updates);
+                                Communicator.updatePatientInUsersandPatientCollection(mPatient);
+                                mAdapter.notifyDataSetChanged();
+                                callingDialog.dismiss();
+                                break;
+                            }
+                        }
+
 
                     case DialogInterface.BUTTON_NEGATIVE:
                         // No button clicked
