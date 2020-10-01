@@ -210,7 +210,11 @@ public class QuestionsListActivity extends AppCompatActivity {
     }
 
     public void onClickQuestion(Question question) {
-        // todo show caregiver or friend??
-        showCaregiverEditQuestionDialog(question);
+//        if (Communicator.isCareGiverUser()){
+            showCaregiverEditQuestionDialog(question);
+//        }
+//        else{
+//            showFriendEditQuestionDialog(question);
+//        }
     }
 }

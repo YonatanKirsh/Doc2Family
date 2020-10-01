@@ -881,13 +881,24 @@ public class Communicator {
         db.collection("Users").whereEqualTo("tz", tz).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                boolean flag = false;
                 if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot doc : task.getResult()){
+                        User user = doc.toObject(User.class);
+                        flag = true;
+
+                    }
+
+                    if(flag){
                         dbCallBackTZ.isTZAlreadyInBD(true);
+                    }
+                    else{
+                        dbCallBackTZ.isTZAlreadyInBD(false);
+                    }
+
 
                 }
-                else{
-                    dbCallBackTZ.isTZAlreadyInBD(false);
-                }
+
             }
         });
 
@@ -900,7 +911,7 @@ public class Communicator {
             //TODO how to check in a better way
 
             if( q.getQuestion().equals(question.getQuestion()) && q.getAskerID().equals(question.getAskerID()) &&
-            q.getDateAsked() == question.getDateAsked()){
+                    q.getDateAsked() == question.getDateAsked()){
                 questionsPatient.remove(q);
                 q.setAnswer(answer);
                 q.setmDateEdited(edited);
