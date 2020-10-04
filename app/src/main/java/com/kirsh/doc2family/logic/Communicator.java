@@ -334,39 +334,30 @@ public class Communicator {
                 });
     }
 
-    public void createLiveQueryPatientsList(final PatientsAdapter adapter){
-        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-        final FirebaseUser myUser  = firebaseAuth.getCurrentUser();
-        final String userID = myUser.getUid();
-        final ArrayList<Patient>[] patientsIds = new ArrayList[]{new ArrayList<Patient>()};
-        final User[] user = new User[1];
-        CollectionReference referenceToCollection = firestore.collection("Users");
+    public void createLiveQueryPatientsAdapter(final PatientsAdapter adapter){
+        createLiveQueryLocalUser();
+        CollectionReference usersCollection = db.collection("Users");
 
-        referenceToCollection.whereEqualTo("id", userID).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        usersCollection.document(firebaseUser.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                //adapter.setmDataset(getUsersPatients(myUser.getUid()));
+            public void onSuccess(DocumentSnapshot documentSnapshot){
+                adapter.setmDataset(localUser.getPatientIds());
                 adapter.notifyDataSetChanged();
             }
         });
 
-        referenceToCollection.whereEqualTo("id", userID).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        usersCollection.document(firebaseUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot myDoc : task.getResult()) {
-                        user[0] = myDoc.toObject(User.class);
-                        patientsIds[0] = user[0].getPatientIds();
-                        adapter.setmDataset(patientsIds[0]);
-                        adapter.notifyDataSetChanged();
-                    }
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()){
+                    task.getResult();
+                    adapter.setmDataset(localUser.getPatientIds());
+                    adapter.notifyDataSetChanged();
                 }
                 else {
                     Log.d("ErrorDoc", "Error getting documents: ", task.getException());
                     return;
                 }
-                //adapter.setmDataset(getUsersPatients(myUser.getUid()));
-                //adapter.notifyDataSetChanged();
             }
         });
     }
