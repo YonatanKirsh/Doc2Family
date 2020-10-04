@@ -158,7 +158,7 @@ public class PatientsListActivity extends AppCompatActivity {
         //todo maybe send a null array in patients instead of communicator.
         ArrayList<Patient> patients = communicator.getPatientsListForLocalUser();
         mAdapter = new PatientsAdapter(this, patients);
-        communicator.createLiveQueryPatientsList(mAdapter, mAdapter.getmDataset());
+        communicator.createLiveQueryPatientsList(mAdapter);
         //mAdapter.notifyDataSetChanged();
     }
 
@@ -183,7 +183,7 @@ public class PatientsListActivity extends AppCompatActivity {
     @Override
     public void onRestart() {
         super.onRestart();
-        communicator.createLiveQueryPatientsList(mAdapter, mAdapter.getmDataset());
+        communicator.createLiveQueryPatientsList(mAdapter);
         mAdapter.notifyDataSetChanged();
     }
 
