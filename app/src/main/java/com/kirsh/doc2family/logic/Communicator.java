@@ -51,8 +51,9 @@ public class Communicator {
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
     User localUser;
+    ArrayList<Patient> localPatients;
     final User[] userBucket = new User[1];
-    Patient currentPatient;
+
     private static Communicator singleton;
 
     private Communicator(){
@@ -100,8 +101,27 @@ public class Communicator {
     }
 
     private void createLiveQueryLocalUser(){
-        CollectionReference usersCollection = db.collection("Users");
-        usersCollection.document(firebaseUser.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        DocumentReference userReference = db.collection("Users").document(firebaseUser.getUid());
+
+        userReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot snapshot,
+                                @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w("firebase error", "Listen failed.", e);
+                    return;
+                }
+
+                if (snapshot != null && snapshot.exists()) {
+                    userBucket[0] = snapshot.toObject(User.class);
+                    updateUserFromBucket();
+                } else {
+                    Log.d("ErrorDoc", "Current data: null");
+                }
+            }
+        });
+
+        userReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 userBucket[0] = documentSnapshot.toObject(User.class);
@@ -109,7 +129,7 @@ public class Communicator {
             }
         });
 
-        usersCollection.document(firebaseUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        userReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
@@ -168,8 +188,8 @@ public class Communicator {
                                                 ArrayList<String> friends = patient.getFriends();
                                                 friends.add(newUser.getId());
                                                 patient.setFriends(friends);
-                                                ArrayList<Patient> userPatients = newUser.getPatientIds();
-                                                userPatients.add(patient);
+                                                ArrayList<String> userPatients = newUser.getPatientIds();
+                                                userPatients.add(patient.getId());
                                                 newUser.setPatientIds(userPatients);
                                                 db.collection("Users").document(user_auth.getUid()).set(newUser);
                                                 updatePatientInUsersandPatientCollection(patient);
@@ -255,7 +275,7 @@ public class Communicator {
                         if (task.isSuccessful()){
                             for (QueryDocumentSnapshot myDoc : task.getResult()){
                                 User user = myDoc.toObject(User.class);
-                                ArrayList<Patient> myPatients = user.getPatientIds();
+                                ArrayList<String> myPatients = user.getPatientIds();
 
                                 if (user.isCareGiver()){
                                     ArrayList<String> careGivers = myPatient.getCaregiverIds();
@@ -271,7 +291,7 @@ public class Communicator {
                                     myPatient.setFriends(friends);
                                     db.collection("Patients").document(myPatient.getId()).set(myPatient);
                                 }
-                                myPatients.add(myPatient);
+                                myPatients.add(myPatient.getId());
                                 user.setPatientIds(myPatients);
                                 db.collection("Users").document(user.getId()).set(user);
                                 ((AddPatientActivity)context).openActivityListPatients();
@@ -318,12 +338,12 @@ public class Communicator {
                         if (task.isSuccessful()){
                             for (QueryDocumentSnapshot myDoc : task.getResult()){
                                 User user = myDoc.toObject(User.class);
-                                ArrayList<Patient> patientList = user.getPatientIds();
-                                for (Patient userPatient : patientList){
-                                    if (userPatient.getId().equals(patient.getId())){
-                                        patientList.remove(userPatient);
-                                        patientList.add(patient);
-                                        user.setPatientIds(patientList);
+                                ArrayList<String> patientIds = user.getPatientIds();
+                                for (String patientId : patientIds){
+                                    if (patientId.equals(patient.getId())){
+                                        patientIds.remove(patientId);
+                                        patientIds.add(patient.getId());
+                                        user.setPatientIds(patientIds);
                                         db.collection("Users").document(user.getId()).set(user);
                                         break;
                                     }
@@ -332,6 +352,19 @@ public class Communicator {
                         }
                     }
                 });
+    }
+
+    private void updateLocalPatients(){
+        CollectionReference patientsCollection = db.collection("Patients");
+        for (String patientId : localUser.getPatientIds()) {
+            patientsCollection.document(patientId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+
+                }
+            })
+        }
+
     }
 
     public void createLiveQueryPatientsAdapter(final PatientsAdapter adapter){
