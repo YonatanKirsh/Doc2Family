@@ -59,7 +59,7 @@ public class Communicator {
         db = FirebaseFirestore.getInstance();
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
-        createLiveQueryLocalUser();
+        initLocalUser();
     }
 
     public static Communicator getSingleton(){
@@ -73,55 +73,34 @@ public class Communicator {
         localUser = userBucket[0];
     }
 
-    private void createLiveQueryLocalUser2(final User[] users){
-        CollectionReference usersCollection = db.collection("Users");
-        usersCollection.document(firebaseUser.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                users[0] = documentSnapshot.toObject(User.class);
-            }
-        });
-
-        usersCollection.document(firebaseUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot documentSnapshot = task.getResult();
-                    User user = documentSnapshot.toObject(User.class);
-                    if (user != null){
-                        users[0] = user;
-                    }
-                }
-                else {
-                    Log.e("ErrorDoc", "Error getting document with id: " + firebaseUser.getUid(), task.getException());
-                }
-            }
-        });
-    }
-
-    private void createLiveQueryLocalUser(){
-        CollectionReference usersCollection = db.collection("Users");
-        usersCollection.document(firebaseUser.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+    private void initLocalUser(){
+        db.collection("Users").document(firebaseUser.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 userBucket[0] = documentSnapshot.toObject(User.class);
                 updateUserFromBucket();
             }
         });
+        createLiveQueryLocalUser();
+    }
 
-        usersCollection.document(firebaseUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+    private void createLiveQueryLocalUser(){
+        DocumentReference userReference = db.collection("Users").document(firebaseUser.getUid());
+
+        userReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot documentSnapshot = task.getResult();
-                    User user = documentSnapshot.toObject(User.class);
-                    if (user != null){
-                        userBucket[0] = user;
-                        updateUserFromBucket();
-                    }
+            public void onEvent(@Nullable DocumentSnapshot snapshot,
+                                @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w("firebase error", "Listen failed.", e);
+                    return;
                 }
-                else {
-                    Log.e("ErrorDoc", "Error getting document with id: " + firebaseUser.getUid(), task.getException());
+
+                if (snapshot != null && snapshot.exists()) {
+                    userBucket[0] = snapshot.toObject(User.class);
+                    updateUserFromBucket();
+                } else {
+                    Log.d("ErrorDoc", "Error getting document with id: " + firebaseUser.getUid());
                 }
             }
         });
@@ -208,6 +187,7 @@ public class Communicator {
                             // Sign in success, update UI with the signed-in user's information
                             if (firebaseAuth.getCurrentUser().isEmailVerified()){
                                 Log.d("SIGN_IN_SUCCESS", "signInWithEmail: success");
+                                initLocalUser();
                                 ((LoginActivity)context).openActivityListPatients();
                             }
                             else{
@@ -336,27 +316,23 @@ public class Communicator {
 
     public void createLiveQueryPatientsAdapter(final PatientsAdapter adapter){
         createLiveQueryLocalUser();
-        CollectionReference usersCollection = db.collection("Users");
 
-        usersCollection.document(firebaseUser.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot){
-                adapter.setmDataset(localUser.getPatientIds());
-                adapter.notifyDataSetChanged();
-            }
-        });
+        DocumentReference userReference = db.collection("Users").document(firebaseUser.getUid());
 
-        usersCollection.document(firebaseUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        userReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()){
-                    task.getResult();
+            public void onEvent(@Nullable DocumentSnapshot snapshot,
+                                @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w("firebase error", "Listen failed.", e);
+                    return;
+                }
+
+                if (snapshot != null && snapshot.exists()) {
                     adapter.setmDataset(localUser.getPatientIds());
                     adapter.notifyDataSetChanged();
-                }
-                else {
-                    Log.d("ErrorDoc", "Error getting documents: ", task.getException());
-                    return;
+                } else {
+                    Log.d("ErrorDoc", "Error getting document with id: " + firebaseUser.getUid());
                 }
             }
         });
