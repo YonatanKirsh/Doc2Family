@@ -36,12 +36,14 @@ public class QuestionsListActivity extends AppCompatActivity {
     Button submitQuestionButton;
     AlertDialog dialog;
     Gson gson = new Gson();
+    Communicator communicator;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Init patient before deciding if we need tp show add question button
+        communicator = Communicator.getSingleton();
         initPatient();
         setContentView(R.layout.activity_questions_list);
         initQuestionsAdapter();
@@ -55,7 +57,7 @@ public class QuestionsListActivity extends AppCompatActivity {
 
     private void initQuestionsAdapter(){
         mAdapter = new QuestionsAdapter(this, mPatient.getQuestions());
-        Communicator.createLiveQueryQuestionsList(mAdapter, mAdapter.getmDataset(), mPatient);
+        communicator.createLiveQueryQuestionsList(mAdapter, mAdapter.getmDataset(), mPatient);
         mAdapter.notifyDataSetChanged();
     }
 
@@ -63,7 +65,7 @@ public class QuestionsListActivity extends AppCompatActivity {
         // submit new question button
         submitQuestionButton = findViewById(R.id.button_submit_question);
 
-        Communicator.appearNewQuestionIfFriend(submitQuestionButton, this, mPatient);
+        communicator.appearNewQuestionIfFriend(submitQuestionButton, this, mPatient);
 
         // questions adapter
         RecyclerView questionsAdapter = findViewById(R.id.recycler_questions);
@@ -106,7 +108,7 @@ public class QuestionsListActivity extends AppCompatActivity {
 
                     //todo add to list of questions of the patients  ?
 
-                    Communicator.cAddQuestionForPatient(QuestionsListActivity.this, mPatient, newQuestion, mAdapter);
+                    communicator.cAddQuestionForPatient(QuestionsListActivity.this, mPatient, newQuestion, mAdapter);
                     String message = "added question:\n" + newQuestion;
                     Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
                     questionInput.setText("");
@@ -158,7 +160,7 @@ public class QuestionsListActivity extends AppCompatActivity {
                 mAdapter.notifyDataSetChanged();
 
                 // update the db
-                Communicator.updateQuestionChange(newUpdate, edited, question, mPatient);
+                communicator.updateQuestionChange(newUpdate, edited, question, mPatient);
 
                 Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
                 questionEditText.setText("");
@@ -202,7 +204,7 @@ public class QuestionsListActivity extends AppCompatActivity {
                 mAdapter.notifyDataSetChanged();
 
                 // update the db
-                Communicator.updateanswerToQuestion(newAnswer, edited, question, mPatient);
+                communicator.updateanswerToQuestion(newAnswer, edited, question, mPatient);
 
                 Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
                 answerEditText.setText("");
@@ -221,7 +223,7 @@ public class QuestionsListActivity extends AppCompatActivity {
     }
 
     public void onClickQuestion(final Question question) {
-//        if (Communicator.isCareGiverOfPatient(mPatient)){
+//        if (communicator.isCareGiverOfPatient(mPatient)){
 //            showCaregiverEditQuestionDialog(question);
 //        }
 //        else{

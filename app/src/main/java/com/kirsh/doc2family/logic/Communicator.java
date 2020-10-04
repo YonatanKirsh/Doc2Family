@@ -19,6 +19,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -46,15 +47,89 @@ public class Communicator {
 
     final TaskCompletionSource<List<Objects>> tcs = new TaskCompletionSource<>();
 
-    private static FirebaseAuth Auth = FirebaseAuth.getInstance();
-    static final FirebaseFirestore[] fireStore = {FirebaseFirestore.getInstance()};
-    static FirebaseFirestore db = FirebaseFirestore.getInstance();
-    static FirebaseAuth myAuth = FirebaseAuth.getInstance();
-    static FirebaseUser myUser = myAuth.getCurrentUser();
+    FirebaseFirestore db;
+    FirebaseAuth firebaseAuth;
+    FirebaseUser firebaseUser;
+    User localUser;
+    final User[] userBucket = new User[1];
+    Patient currentPatient;
+    private static Communicator singleton;
 
-    public static void cCreateUserWithEmailAndPassword(String email, String password, final Context context, final String firstName, final String lastName, final boolean  mIsDoctor, final EditText mEmailEditText,
+    private Communicator(){
+        db = FirebaseFirestore.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+        createLiveQueryLocalUser();
+    }
+
+    public static Communicator getSingleton(){
+        if (singleton == null){
+            singleton = new Communicator();
+        }
+        return singleton;
+    }
+
+    private void updateUserFromBucket(){
+        localUser = userBucket[0];
+    }
+
+    private void createLiveQueryLocalUser2(final User[] users){
+        CollectionReference usersCollection = db.collection("Users");
+        usersCollection.document(firebaseUser.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                users[0] = documentSnapshot.toObject(User.class);
+            }
+        });
+
+        usersCollection.document(firebaseUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot documentSnapshot = task.getResult();
+                    User user = documentSnapshot.toObject(User.class);
+                    if (user != null){
+                        users[0] = user;
+                    }
+                }
+                else {
+                    Log.e("ErrorDoc", "Error getting document with id: " + firebaseUser.getUid(), task.getException());
+                }
+            }
+        });
+    }
+
+    private void createLiveQueryLocalUser(){
+        CollectionReference usersCollection = db.collection("Users");
+        usersCollection.document(firebaseUser.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                userBucket[0] = documentSnapshot.toObject(User.class);
+                updateUserFromBucket();
+            }
+        });
+
+        usersCollection.document(firebaseUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot documentSnapshot = task.getResult();
+                    User user = documentSnapshot.toObject(User.class);
+                    if (user != null){
+                        userBucket[0] = user;
+                        updateUserFromBucket();
+                    }
+                }
+                else {
+                    Log.e("ErrorDoc", "Error getting document with id: " + firebaseUser.getUid(), task.getException());
+                }
+            }
+        });
+    }
+
+    public void cCreateUserWithEmailAndPassword(String email, String password, final Context context, final String firstName, final String lastName, final boolean  mIsDoctor, final EditText mEmailEditText,
                                                        final EditText mPasswordEditText, final TextInputLayout mEmailLayout, final TextInputLayout mPasswordLayout, final String tz){
-        Auth.createUserWithEmailAndPassword(email, password)
+        firebaseAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener((Activity) context, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -63,7 +138,7 @@ public class Communicator {
                             Log.d("SIGN_UP_SUCCESS", "createUserWithEmail:success");
                             Toast.makeText(context, "Registration succeed!",
                                     Toast.LENGTH_SHORT).show();
-                            Auth.getCurrentUser().sendEmailVerification()
+                            firebaseAuth.getCurrentUser().sendEmailVerification()
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                                @Override
                                                                public void onComplete(@NonNull Task<Void> task) {
@@ -78,7 +153,7 @@ public class Communicator {
                                                                }
                                                            }
                                     );
-                            final FirebaseUser user_auth = Auth.getCurrentUser();
+                            final FirebaseUser user_auth = firebaseAuth.getCurrentUser();
                             final User newUser = new User(user_auth.getEmail(), firstName, lastName, user_auth.getUid(), mIsDoctor, tz);
                             FirebaseFirestore firestore = FirebaseFirestore.getInstance();
                             firestore.collection("Users").document(user_auth.getUid()).set(newUser);
@@ -97,7 +172,7 @@ public class Communicator {
                                                 userPatients.add(patient);
                                                 newUser.setPatientIds(userPatients);
                                                 db.collection("Users").document(user_auth.getUid()).set(newUser);
-                                                Communicator.updatePatientInUsersandPatientCollection(patient);
+                                                updatePatientInUsersandPatientCollection(patient);
                                             }
                                         }
                                     }
@@ -124,14 +199,14 @@ public class Communicator {
                 });
     }
 
-    public static void cSignInWithEmailAndPassword(String email, String password, final Context context){
-        Auth.signInWithEmailAndPassword(email, password)
+    public void cSignInWithEmailAndPassword(String email, String password, final Context context){
+        firebaseAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener((Activity) context, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            if (Auth.getCurrentUser().isEmailVerified()){
+                            if (firebaseAuth.getCurrentUser().isEmailVerified()){
                                 Log.d("SIGN_IN_SUCCESS", "signInWithEmail: success");
                                 ((LoginActivity)context).openActivityListPatients();
                             }
@@ -148,8 +223,8 @@ public class Communicator {
                 });
     }
 
-    public static void cSendPasswordResetEmail(String email, final Context context) {
-        Auth.sendPasswordResetEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
+    public void cSendPasswordResetEmail(String email, final Context context) {
+        firebaseAuth.sendPasswordResetEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
@@ -162,7 +237,7 @@ public class Communicator {
         });
     }
 
-    public static void cAddPatient(String firstName, String lastName, String tz, String diagnosis, final Context context){
+    public void cAddPatient(String firstName, String lastName, String tz, String diagnosis, final Context context){
         //TODO What if the patient is already in the db ( need to add tz ??)
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
         final DocumentReference myDocPatient = db.collection("Patients").document();
@@ -206,12 +281,12 @@ public class Communicator {
                 });
     }
 
-    public static void cAddQuestionForPatient(Context context, final Patient patient, final String questions, final QuestionsAdapter adpater){
+    public void cAddQuestionForPatient(Context context, final Patient patient, final String questions, final QuestionsAdapter adpater){
 
         // update the list of questions of given patient in the Patient collection
         //todo test remove answer
 
-        db.collection("Users").whereEqualTo("id", myUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        db.collection("Users").whereEqualTo("id", firebaseUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()){
@@ -234,7 +309,7 @@ public class Communicator {
 
     }
 
-    public static void updatePatientInUsersandPatientCollection(final Patient patient){
+    public void updatePatientInUsersandPatientCollection(final Patient patient){
         db.collection("Patients").document(patient.getId()).set(patient);
         db.collection("Users").get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -259,9 +334,9 @@ public class Communicator {
                 });
     }
 
-    public static void createLiveQueryPatientList(final PatientsAdapter adapter, final ArrayList<Patient> patientsList){
+    public void createLiveQueryPatientsList(final PatientsAdapter adapter){
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-        final FirebaseUser myUser  = Auth.getCurrentUser();
+        final FirebaseUser myUser  = firebaseAuth.getCurrentUser();
         final String userID = myUser.getUid();
         final ArrayList<Patient>[] patientsIds = new ArrayList[]{new ArrayList<Patient>()};
         final User[] user = new User[1];
@@ -296,7 +371,7 @@ public class Communicator {
         });
     }
 
-    public static void createLiveQueryQuestionsList(final QuestionsAdapter adapter, final ArrayList<Question> questionsList, Patient patient){
+    public void createLiveQueryQuestionsList(final QuestionsAdapter adapter, final ArrayList<Question> questionsList, Patient patient){
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
         final Patient[] dbPatient = new Patient[1];
 
@@ -347,9 +422,9 @@ public class Communicator {
         });
     }
 
-    public  static void getUsersByIds(final CaregiversAdapter adapter, final ArrayList<User> userList, final ArrayList<String> idsList){
+    public  void getUsersByIds(final CaregiversAdapter adapter, final ArrayList<User> userList, final ArrayList<String> idsList){
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-        final FirebaseUser myUser  = Auth.getCurrentUser();
+        final FirebaseUser myUser  = firebaseAuth.getCurrentUser();
         final ArrayList<User>[] careGivers = new ArrayList[]{new ArrayList<User>()};
         CollectionReference referenceToCollection = firestore.collection("Users");
         referenceToCollection.addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -399,9 +474,9 @@ public class Communicator {
         });
     }
 
-    public  static void getFriendsByIds(final FriendsAdapter adapter, final ArrayList<User> userList, final ArrayList<String> idsList){
+    public  void getFriendsByIds(final FriendsAdapter adapter, final ArrayList<User> userList, final ArrayList<String> idsList){
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-        final FirebaseUser myUser  = Auth.getCurrentUser();
+        final FirebaseUser myUser  = firebaseAuth.getCurrentUser();
         final ArrayList<User>[] friends = new ArrayList[]{new ArrayList<User>()};
         CollectionReference referenceToCollection = firestore.collection("Users");
         referenceToCollection.addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -452,8 +527,12 @@ public class Communicator {
         });
     }
 
-    public static void appearAddPatientIfCaregiver(final Button addPatientButton){
-        db.collection("Users").whereEqualTo("id", myUser.getUid())
+    public boolean localUserIsCaregiver(){
+        return localUser.isCareGiver();
+    }
+
+    public void appearAddPatientIfCaregiver(final Button addPatientButton){
+        db.collection("Users").whereEqualTo("id", firebaseUser.getUid())
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -470,9 +549,9 @@ public class Communicator {
                 });
     }
 
-    public static void appearAddAdminAndUpdate(final Button addAdminButton, final Button addUpdateButton, final Patient mPatient){
+    public void appearAddAdminAndUpdate(final Button addAdminButton, final Button addUpdateButton, final Patient mPatient){
 
-        if (mPatient.getCaregiverIds().contains(myUser.getUid())){
+        if (mPatient.getCaregiverIds().contains(firebaseUser.getUid())){
             addUpdateButton.setVisibility(View.VISIBLE);
         }
         if (mPatient.getAdminTz().equals("")){
@@ -499,8 +578,8 @@ public class Communicator {
 //                });
     }
 
-    public static void removePatientFromUserAndUpdate(final Patient currentPatient){
-        db.collection("Users").whereEqualTo("id", myUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+    public void removePatientFromUserAndUpdate(final Patient currentPatient){
+        db.collection("Users").whereEqualTo("id", firebaseUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
@@ -520,12 +599,12 @@ public class Communicator {
                             ArrayList<String> careGivers = currentPatient.getCaregiverIds();
                             careGivers.remove(user.getId());
                             currentPatient.setCaregiverIds(careGivers);
-                            Communicator.updatePatientInUsersandPatientCollection(currentPatient);
+                            updatePatientInUsersandPatientCollection(currentPatient);
                         } else {
                             ArrayList<String> friends = currentPatient.getFriends();
                             friends.remove(user.getId());
                             currentPatient.setFriends(friends);
-                            Communicator.updatePatientInUsersandPatientCollection(currentPatient);
+                            updatePatientInUsersandPatientCollection(currentPatient);
                         }
                     }
                 }
@@ -535,8 +614,8 @@ public class Communicator {
 
     }
 
-    public static void updateAdminInUsersAndPatientCollection(final Patient mPatient, final String adminTz){
-        Communicator.updatePatientInUsersandPatientCollection(mPatient);
+    public void updateAdminInUsersAndPatientCollection(final Patient mPatient, final String adminTz){
+        updatePatientInUsersandPatientCollection(mPatient);
         db.collection("Users").whereEqualTo("tz", adminTz).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -550,7 +629,7 @@ public class Communicator {
                         patients.add(mPatient);
                         user.setPatientIds(patients);
                         db.collection("Users").document(user.getId()).set(user);
-                        Communicator.updatePatientInUsersandPatientCollection(mPatient);
+                        updatePatientInUsersandPatientCollection(mPatient);
                     }
                 }
             }
@@ -558,7 +637,7 @@ public class Communicator {
 
     }
 
-    public static void checkNewPatientExistence(final String updateMess, final boolean[] flag, final Patient[] patient, final Context context, final View contextView){
+    public void checkNewPatientExistence(final String updateMess, final boolean[] flag, final Patient[] patient, final Context context, final View contextView){
         // todo there is a pb when I delete a patient and try to add it with the same tz.
         db.collection("Patients").whereEqualTo("tz", updateMess).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
@@ -567,7 +646,7 @@ public class Communicator {
                     for (QueryDocumentSnapshot myDoc : task.getResult()) {
                         flag[0] = true;
                         patient[0] = myDoc.toObject(Patient.class);
-                        db.collection("Users").whereEqualTo("id", myUser.getUid())
+                        db.collection("Users").whereEqualTo("id", firebaseUser.getUid())
                                 .get()
                                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                     @Override
@@ -601,8 +680,8 @@ public class Communicator {
         });
     }
 
-    public static void editUpdateIfCurrentUser(final Update update, final Context context){
-        db.collection("Users").whereEqualTo("id", myUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+    public void editUpdateIfCurrentUser(final Update update, final Context context){
+        db.collection("Users").whereEqualTo("id", firebaseUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()){
@@ -617,8 +696,8 @@ public class Communicator {
         });
     }
 
-    public static void appearNewQuestionIfFriend(final Button submitQuestionButton, final Context context, Patient patient){
-        String userID = myUser.getUid();
+    public void appearNewQuestionIfFriend(final Button submitQuestionButton, final Context context, Patient patient){
+        String userID = firebaseUser.getUid();
 //        final User[] user = new User[1];
 
         if (patient.getFriends().contains(userID)){
@@ -648,7 +727,7 @@ public class Communicator {
 //                });
     }
 
-    public static void appearAddFriendIfAdmin(final Button addFriendButton, final Patient mPatient){
+    public void appearAddFriendIfAdmin(final Button addFriendButton, final Patient mPatient){
         final FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -667,7 +746,7 @@ public class Communicator {
         });
     }
 
-    public static void addFriendAndUpdateCollections(final String newFriend, final Patient mPatient, final Context context, final  FriendsAdapter mAdapter){
+    public void addFriendAndUpdateCollections(final String newFriend, final Patient mPatient, final Context context, final  FriendsAdapter mAdapter){
         final boolean[] flag = {false};
 
         db.collection("Users").whereEqualTo("tz", newFriend).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -692,7 +771,7 @@ public class Communicator {
                         ArrayList<String> friends = mPatient.getFriends();
                         friends.add(user.getId());
                         mPatient.setFriends(friends);
-                        Communicator.updatePatientInUsersandPatientCollection(mPatient);
+                        updatePatientInUsersandPatientCollection(mPatient);
                         Toast.makeText(context, "Friend added !",
                                 Toast.LENGTH_SHORT).show();
                         ArrayList<User> users = mAdapter.getmDataset();
@@ -709,7 +788,7 @@ public class Communicator {
         });
     }
 
-    public static void updateUpdateAdapterFullname(final String userID, final UpdatesAdapter.UpdateHolder holder ){
+    public void updateUpdateAdapterFullname(final String userID, final UpdatesAdapter.UpdateHolder holder ){
         db.collection("Users").whereEqualTo("id", userID).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -725,7 +804,7 @@ public class Communicator {
     }
 
 
-    public static ArrayList<Patient> getPatient (String patientID){
+    public ArrayList<Patient> getPatient (String patientID){
         final ArrayList<Patient> updatedPatient = new ArrayList<>();
         db.collection("Patients").whereEqualTo("id", patientID).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
@@ -742,9 +821,9 @@ public class Communicator {
     }
 
     //todo firebase / local db !! TO TEST
-    public static Patient getPatientById(Serializable patientId){
+    public Patient getPatientById(Serializable patientId){
         final Patient[] patient = new Patient[1];
-        fireStore[0].collection("Patients")
+        db.collection("Patients")
                 .whereEqualTo("id", patientId)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -769,12 +848,12 @@ public class Communicator {
         //}
     }
 
-    public static ArrayList<Patient> getPatientsListForUser(String userId){
+    public ArrayList<Patient> getPatientsListForLocalUser(){
         final ArrayList<Patient>[] patientsIds = new ArrayList[]{new ArrayList<Patient>()};
         final User[] user = new User[1];
 
-        fireStore[0].collection("Users")
-                .whereEqualTo("id", userId)
+        db.collection("Users")
+                .whereEqualTo("id", firebaseUser.getUid())
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
 
@@ -796,7 +875,7 @@ public class Communicator {
     }
 
     //todo firebase!
-//    public static ArrayList<String> getPatientsCaregivers(String patientId){
+//    public ArrayList<String> getPatientsCaregivers(String patientId){
 //        //ArrayList<User> caregivers = new ArrayList<>();
 //        //Patient patient = getPatientById(patientId);
 //        //final ArrayList<String> caregiverIds = patient.getCaregiverIds();
@@ -830,7 +909,7 @@ public class Communicator {
 //    }
 
     // todo firebase!
-    public static User getUserById(String userId){
+    public User getUserById(String userId){
         final User[] user = new User[1];
         db.collection("Users")
                 .whereEqualTo("id", userId)
@@ -852,7 +931,7 @@ public class Communicator {
         return user[0];
     }
 
-    public static Friend getFriendById(String friendId){
+    public Friend getFriendById(String friendId){
         final Friend[] friend = new Friend[1];
         db.collection("Users")
                 .whereEqualTo("id", friendId)
@@ -876,7 +955,7 @@ public class Communicator {
     }
 
 
-    public static void checkTZ(String tz, final DBCallBackTZ dbCallBackTZ) {
+    public void checkTZ(String tz, final DBCallBackTZ dbCallBackTZ) {
 
         db.collection("Users").whereEqualTo("tz", tz).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
@@ -904,7 +983,7 @@ public class Communicator {
 
     }
 
-    public static void updateanswerToQuestion(String answer, long edited, Question question, Patient patient) {
+    public void updateanswerToQuestion(String answer, long edited, Question question, Patient patient) {
 
         ArrayList<Question> questionsPatient = patient.getQuestions();
         for(Question q : questionsPatient){
@@ -925,7 +1004,7 @@ public class Communicator {
 
     }
 
-    public static void updateAskerFullname(String askerID, final QuestionsAdapter.QuestionHolder holder) {
+    public void updateAskerFullname(String askerID, final QuestionsAdapter.QuestionHolder holder) {
         db.collection("Users").whereEqualTo("id", askerID).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -940,7 +1019,7 @@ public class Communicator {
         });
     }
 
-    public static void createLiveQueryUpdatesList(final Patient mPatient, final UpdatesAdapter mAdapter){
+    public void createLiveQueryUpdatesList(final Patient mPatient, final UpdatesAdapter mAdapter){
         db.collection("Patients").whereEqualTo("id", mPatient.getId()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -957,13 +1036,13 @@ public class Communicator {
     }
 
 
-    public static boolean isCareGiverOfPatient(final Patient patient) {
+    public boolean isCareGiverOfPatient(final Patient patient) {
         final boolean[] flag = {false};
-        db.collection("Users").whereEqualTo("id", myUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        db.collection("Users").whereEqualTo("id", firebaseUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()){
-                    if (patient.getCaregiverIds().contains(myUser.getUid())){
+                    if (patient.getCaregiverIds().contains(firebaseUser.getUid())){
                         flag[0] = true;
                     }
 
@@ -973,7 +1052,7 @@ public class Communicator {
         return flag[0];
     }
 
-    public static void updateQuestionChange(String newUpdate, long edited, Question question, Patient mPatient) {
+    public void updateQuestionChange(String newUpdate, long edited, Question question, Patient mPatient) {
 
         ArrayList<Question> questionsPatient = mPatient.getQuestions();
         for(Question q : questionsPatient){

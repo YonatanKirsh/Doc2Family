@@ -48,6 +48,7 @@ public class PatientInfoActivity extends AppCompatActivity {
     Button addUpdateButton;
     Gson gson = new Gson();
     FirebaseFirestore db = FirebaseFirestore.getInstance();
+    Communicator communicator;
 
     private SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy HH:mm");
 
@@ -56,10 +57,11 @@ public class PatientInfoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_patient_info);
+        communicator = Communicator.getSingleton();
         String patientString = getIntent().getStringExtra(Constants.PATIENT_ID_KEY);
         mPatient = gson.fromJson(patientString, Patient.class);
         initUpdatesAdapter();
-        Communicator.createLiveQueryUpdatesList(mPatient, mAdapter);
+        communicator.createLiveQueryUpdatesList(mPatient, mAdapter);
         initViews();
     }
 
@@ -132,7 +134,7 @@ public class PatientInfoActivity extends AppCompatActivity {
 
         //add update button
         addUpdateButton = findViewById(R.id.add_an_update_button);
-        Communicator.appearAddAdminAndUpdate(addAdminButton, addUpdateButton, mPatient);
+        communicator.appearAddAdminAndUpdate(addAdminButton, addUpdateButton, mPatient);
 
         addAdminButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -182,7 +184,7 @@ public class PatientInfoActivity extends AppCompatActivity {
                     mAdapter.notifyDataSetChanged();
 
                     // update the db
-                    Communicator.updatePatientInUsersandPatientCollection(mPatient);
+                    communicator.updatePatientInUsersandPatientCollection(mPatient);
                 }
                 String message = "added update:\n" + updateMess;
                 Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
@@ -219,7 +221,7 @@ public class PatientInfoActivity extends AppCompatActivity {
                 String adminTz = adminTzInput.getText().toString();
                 if (!adminTz.equals("")){
                     mPatient.setAdminTz(adminTz);
-                    Communicator.updateAdminInUsersAndPatientCollection(mPatient, adminTz);
+                    communicator.updateAdminInUsersAndPatientCollection(mPatient, adminTz);
                 }
                 String message = "added admin:\n" + adminTz;
                 Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
@@ -295,7 +297,7 @@ public class PatientInfoActivity extends AppCompatActivity {
                                 updates.remove(updateOld);
                                 updates.sort(new Update.UpdateSorter());
                                 mPatient.setUpdates(updates);
-                                Communicator.updatePatientInUsersandPatientCollection(mPatient);
+                                communicator.updatePatientInUsersandPatientCollection(mPatient);
                                 mAdapter.notifyDataSetChanged();
                                 dialog.dismiss();
                                 break;
@@ -328,7 +330,7 @@ public class PatientInfoActivity extends AppCompatActivity {
                                 updates.add(newUpdate);
                                 updates.sort(new Update.UpdateSorter());
                                 mPatient.setUpdates(updates);
-                                Communicator.updatePatientInUsersandPatientCollection(mPatient);
+                                communicator.updatePatientInUsersandPatientCollection(mPatient);
                                 mAdapter.notifyDataSetChanged();
                                 callingDialog.dismiss();
                                 break;
@@ -386,7 +388,7 @@ public class PatientInfoActivity extends AppCompatActivity {
                     case DialogInterface.BUTTON_POSITIVE:
                         //Yes button clicked - todo actually update diagnosis
                         mPatient.setDiagnosis(newDiagnosis);
-                        Communicator.updatePatientInUsersandPatientCollection(mPatient);
+                        communicator.updatePatientInUsersandPatientCollection(mPatient);
                         diagnosisTextView.setText(newDiagnosis);
                         callingDialog.dismiss();
                         break;
@@ -402,7 +404,7 @@ public class PatientInfoActivity extends AppCompatActivity {
     }
 
     public void onClickUpdate(final Update update) {
-        Communicator.editUpdateIfCurrentUser(update, this);
+        communicator.editUpdateIfCurrentUser(update, this);
     }
 
     public void openActivityQuestions(){
@@ -429,7 +431,7 @@ public class PatientInfoActivity extends AppCompatActivity {
     @Override
     public void onRestart() {
         super.onRestart();
-        //Communicator.updatePatient(mPatient);
+        //communicator.updatePatient(mPatient);
         db.collection("Patients").whereEqualTo("id", mPatient.getId()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
