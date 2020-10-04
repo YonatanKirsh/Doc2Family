@@ -46,6 +46,7 @@ public class SignUpActivity extends AppCompatActivity {
     private EditText mVerifyPasswordEditText;
     private CheckBox mCaregiverCheckbox;
     private Button mSignUpButton;
+    private Communicator communicator;
 
     private View v;
 
@@ -54,6 +55,7 @@ public class SignUpActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
+        communicator = Communicator.getSingleton();
         initViews();
     }
 
@@ -64,7 +66,7 @@ public class SignUpActivity extends AppCompatActivity {
         final String lastName = mLastNameEditText.getText().toString();
         final boolean isCaregiver = mCaregiverCheckbox.isChecked();
         final String tz = mTzEditText.getText().toString();
-        Communicator.cCreateUserWithEmailAndPassword(email, password, SignUpActivity.this, firstName, lastName, isCaregiver,mEmailEditText, mPasswordEditText, mEmailLayout, mPasswordLayout, tz);
+        communicator.cCreateUserWithEmailAndPassword(email, password, SignUpActivity.this, firstName, lastName, isCaregiver,mEmailEditText, mPasswordEditText, mEmailLayout, mPasswordLayout, tz);
     }
 
     private void initViews() {
@@ -156,7 +158,7 @@ public class SignUpActivity extends AppCompatActivity {
         final boolean[] checkTZ = new boolean[1];
         final boolean[] checkAll = {true};
 
-        Communicator.checkTZ(tz, new DBCallBackTZ() {
+        communicator.checkTZ(tz, new DBCallBackTZ() {
             @Override
             public void isTZAlreadyInBD(boolean alreadyIn) {
                 checkTZ[0] = alreadyIn;

@@ -21,6 +21,15 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.Ques
     private ArrayList<Question> mDataset;
     private Context mContext;
     private SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy HH:mm");
+    private Communicator communicator;
+
+    public QuestionsAdapter(Context context, ArrayList<Question> dataset){
+        //todo sort by unanswered first for doctor, answered first for friend?
+        communicator = Communicator.getSingleton();
+        dataset.sort(new Question.SortByLastEdited());
+        mDataset = dataset;
+        mContext = context;
+    }
 
     public ArrayList<Question> getmDataset() {
         return mDataset;
@@ -28,13 +37,6 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.Ques
 
     public void setmDataset(ArrayList<Question> mDataset) {
         this.mDataset = mDataset;
-    }
-
-    public QuestionsAdapter(Context context, ArrayList<Question> dataset){
-        //todo sort by unanswered first for doctor, answered first for friend?
-        dataset.sort(new Question.SortByLastEdited());
-        mDataset = dataset;
-        mContext = context;
     }
 
     @NonNull
@@ -58,7 +60,7 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.Ques
     public void onBindViewHolder(@NonNull QuestionHolder holder, int position) {
         Question question = mDataset.get(position);
         holder.textViewQuestion.setText(question.getQuestion());
-        Communicator.updateAskerFullname(question.getAskerID(), holder);
+        communicator.updateAskerFullname(question.getAskerID(), holder);
         if (question.isAnswered()){
             holder.textViewAnswer.setText(question.getAnswer());
             //todo maybe want to add the name of the doctor that answers

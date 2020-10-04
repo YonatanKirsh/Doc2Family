@@ -20,11 +20,13 @@ public class AddPatientActivity extends AppCompatActivity {
     EditText lastNameEdit;
     EditText tzEdit;
     EditText diagnosisEdit;
+    Communicator communicator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_patient);
+        communicator = Communicator.getSingleton();
         this.firstNameEdit = (EditText) findViewById(R.id.edit_text_patient_first_name);
         this.lastNameEdit = (EditText) findViewById(R.id.edit_text_patients_last_name);
         this.tzEdit =  (EditText) findViewById(R.id.edit_text_tz);
@@ -76,7 +78,7 @@ public class AddPatientActivity extends AppCompatActivity {
         lastNameEdit.getText().clear();
         tzEdit.getText().clear();
         diagnosisEdit.getText().clear();
-        Communicator.cAddPatient(firstName, lastName, tz, diagnosis, this);
+        communicator.cAddPatient(firstName, lastName, tz, diagnosis, this);
     }
 
     public void openActivityListPatients(){

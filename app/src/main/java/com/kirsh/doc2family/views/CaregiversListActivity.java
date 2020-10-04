@@ -29,11 +29,13 @@ public class CaregiversListActivity extends AppCompatActivity {
     CaregiversAdapter mAdapter;
     Button addCaregiverButton;
     Gson gson = new Gson();
+    Communicator communicator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_caregivers_list);
+        communicator = Communicator.getSingleton();
         initPatient();
         initCaregiversAdapter();
         initViews();
@@ -48,7 +50,7 @@ public class CaregiversListActivity extends AppCompatActivity {
         ArrayList<String> careGiverIds = mPatient.getCaregiverIds();
         ArrayList<User> careGivers = new ArrayList<User>();
         mAdapter = new CaregiversAdapter(this, careGivers);
-        Communicator.getUsersByIds(mAdapter, mAdapter.getmDataset(), careGiverIds);
+        communicator.getUsersByIds(mAdapter, mAdapter.getmDataset(), careGiverIds);
         mAdapter.notifyDataSetChanged();
     }
 

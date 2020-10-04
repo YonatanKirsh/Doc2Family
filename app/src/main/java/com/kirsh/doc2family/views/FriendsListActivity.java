@@ -41,11 +41,13 @@ public class FriendsListActivity extends AppCompatActivity {
 
     Button addFriendButton;
     Gson gson = new Gson();
+    Communicator communicator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friends_list);
+        communicator = Communicator.getSingleton();
         initPatient();
         initFriendsadapter();
         initViews();
@@ -76,7 +78,7 @@ public class FriendsListActivity extends AppCompatActivity {
         ArrayList<User> friendsList = new ArrayList<User>();
         mAdapter = new FriendsAdapter(this, friendsList);
         if (FriendsIds.size() != 0) {
-            Communicator.getFriendsByIds(mAdapter, mAdapter.getmDataset(), FriendsIds);
+            communicator.getFriendsByIds(mAdapter, mAdapter.getmDataset(), FriendsIds);
         }
         mAdapter.notifyDataSetChanged();
     }
@@ -84,7 +86,7 @@ public class FriendsListActivity extends AppCompatActivity {
     private void initViews(){
         // add friend button
         addFriendButton = findViewById(R.id.button_add_friend);
-        Communicator.appearAddFriendIfAdmin(addFriendButton, mPatient);
+        communicator.appearAddFriendIfAdmin(addFriendButton, mPatient);
         addFriendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -116,7 +118,7 @@ public class FriendsListActivity extends AppCompatActivity {
         builder.setPositiveButton(R.string.add, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 String newFriend = emailInput.getText().toString();
-                Communicator.addFriendAndUpdateCollections(newFriend, mPatient, FriendsListActivity.this, mAdapter);
+                communicator.addFriendAndUpdateCollections(newFriend, mPatient, FriendsListActivity.this, mAdapter);
                 emailInput.setText("");
                 dialog.dismiss();
             }
@@ -138,7 +140,7 @@ public class FriendsListActivity extends AppCompatActivity {
         View view = getLayoutInflater().inflate(R.layout.friend_dialog, null);
         builder.setView(view);
         // add friend info
-        User user = Communicator.getUserById(friend.getId());
+        User user = communicator.getUserById(friend.getId());
         final TextView friendNameTextView = view.findViewById(R.id.friend_dialog_text_view_friend_name);
         friendNameTextView.setText(user.getFullName());
         final TextView friendEmailtextView = view.findViewById(R.id.friend_dialog_text_view_friend_email);
@@ -193,7 +195,7 @@ public class FriendsListActivity extends AppCompatActivity {
     }
 
     private void confirmRemoveFriend(User friendToRemove, final DialogInterface callingDialog){
-        final User user = Communicator.getUserById(friendToRemove.getId());
+        final User user = communicator.getUserById(friendToRemove.getId());
         DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -221,7 +223,7 @@ public class FriendsListActivity extends AppCompatActivity {
     @Override
     public void onRestart() {
         super.onRestart();
-        //Communicator.createLiveQueryPatientList(mAdapter, mAdapter.getmDataset());
+        //communicator.createLiveQueryPatientList(mAdapter, mAdapter.getmDataset());
         mAdapter.notifyDataSetChanged();
     }
 }

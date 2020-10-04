@@ -22,9 +22,11 @@ public class UpdatesAdapter extends RecyclerView.Adapter<UpdatesAdapter.UpdateHo
     private ArrayList<Update> mDataset;
     private Context mContext;
     private SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy HH:mm");
+    private Communicator communicator;
 
 
     public UpdatesAdapter(Context context, ArrayList<Update> dataset){
+        communicator = Communicator.getSingleton();
         dataset.sort(new Update.UpdateSorter());
         mDataset = dataset;
         mContext = context;
@@ -54,7 +56,7 @@ public class UpdatesAdapter extends RecyclerView.Adapter<UpdatesAdapter.UpdateHo
         holder.textViewDate.setText(sdf.format(resultdate));
         holder.textViewContent.setText(update.getContent());
         String userID = update.getIssuingCareGiverId();
-        Communicator.updateUpdateAdapterFullname(userID, holder);
+        communicator.updateUpdateAdapterFullname(userID, holder);
     }
 
     @Override

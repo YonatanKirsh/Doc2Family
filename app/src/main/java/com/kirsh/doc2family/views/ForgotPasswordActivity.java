@@ -13,11 +13,13 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
     private EditText emailEditText;
     private Button resetPassword;
+    Communicator communicator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forgot_password);
+        communicator = Communicator.getSingleton();
         initViews();
     }
 
@@ -31,7 +33,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 final String email = emailEditText.getText().toString();
-                Communicator.cSendPasswordResetEmail(email, ForgotPasswordActivity.this);
+                communicator.cSendPasswordResetEmail(email, ForgotPasswordActivity.this);
             }
         });
     }

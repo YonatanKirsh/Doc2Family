@@ -21,8 +21,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
 import com.kirsh.doc2family.R;
 import com.kirsh.doc2family.logic.Communicator;
@@ -40,11 +38,13 @@ public class PatientsListActivity extends AppCompatActivity {
     Gson gson = new Gson();
     ItemTouchHelper.SimpleCallback itemTouchHelper;
     private Paint p = new Paint();
+    Communicator communicator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_patients_list);
+        communicator = Communicator.getSingleton();
         initPatientAdapter();
         initViews();
     }
@@ -62,8 +62,10 @@ public class PatientsListActivity extends AppCompatActivity {
 
         // add-patient button if the user is CareGiver
         addPatientButton = findViewById(R.id.button_goto_add_patient);
-        Communicator.appearAddPatientIfCaregiver(addPatientButton);
-//        addPatientButton.setVisibility(View.VISIBLE);
+//        communicator.appearAddPatientIfCaregiver(addPatientButton);
+        if (communicator.localUserIsCaregiver()){
+            addPatientButton.setVisibility(View.VISIBLE);
+        }
         addPatientButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -88,7 +90,7 @@ public class PatientsListActivity extends AppCompatActivity {
                 mAdapter.setmDataset(mDataset);
 
                 // remove the current patient from the db
-                Communicator.removePatientFromUserAndUpdate(currentPatient);
+                communicator.removePatientFromUserAndUpdate(currentPatient);
                 mAdapter.notifyDataSetChanged();
             }
 
@@ -135,7 +137,7 @@ public class PatientsListActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int id) {
                 String updateMess = updateInput.getText().toString();
                 if (!updateMess.equals("")) {
-                    Communicator.checkNewPatientExistence(updateMess, flag, patient, PatientsListActivity.this, findViewById(android.R.id.content));
+                    communicator.checkNewPatientExistence(updateMess, flag, patient, PatientsListActivity.this, findViewById(android.R.id.content));
                     mAdapter.notifyDataSetChanged();
                 }
             }
@@ -153,13 +155,9 @@ public class PatientsListActivity extends AppCompatActivity {
     }
 
     private void initPatientAdapter() {
-        //todo maybe send a null array in patients instead of communicator.
-        FirebaseAuth myAuth = FirebaseAuth.getInstance();
-        final FirebaseUser myUser = myAuth.getCurrentUser();
-        ArrayList<Patient> patients = Communicator.getPatientsListForUser(myUser.getUid());
+        ArrayList<Patient> patients = communicator.getPatientsListForLocalUser();
         mAdapter = new PatientsAdapter(this, patients);
-        Communicator.createLiveQueryPatientList(mAdapter, mAdapter.getmDataset());
-        //mAdapter.notifyDataSetChanged();
+        communicator.createLiveQueryPatientsAdapter(mAdapter);
     }
 
     public void onClickPatient(Patient patient) {
@@ -183,7 +181,7 @@ public class PatientsListActivity extends AppCompatActivity {
     @Override
     public void onRestart() {
         super.onRestart();
-        Communicator.createLiveQueryPatientList(mAdapter, mAdapter.getmDataset());
+        communicator.createLiveQueryPatientsAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
     }
 

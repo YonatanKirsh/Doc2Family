@@ -22,11 +22,13 @@ public class LoginActivity extends AppCompatActivity {
     private Button loginButton;
     private Button signUpButton;
     private Button forgotP;
+    private Communicator communicator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        communicator = Communicator.getSingleton();
         initViews();
 
         //todo remove openActivity!!
@@ -108,7 +110,7 @@ public class LoginActivity extends AppCompatActivity {
     private void signInWithEmailAndPassword() {
         String email = emailEditText.getText().toString();
         String password = passwordEditText.getText().toString();
-        Communicator.cSignInWithEmailAndPassword(email, password, this);
+        communicator.cSignInWithEmailAndPassword(email, password, this);
     }
 
     private void openActivitySignUp(){
