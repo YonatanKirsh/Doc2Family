@@ -51,7 +51,7 @@ public class QuestionsListActivity extends AppCompatActivity {
     }
 
     private void initPatient(){
-        String patientString = getIntent().getStringExtra(Constants.PATIENT_ID_KEY);
+        String patientString = getIntent().getStringExtra(Constants.PATIENT_AS_STRING_KEY);
         mPatient = gson.fromJson(patientString, Patient.class);
     }
 
@@ -64,8 +64,10 @@ public class QuestionsListActivity extends AppCompatActivity {
     private void initViews(){
         // submit new question button
         submitQuestionButton = findViewById(R.id.button_submit_question);
-
-        communicator.appearNewQuestionIfFriend(submitQuestionButton, this, mPatient);
+        setAddQuestionButton();
+        if (mPatient.getFriendIds().contains(communicator.getLocalUser().getId())){
+            submitQuestionButton.setVisibility(View.VISIBLE);
+        }
 
         // questions adapter
         RecyclerView questionsAdapter = findViewById(R.id.recycler_questions);
@@ -75,7 +77,6 @@ public class QuestionsListActivity extends AppCompatActivity {
 
         // questions dialog
         initNewQuestionDialog();
-
     }
 
     public void setAddQuestionButton(){

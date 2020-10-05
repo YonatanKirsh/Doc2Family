@@ -6,10 +6,10 @@ import java.util.ArrayList;
 public class Constants {
 
     // error messages
-    public static final String NULL_USER_ERROR_FORMAT_MESSAGE = "Could not find user with id: %s.";
+//    public static final String NULL_USER_ERROR_FORMAT_MESSAGE = "Could not find user with id: %s.";
 
     // keys
-    public static final String PATIENT_ID_KEY = "patient_id";
+    public static final String PATIENT_AS_STRING_KEY = "patient_id";
 
     // fields
     public static final String PATIENTS_COLLECTION_FIELD = "Patients";

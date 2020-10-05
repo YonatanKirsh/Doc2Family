@@ -18,14 +18,10 @@ import com.kirsh.doc2family.logic.User;
 
 import java.util.ArrayList;
 
-public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendHolder> {
-
-    private ArrayList<User> mDataset;
-    private Context mContext;
+public class FriendsAdapter extends UsersAdapter<FriendsAdapter.FriendHolder> {
 
     public FriendsAdapter(Context context, ArrayList<User> friends){
-        mDataset = friends;
-        mContext = context;
+        super(context, friends);
     }
 
     @NonNull
@@ -48,25 +44,11 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendHo
     @Override
     public void onBindViewHolder(@NonNull FriendHolder holder, int position) {
         User friend = mDataset.get(position);
-        //User user = Communicator.getUserById(friend.getId());
         if (friend != null){
             holder.textView.setText(friend.getFullName());
         }else {
-            Log.d(Constants.NULL_USER_TAG, String.format(Constants.NULL_USER_ERROR_FORMAT_MESSAGE, friend.getId()));
+            Log.w(Constants.NULL_USER_TAG, "FriendsAdapter: null friend");
         }
-    }
-
-    @Override
-    public int getItemCount() {
-        return mDataset.size();
-    }
-
-    public ArrayList<User> getmDataset() {
-        return mDataset;
-    }
-
-    public void setmDataset(ArrayList<User> mDataset) {
-        this.mDataset = mDataset;
     }
 
     static class FriendHolder extends RecyclerView.ViewHolder{

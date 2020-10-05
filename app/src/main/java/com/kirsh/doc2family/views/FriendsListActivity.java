@@ -50,39 +50,36 @@ public class FriendsListActivity extends AppCompatActivity {
     }
 
     private void initPatient(){
-        //todo handle no-key exception
-        //todo unite with QuestionsActivity? move to Constants?
-        String patientString = getIntent().getStringExtra(Constants.PATIENT_ID_KEY);
+        String patientString = getIntent().getStringExtra(Constants.PATIENT_AS_STRING_KEY);
         mPatient = gson.fromJson(patientString, Patient.class);
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("Patients").whereEqualTo("id", mPatient.getId()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()){
-                    for (QueryDocumentSnapshot doc: task.getResult()){
-                        Patient patient = doc.toObject(Patient.class);
-                        mPatient = patient;
-                    }
-                }
-            }
-        });
+//        FirebaseFirestore db = FirebaseFirestore.getInstance();
+//        db.collection("Patients").whereEqualTo("id", mPatient.getId()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//            @Override
+//            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                if (task.isSuccessful()){
+//                    for (QueryDocumentSnapshot doc: task.getResult()){
+//                        Patient patient = doc.toObject(Patient.class);
+//                        mPatient = patient;
+//                    }
+//                }
+//            }
+//        });
     }
 
     private void initFriendsadapter(){
-        ArrayList<String> FriendsIds = mPatient.getFriends();
-        ArrayList<User> friendsList = new ArrayList<User>();
+        ArrayList<User> friendsList = new ArrayList<>();
         mAdapter = new FriendsAdapter(this, friendsList);
-        if (FriendsIds.size() != 0) {
-            communicator.createLiveQueryFriendsAdapter(mAdapter, mAdapter.getmDataset(), FriendsIds);
-        }
+        communicator.createLiveQueryFriendsAdapter(mPatient, mAdapter);
         mAdapter.notifyDataSetChanged();
     }
 
     private void initViews(){
         // add friend button
         addFriendButton = findViewById(R.id.button_add_friend);
-        communicator.appearAddFriendIfAdmin(addFriendButton, mPatient);
+        if (mPatient.userIsAdmin(communicator.getLocalUser().getId())){
+            addFriendButton.setVisibility(View.VISIBLE);
+        }
         addFriendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -136,13 +133,13 @@ public class FriendsListActivity extends AppCompatActivity {
         View view = getLayoutInflater().inflate(R.layout.friend_dialog, null);
         builder.setView(view);
         // add friend info
-        User user = communicator.getUserById(friend.getId());
+//        User user = communicator.getUserById(friend.getId());
         final TextView friendNameTextView = view.findViewById(R.id.friend_dialog_text_view_friend_name);
-        friendNameTextView.setText(user.getFullName());
+        friendNameTextView.setText(friend.getFullName());
         final TextView friendEmailtextView = view.findViewById(R.id.friend_dialog_text_view_friend_email);
-        friendEmailtextView.setText(user.getEmail());
+        friendEmailtextView.setText(friend.getEmail());
         final TextView isAdminTextView = view.findViewById(R.id.friend_dialog_text_view_is_admin);
-        if (friend.getTz().equals(mPatient.getAdminTz())){
+        if (mPatient.userIsAdmin(friend.getId())){
             isAdminTextView.setText(R.string.admin);
         }else {
             isAdminTextView.setText(R.string.not_admin);
@@ -165,7 +162,7 @@ public class FriendsListActivity extends AppCompatActivity {
         // add admin views
         final CheckBox makeAdminCheckBox = view.findViewById(R.id.friend_dialog_checkbox_make_admin);
         makeAdminCheckBox.setVisibility(View.VISIBLE);
-        if (friend.getTz().equals(mPatient.getAdminTz())){
+        if (mPatient.userIsAdmin(friend.getId())){
             makeAdminCheckBox.setChecked(true);
         } else {
             makeAdminCheckBox.setChecked(false);
@@ -190,15 +187,15 @@ public class FriendsListActivity extends AppCompatActivity {
         });
     }
 
-    private void confirmRemoveFriend(User friendToRemove, final DialogInterface callingDialog){
-        final User user = communicator.getUserById(friendToRemove.getId());
+    private void confirmRemoveFriend(final User friendToRemove, final DialogInterface callingDialog){
+//        final User user = friendToRemove;
         DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 switch (which){
                     case DialogInterface.BUTTON_POSITIVE:
                         //Yes button clicked - todo actually remove friend
-                        Toast.makeText(FriendsListActivity.this, String.format("%s removed!", user.getFullName()), Toast.LENGTH_LONG).show();
+                        Toast.makeText(FriendsListActivity.this, String.format("%s removed!", friendToRemove.getFullName()), Toast.LENGTH_LONG).show();
                         callingDialog.dismiss();
                         break;
 
@@ -209,7 +206,7 @@ public class FriendsListActivity extends AppCompatActivity {
             }
         };
 
-        ConfirmDialog.show(this, dialogClickListener, String.format("Remove %s?", user.getFullName()));
+        ConfirmDialog.show(this, dialogClickListener, String.format("Remove %s?", friendToRemove.getFullName()));
     }
 
     public void onClickFriend(User friend) {

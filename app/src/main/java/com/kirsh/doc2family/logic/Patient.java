@@ -1,7 +1,9 @@
 package com.kirsh.doc2family.logic;
 
-import java.io.Serializable;
+import android.util.ArrayMap;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Patient{
 
@@ -11,23 +13,23 @@ public class Patient{
     private String diagnosis;
     private ArrayList<Update> updates;
     private ArrayList<Question> questions;
-    private ArrayList<String> friends;
+//    private ArrayList<Friend> friends;
+    private HashMap<String, Friend> friends;
     private ArrayList<String> caregiverIds;
-    private String adminTz;
     private String tz;
 
     public Patient(){ }
 
-    public Patient(String firstName, String lastName, String id, String diagnosis, String tz){
+    public Patient(String firstName, String lastName, String id, String diagnosis, String tz, String caregiverId){
         this.firstName = firstName;
         this.lastName = lastName;
         this.id = id;
         this.diagnosis = diagnosis;
         updates = new ArrayList<Update>();
         questions = new ArrayList<Question>();
-        friends = new ArrayList<String>();
+        friends = new HashMap<>();
         caregiverIds = new ArrayList<String>();
-        adminTz = "";
+        caregiverIds.add(caregiverId);
         this.tz = tz;
     }
 
@@ -51,8 +53,20 @@ public class Patient{
         return questions;
     }
 
-    public ArrayList<String> getFriends(){
-        return friends;
+    public ArrayList<Friend> getFriends(){
+        ArrayList<Friend> toReturn = new ArrayList<>();
+        if (friends != null){
+            toReturn.addAll(friends.values());
+        }
+        return toReturn;
+    }
+
+    public ArrayList<String> getFriendIds(){
+        ArrayList<String> ids = new ArrayList<>();
+        for (Friend friend : getFriends()) {
+            ids.add(friend.getUserId());
+        }
+        return ids;
     }
 
     public ArrayList<String> getCaregiverIds(){
@@ -67,8 +81,12 @@ public class Patient{
         this.diagnosis = diagnosis;
     }
 
-    public void setFriends(ArrayList<String> friends) {
-        this.friends = friends;
+    public void setFriends(ArrayList<Friend> friendsList) {
+        HashMap<String, Friend> updatedFriends = new HashMap<>();
+        for (Friend friend : friendsList){
+            updatedFriends.put(friend.getUserId(), friend);
+        }
+        this.friends = updatedFriends;
     }
 
     public void setQuestions(ArrayList<Question> questions) {
@@ -99,14 +117,6 @@ public class Patient{
         this.lastName = lastName;
     }
 
-    public String getAdminTz() {
-        return adminTz;
-    }
-
-    public void setAdminTz(String adminTz) {
-        this.adminTz = adminTz;
-    }
-
     public String getTz() {
         return tz;
     }
@@ -115,6 +125,51 @@ public class Patient{
         this.tz = tz;
     }
 
+    public void removeCaregiver(String caregiverId){
+        caregiverIds.remove(caregiverId);
+    }
 
+    public void removeFriend(String friendId){
+        friends.remove(friendId);
+    }
+
+    public void addFriend(String userId, boolean isAdmin){
+        Friend friend = new Friend(userId, isAdmin);
+        friends.put(friend.getUserId(), friend);
+    }
+
+    public void addFriend(String userId){
+        addFriend(userId, false);
+    }
+
+    private Friend getFriendWithId(String id){
+        return friends.get(id);
+    }
+
+    public boolean userIsAdmin(String userId){
+        Friend friend = getFriendWithId(userId);
+        if (friend != null){
+            return friend.isAdmin();
+        }
+        return false;
+    }
+
+    public boolean userIsCaregiver(String userId){
+        return caregiverIds.contains(userId);
+    }
+
+    public void addAdmin(String userId){
+        addFriend(userId, true);
+    }
+
+    public ArrayList<String> getAdminIds(){
+        ArrayList<String> admins = new ArrayList<>();
+        for (Friend friend : friends.values()){
+            if (friend.isAdmin()){
+                admins.add(friend.getUserId());
+            }
+        }
+        return admins;
+    }
 }
 

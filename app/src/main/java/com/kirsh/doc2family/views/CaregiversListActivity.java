@@ -40,15 +40,14 @@ public class CaregiversListActivity extends AppCompatActivity {
     }
 
     private void initPatient(){
-        String patientString = getIntent().getStringExtra(Constants.PATIENT_ID_KEY);
+        String patientString = getIntent().getStringExtra(Constants.PATIENT_AS_STRING_KEY);
         mPatient = gson.fromJson(patientString, Patient.class);
     }
 
     private void initCaregiversAdapter() {
-        ArrayList<String> careGiverIds = mPatient.getCaregiverIds();
-        ArrayList<User> careGivers = new ArrayList<User>();
+        ArrayList<User> careGivers = new ArrayList<>();
         mAdapter = new CaregiversAdapter(this, careGivers);
-        communicator.createLiveQueryCaregiversAdapter(mAdapter, mPatient);
+        communicator.createLiveQueryCaregiversAdapter(mPatient, mAdapter);
         mAdapter.notifyDataSetChanged();
     }
 
