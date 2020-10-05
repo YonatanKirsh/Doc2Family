@@ -7,11 +7,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
@@ -50,7 +48,7 @@ public class CaregiversListActivity extends AppCompatActivity {
         ArrayList<String> careGiverIds = mPatient.getCaregiverIds();
         ArrayList<User> careGivers = new ArrayList<User>();
         mAdapter = new CaregiversAdapter(this, careGivers);
-        communicator.getCaregiversByIds(mAdapter, mAdapter.getmDataset(), careGiverIds);
+        communicator.createLiveQueryCaregiversAdapter(mAdapter, mPatient);
         mAdapter.notifyDataSetChanged();
     }
 

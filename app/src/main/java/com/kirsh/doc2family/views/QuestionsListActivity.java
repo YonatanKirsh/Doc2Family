@@ -57,7 +57,7 @@ public class QuestionsListActivity extends AppCompatActivity {
 
     private void initQuestionsAdapter(){
         mAdapter = new QuestionsAdapter(this, mPatient.getQuestions());
-        communicator.createLiveQueryQuestionsList(mAdapter, mAdapter.getmDataset(), mPatient);
+        communicator.createLiveQueryQuestionsAdapter(mAdapter, mPatient);
         mAdapter.notifyDataSetChanged();
     }
 
@@ -108,7 +108,7 @@ public class QuestionsListActivity extends AppCompatActivity {
 
                     //todo add to list of questions of the patients  ?
 
-                    communicator.cAddQuestionForPatient(QuestionsListActivity.this, mPatient, newQuestion, mAdapter);
+                    communicator.cAddQuestionForPatient(mPatient, newQuestion, mAdapter);
                     String message = "added question:\n" + newQuestion;
                     Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
                     questionInput.setText("");
