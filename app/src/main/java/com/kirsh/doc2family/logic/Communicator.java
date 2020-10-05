@@ -289,26 +289,42 @@ public class Communicator {
     }
 
     public void createLiveQueryPatientsAdapter(final PatientsAdapter adapter){
-        createLiveQueryLocalUser();
-        DocumentReference userReference = db.collection(Constants.USERS_COLLECTION_FIELD).document(firebaseUser.getUid());
-
-        userReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        // init adapter
+        updatePatientsAdapter(adapter, localUser.getPatientIds());
+        // listen for this users updates
+        db.collection(Constants.USERS_COLLECTION_FIELD).document(localUser.getId()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
-            public void onEvent(@Nullable DocumentSnapshot snapshot,
-                                @Nullable FirebaseFirestoreException e) {
+            public void onEvent(@Nullable DocumentSnapshot snapshot, @Nullable FirebaseFirestoreException e) {
                 if (e != null) {
-                    Log.w("firebase error", "Listen failed.", e);
+                    Log.d("FirestoreManager", "exception in snapshot :(" + e.getMessage());
                     return;
                 }
-                if (snapshot != null && snapshot.exists()) {
-                    updateLocalPatients();
-                    adapter.setmDataset(getPatientsListForLocalUser());
-                    adapter.notifyDataSetChanged();
+                if (snapshot != null && snapshot.exists() && snapshot.toObject(User.class) != null) {
+                    // if user updated - update it's patients
+                    userBucket[0] = snapshot.toObject(User.class);
+                    updateUserFromBucket();
+                    updatePatientsAdapter(adapter, userBucket[0].getPatientIds());
                 } else {
-                    Log.d("ErrorDoc", "Error getting document with id: " + firebaseUser.getUid());
+                    Log.d("ErrorDoc", "Error getting document with id:" + localUser.getId());
                 }
             }
         });
+    }
+
+    private void updatePatientsAdapter(final PatientsAdapter adapter, final ArrayList<String> patientIds){
+        final ArrayList<Patient>[] updatedPatients = new ArrayList[]{new ArrayList<Patient>()};
+        updatedPatients[0].clear();
+        for (String patientId : patientIds) {
+            db.collection(Constants.PATIENTS_COLLECTION_FIELD).document(patientId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    Patient patient = documentSnapshot.toObject(Patient.class);
+                    updatedPatients[0].add(patient);
+                    adapter.setmDataset(updatedPatients[0]);
+                    adapter.notifyDataSetChanged();
+                }
+            });
+        }
     }
 
     public void createLiveQueryQuestionsAdapter(final QuestionsAdapter adapter, final Patient patient){
