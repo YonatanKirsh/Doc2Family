@@ -181,7 +181,7 @@ public class PatientsListActivity extends AppCompatActivity {
     @Override
     public void onRestart() {
         super.onRestart();
-        communicator.createLiveQueryPatientsAdapter(mAdapter);
+//        communicator.createLiveQueryPatientsAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
     }
 

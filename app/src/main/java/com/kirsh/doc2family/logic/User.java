@@ -9,7 +9,7 @@ public class User {
     private String lastName;
     private String id;
     private boolean careGiver;
-    private ArrayList<Patient> patientIds = new ArrayList<>();
+    private ArrayList<String> patientIds = new ArrayList<>();
     String fullName;
     private String tz;
 
@@ -57,7 +57,7 @@ public class User {
         this.id = id;
     }
 
-    public ArrayList<Patient> getPatientIds() {
+    public ArrayList<String> getPatientIds() {
         return patientIds;
     }
 
@@ -73,8 +73,14 @@ public class User {
         return String.format("%s %s", getFirstName(), getLastName());
     }
 
-    public void setPatientIds(ArrayList<Patient> patientIds){
+    public void setPatientIds(ArrayList<String> patientIds){
         this.patientIds = patientIds;
+    }
+
+    public void addPatientId(String id){
+        if (!patientIds.contains(id)){
+            patientIds.add(id);
+        }
     }
 
     public String getTz() {

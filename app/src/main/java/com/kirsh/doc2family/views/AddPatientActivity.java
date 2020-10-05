@@ -2,7 +2,6 @@ package com.kirsh.doc2family.views;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -78,10 +77,10 @@ public class AddPatientActivity extends AppCompatActivity {
         lastNameEdit.getText().clear();
         tzEdit.getText().clear();
         diagnosisEdit.getText().clear();
-        communicator.cAddPatient(firstName, lastName, tz, diagnosis, this);
+        communicator.createNewPatient(firstName, lastName, tz, diagnosis, this);
     }
 
-    public void openActivityListPatients(){
+    public void openActivityPatientsList(){
         Intent intent = new Intent(this, PatientsListActivity.class);
         this.startActivity(intent);
     }

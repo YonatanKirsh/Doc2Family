@@ -50,7 +50,7 @@ public class CaregiversListActivity extends AppCompatActivity {
         ArrayList<String> careGiverIds = mPatient.getCaregiverIds();
         ArrayList<User> careGivers = new ArrayList<User>();
         mAdapter = new CaregiversAdapter(this, careGivers);
-        communicator.getUsersByIds(mAdapter, mAdapter.getmDataset(), careGiverIds);
+        communicator.getCaregiversByIds(mAdapter, mAdapter.getmDataset(), careGiverIds);
         mAdapter.notifyDataSetChanged();
     }
 
