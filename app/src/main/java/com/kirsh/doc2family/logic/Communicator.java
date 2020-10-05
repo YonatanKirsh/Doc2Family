@@ -301,6 +301,7 @@ public class Communicator {
                     return;
                 }
                 if (snapshot != null && snapshot.exists()) {
+                    updateLocalPatients();
                     adapter.setmDataset(getPatientsListForLocalUser());
                     adapter.notifyDataSetChanged();
                 } else {
