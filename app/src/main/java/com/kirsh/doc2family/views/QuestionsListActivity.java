@@ -51,21 +51,23 @@ public class QuestionsListActivity extends AppCompatActivity {
     }
 
     private void initPatient(){
-        String patientString = getIntent().getStringExtra(Constants.PATIENT_ID_KEY);
+        String patientString = getIntent().getStringExtra(Constants.PATIENT_AS_STRING_KEY);
         mPatient = gson.fromJson(patientString, Patient.class);
     }
 
     private void initQuestionsAdapter(){
         mAdapter = new QuestionsAdapter(this, mPatient.getQuestions());
-        communicator.createLiveQueryQuestionsList(mAdapter, mAdapter.getmDataset(), mPatient);
+        communicator.createLiveQueryQuestionsAdapter(mAdapter, mPatient);
         mAdapter.notifyDataSetChanged();
     }
 
     private void initViews(){
         // submit new question button
         submitQuestionButton = findViewById(R.id.button_submit_question);
-
-        communicator.appearNewQuestionIfFriend(submitQuestionButton, this, mPatient);
+        setAddQuestionButton();
+        if (mPatient.getFriendIds().contains(communicator.getLocalUser().getId())){
+            submitQuestionButton.setVisibility(View.VISIBLE);
+        }
 
         // questions adapter
         RecyclerView questionsAdapter = findViewById(R.id.recycler_questions);
@@ -75,7 +77,6 @@ public class QuestionsListActivity extends AppCompatActivity {
 
         // questions dialog
         initNewQuestionDialog();
-
     }
 
     public void setAddQuestionButton(){
@@ -108,7 +109,7 @@ public class QuestionsListActivity extends AppCompatActivity {
 
                     //todo add to list of questions of the patients  ?
 
-                    communicator.cAddQuestionForPatient(QuestionsListActivity.this, mPatient, newQuestion, mAdapter);
+                    communicator.cAddQuestionForPatient(mPatient, newQuestion, mAdapter);
                     String message = "added question:\n" + newQuestion;
                     Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
                     questionInput.setText("");

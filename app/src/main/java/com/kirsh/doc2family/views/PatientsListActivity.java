@@ -174,7 +174,7 @@ public class PatientsListActivity extends AppCompatActivity {
     private void openActivityPatientInfo(Patient patient) {
         Intent intent = new Intent(this, PatientInfoActivity.class);
         String patientString = gson.toJson(patient);
-        intent.putExtra(Constants.PATIENT_ID_KEY, patientString);
+        intent.putExtra(Constants.PATIENT_AS_STRING_KEY, patientString);
         startActivity(intent);
     }
 

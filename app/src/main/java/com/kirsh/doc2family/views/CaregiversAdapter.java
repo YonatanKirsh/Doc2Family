@@ -15,14 +15,10 @@ import com.kirsh.doc2family.logic.User;
 
 import java.util.ArrayList;
 
-public class CaregiversAdapter extends RecyclerView.Adapter<CaregiversAdapter.CaregiverHolder> {
-
-    private ArrayList<User> mDataset;
-    private Context mContext;
+public class CaregiversAdapter extends UsersAdapter<CaregiversAdapter.CaregiverHolder> {
 
     public CaregiversAdapter(@NonNull Context context, ArrayList<User> dataset) {
-        mDataset = dataset;
-        mContext = context;
+        super(context, dataset);
     }
 
     @NonNull
@@ -48,19 +44,6 @@ public class CaregiversAdapter extends RecyclerView.Adapter<CaregiversAdapter.Ca
         User user = mDataset.get(position);
         holder.textView.setText(user.getFullName());
 
-    }
-
-    @Override
-    public int getItemCount() {
-        return mDataset.size();
-    }
-
-    public ArrayList<User> getmDataset() {
-        return mDataset;
-    }
-
-    public void setmDataset(ArrayList<User> mDataset) {
-        this.mDataset = mDataset;
     }
 
     static class CaregiverHolder extends RecyclerView.ViewHolder{

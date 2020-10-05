@@ -58,7 +58,7 @@ public class PatientInfoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_patient_info);
         communicator = Communicator.getSingleton();
-        String patientString = getIntent().getStringExtra(Constants.PATIENT_ID_KEY);
+        String patientString = getIntent().getStringExtra(Constants.PATIENT_AS_STRING_KEY);
         mPatient = gson.fromJson(patientString, Patient.class);
         initUpdatesAdapter();
         communicator.createLiveQueryUpdatesList(mPatient, mAdapter);
@@ -128,13 +128,18 @@ public class PatientInfoActivity extends AppCompatActivity {
             }
         });
 
+        String localUserId = communicator.getLocalUser().getId();
         // add admin button
         addAdminButton = findViewById(R.id.add_an_admin_button);
-
+        if (mPatient.userIsAdmin(localUserId) || mPatient.userIsCaregiver(localUserId)){
+            addAdminButton.setVisibility(View.VISIBLE);
+        }
 
         //add update button
         addUpdateButton = findViewById(R.id.add_an_update_button);
-        communicator.appearAddAdminAndUpdate(addAdminButton, addUpdateButton, mPatient);
+        if (mPatient.userIsCaregiver(localUserId)){
+            addUpdateButton.setVisibility(View.VISIBLE);
+        }
 
         addAdminButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -220,7 +225,7 @@ public class PatientInfoActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int id) {
                 String adminTz = adminTzInput.getText().toString();
                 if (!adminTz.equals("")){
-                    mPatient.setAdminTz(adminTz);
+                    mPatient.addAdmin(adminTz);
                     communicator.updateAdminInUsersAndPatientCollection(mPatient, adminTz);
                 }
                 String message = "added admin:\n" + adminTz;
@@ -410,21 +415,21 @@ public class PatientInfoActivity extends AppCompatActivity {
     public void openActivityQuestions(){
         Intent intent = new Intent(this, QuestionsListActivity.class);
         String patientString = gson.toJson(mPatient);
-        intent.putExtra(Constants.PATIENT_ID_KEY, patientString);
+        intent.putExtra(Constants.PATIENT_AS_STRING_KEY, patientString);
         startActivity(intent);
     }
 
     public void openActivityFriends(){
         Intent intent = new Intent(this, FriendsListActivity.class);
         String patientString = gson.toJson(mPatient);
-        intent.putExtra(Constants.PATIENT_ID_KEY, patientString);
+        intent.putExtra(Constants.PATIENT_AS_STRING_KEY, patientString);
         startActivity(intent);
     }
 
     public void openActivityCaregivers(){
         Intent intent = new Intent(this, CaregiversListActivity.class);
         String patientString = gson.toJson(mPatient);
-        intent.putExtra(Constants.PATIENT_ID_KEY, patientString);
+        intent.putExtra(Constants.PATIENT_AS_STRING_KEY, patientString);
         startActivity(intent);
     }
 

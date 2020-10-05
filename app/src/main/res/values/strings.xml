@@ -59,7 +59,7 @@
     <string name="id_number">ID number</string>
     <string name="tz_info_message">Please enter your Teudat Zeut number</string>
     <string name="add_update">Add an update</string>
-    <string name="set_admin">Set admin</string>
+    <string name="add_admin">Add admin</string>
     <string name="delete">DELETE</string>
 
 </resources>
