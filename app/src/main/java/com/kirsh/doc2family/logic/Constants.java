@@ -11,8 +11,14 @@ public class Constants {
     // keys
     public static final String PATIENT_ID_KEY = "patient_id";
 
+    // fields
+    public static final String PATIENTS_COLLECTION_FIELD = "Patients";
+    public static final String USERS_COLLECTION_FIELD = "Users";
+    public static final String PATIENT_IDS_FIELD = "patientIds";
+
     // tags
     public static final String NULL_USER_TAG = "Null User";
+    public static final String UPDATE_FIREBASE_TAG = "Updated firebase";
 
     // validation functions
     public static boolean isLegalEmail(String email){

@@ -77,6 +77,12 @@ public class User {
         this.patientIds = patientIds;
     }
 
+    public void addPatientId(String id){
+        if (!patientIds.contains(id)){
+            patientIds.add(id);
+        }
+    }
+
     public String getTz() {
         return tz;
     }

@@ -184,7 +184,7 @@ public class PatientInfoActivity extends AppCompatActivity {
                     mAdapter.notifyDataSetChanged();
 
                     // update the db
-                    communicator.updatePatientInUsersandPatientCollection(mPatient);
+                    communicator.updatePatientInCollection(mPatient);
                 }
                 String message = "added update:\n" + updateMess;
                 Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
@@ -297,7 +297,7 @@ public class PatientInfoActivity extends AppCompatActivity {
                                 updates.remove(updateOld);
                                 updates.sort(new Update.UpdateSorter());
                                 mPatient.setUpdates(updates);
-                                communicator.updatePatientInUsersandPatientCollection(mPatient);
+                                communicator.updatePatientInCollection(mPatient);
                                 mAdapter.notifyDataSetChanged();
                                 dialog.dismiss();
                                 break;
@@ -330,7 +330,7 @@ public class PatientInfoActivity extends AppCompatActivity {
                                 updates.add(newUpdate);
                                 updates.sort(new Update.UpdateSorter());
                                 mPatient.setUpdates(updates);
-                                communicator.updatePatientInUsersandPatientCollection(mPatient);
+                                communicator.updatePatientInCollection(mPatient);
                                 mAdapter.notifyDataSetChanged();
                                 callingDialog.dismiss();
                                 break;
@@ -388,7 +388,7 @@ public class PatientInfoActivity extends AppCompatActivity {
                     case DialogInterface.BUTTON_POSITIVE:
                         //Yes button clicked - todo actually update diagnosis
                         mPatient.setDiagnosis(newDiagnosis);
-                        communicator.updatePatientInUsersandPatientCollection(mPatient);
+                        communicator.updatePatientInCollection(mPatient);
                         diagnosisTextView.setText(newDiagnosis);
                         callingDialog.dismiss();
                         break;
