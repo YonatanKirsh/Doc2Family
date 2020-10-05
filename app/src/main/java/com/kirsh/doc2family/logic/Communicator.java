@@ -384,6 +384,60 @@ public class Communicator {
         });
     }
 
+    public void getCaregiversByIds(final CaregiversAdapter adapter, final ArrayList<User> userList, final ArrayList<String> idsList){
+        if (idsList.isEmpty()){
+            return;
+        }
+        final ArrayList<User>[] caregivers = new ArrayList[]{new ArrayList<User>()};
+        CollectionReference referenceToCollection = db.collection("Users");
+        referenceToCollection.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (e != null){
+                    Log.d("FirestoreManager", "exception in snapshot :(" + e.getMessage());
+                    return;
+                }
+                if (queryDocumentSnapshots == null){
+                    Log.d("FirestoreManager", "value is null");
+                    return;
+                }
+                // let's refresh the local array list
+                userList.clear();
+                //adapter.setmDataset(getUsersPatients(myUser.getUid()));
+                adapter.notifyDataSetChanged();
+            }
+        });
+
+        referenceToCollection.whereIn("id", idsList).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                //adapter.setmDataset(getUsersPatients(myUser.getUid()));
+                adapter.notifyDataSetChanged();
+            }
+        });
+
+        referenceToCollection.whereIn("id", idsList).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot myDoc : task.getResult()) {
+                        User user = myDoc.toObject(User.class);
+                        caregivers[0].add(user);
+
+                    }
+                    adapter.setmDataset(caregivers[0]);
+                    adapter.notifyDataSetChanged();
+                }
+                else {
+                    Log.d("ErrorDoc", "Error getting documents: ", task.getException());
+                    return;
+                }
+                //adapter.setmDataset(getUsersPatients(myUser.getUid()));
+                //adapter.notifyDataSetChanged();
+            }
+        });
+    }
+
     public  void getUsersByIds(final CaregiversAdapter adapter, final ArrayList<User> userList, final ArrayList<String> idsList){
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
         final FirebaseUser myUser  = firebaseAuth.getCurrentUser();
