@@ -291,7 +291,7 @@ public class Communicator {
     public void createLiveQueryPatientsAdapter(final PatientsAdapter adapter){
         // init adapter
         updatePatientsAdapter(adapter, localUser.getPatientIds());
-        // listen for this patients updates
+        // listen for this users updates
         db.collection(Constants.USERS_COLLECTION_FIELD).document(localUser.getId()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot snapshot, @Nullable FirebaseFirestoreException e) {
@@ -300,7 +300,7 @@ public class Communicator {
                     return;
                 }
                 if (snapshot != null && snapshot.exists() && snapshot.toObject(User.class) != null) {
-                    // if patient updated - update it's caregivers
+                    // if user updated - update it's patients
                     userBucket[0] = snapshot.toObject(User.class);
                     updateUserFromBucket();
                     updatePatientsAdapter(adapter, userBucket[0].getPatientIds());
