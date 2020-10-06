@@ -1,13 +1,16 @@
 package com.kirsh.doc2family.logic;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
@@ -23,7 +26,6 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.kirsh.doc2family.R;
-import com.kirsh.doc2family.views.AddPatientActivity;
 import com.kirsh.doc2family.views.CaregiversAdapter;
 import com.kirsh.doc2family.views.ForgotPasswordActivity;
 import com.kirsh.doc2family.views.FriendsAdapter;
@@ -63,6 +65,9 @@ public class Communicator {
         if (singleton == null){
             singleton = new Communicator();
         }
+        if (singleton.localUser == null){
+            singleton.initLocalUser();
+        }
         return singleton;
     }
 
@@ -71,7 +76,10 @@ public class Communicator {
     }
 
     private void initLocalUser(){
-        db.collection("Users").document(firebaseUser.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        if (firebaseUser == null){
+            return;
+        }
+        db.collection(Constants.USERS_COLLECTION_FIELD).document(firebaseUser.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 userBucket[0] = documentSnapshot.toObject(User.class);
@@ -138,7 +146,6 @@ public class Communicator {
                             // add new User object to db
                             final User newUser = new User(firebaseUser.getEmail(), firstName, lastName, firebaseUser.getUid(), mIsDoctor, tz);
                             db.collection(Constants.USERS_COLLECTION_FIELD).document(firebaseUser.getUid()).set(newUser);
-
                             ((SignUpActivity)context).openActivityLogin();
                         } else {
                             // If sign in fails, display a message to the user.
@@ -167,7 +174,7 @@ public class Communicator {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             if (firebaseAuth.getCurrentUser().isEmailVerified()){
-                                Log.d("SIGN_IN_SUCCESS", "signInWithEmail: success");
+                                Log.d("Sign in success", "signInWithEmail: success");
                                 initLocalUser();
                                 ((LoginActivity)context).openActivityListPatients();
                             }
@@ -199,58 +206,49 @@ public class Communicator {
     }
 
     public void createNewPatient(String firstName, String lastName, String tz, String diagnosis, final Context context){
-        //TODO What if the patient is already in the db ( need to add tz ??)
         // create new patient in db
         final DocumentReference myDocPatient = db.collection(Constants.PATIENTS_COLLECTION_FIELD).document();
         final Patient patientToAdd = new Patient(firstName, lastName, myDocPatient.getId(), diagnosis, tz, localUser.getId());
         myDocPatient.set(patientToAdd);
         localUser.addPatientId(patientToAdd.getId());
-        // add to user's patients on db
-        db.collection(Constants.USERS_COLLECTION_FIELD)
-                .document(localUser.getId())
-                .update(Constants.PATIENT_IDS_FIELD, localUser.getPatientIds())
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(Constants.UPDATE_FIREBASE_TAG, "DocumentSnapshot User: " + localUser.getId()  + " patientIds successfully updated!");
-                        ((AddPatientActivity)context).openActivityPatientsList();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(Constants.UPDATE_FIREBASE_TAG, "Error updating document: " + localUser.getId(), e);
-                        ((AddPatientActivity)context).openActivityPatientsList();
-                    }
-                });
+        updateUserInDatabase(localUser);
     }
 
-    public void cAddQuestionForPatient(final Patient patient, final String questions, final QuestionsAdapter adpater){
-        // update the list of questions of given patient in the Patient collection
-        //todo test remove answer
+    public void addQuestionForPatient(Patient patient, final String questionInput){
         db.collection(Constants.PATIENTS_COLLECTION_FIELD).document(patient.getId()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()){
                     DocumentSnapshot documentSnapshot = task.getResult();
                     Patient patient = documentSnapshot.toObject(Patient.class);
-                    Question question = new Question(questions, System.currentTimeMillis(), System.currentTimeMillis(), localUser.getId());
-
-                    ArrayList<Question> oldQuestions = patient.getQuestions();
-                    oldQuestions.add(question);
-                    patient.setQuestions(oldQuestions);
-                    updatePatientInCollection(patient);
+                    Question question = new Question(questionInput, System.currentTimeMillis(), System.currentTimeMillis(), localUser.getId());
+                    patient.addQuestion(question);
+                    updatePatientInDatabase(patient);
                 }
             }
         });
-
     }
 
-    public void updatePatientInCollection(final Patient patient){
+    public void deleteQuestionForPatient(Patient patient, final Question question){
+        db.collection(Constants.PATIENTS_COLLECTION_FIELD).document(patient.getId()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()){
+                    DocumentSnapshot documentSnapshot = task.getResult();
+                    Patient patient = documentSnapshot.toObject(Patient.class);
+                    patient.deleteQuestion(question);
+                    updatePatientInDatabase(patient);
+                }
+            }
+        });
+    }
+
+    //todo make private
+    public void updatePatientInDatabase(final Patient patient){
         db.collection(Constants.PATIENTS_COLLECTION_FIELD).document(patient.getId()).set(patient);
     }
 
-    public void updateUserInCollection(final User user){
+    private void updateUserInDatabase(final User user){
         db.collection(Constants.USERS_COLLECTION_FIELD).document(user.getId()).set(user);
     }
 
@@ -262,12 +260,15 @@ public class Communicator {
         }
         // get each patient _once_
         localPatientIds.clear();
-        CollectionReference patientsCollection = db.collection("Patients");
+        CollectionReference patientsCollection = db.collection(Constants.PATIENTS_COLLECTION_FIELD);
         for (final String patientId : localUser.getPatientIds()) {
             patientsCollection.document(patientId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                     Patient patient = documentSnapshot.toObject(Patient.class);
+                    if (patient == null){
+                        return;
+                    }
                     if (!localPatientIds.contains(patient.getId())){
                         localPatientIds.add(patient.getId());
                         patientsBucket[0].add(patient);
@@ -408,58 +409,71 @@ public class Communicator {
         });
     }
 
-    public boolean localUserIsCaregiver(){
-        if (localUser == null){
-            return false;
-        }
-        return localUser.isCareGiver();
-    }
-
     public void removePatientFromUserAndUpdate(final Patient currentPatient){
-        db.collection(Constants.USERS_COLLECTION_FIELD).document(localUser.getId()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                // remove patient from user's patients
-                User user = documentSnapshot.toObject(User.class);
-                if (user == null){
-                    Log.d(Constants.NULL_USER_TAG, "onSuccess: got null user with id: " + localUser.getId());
-                    return;
-                }
-                user.removePatientId(currentPatient.getId());
-                db.collection(Constants.USERS_COLLECTION_FIELD).document(user.getId()).set(user);
-                // remove this user as caregiver if necessary
-                if (currentPatient.getCaregiverIds().contains(user.getId())){
-                    currentPatient.removeCaregiver(user.getId());
-                }
-                // remove this user as friend if necessary
-                if (currentPatient.getFriends().contains(user.getId())){
-                    currentPatient.removeFriend(user.getId());
-                }
-                updatePatientInCollection(currentPatient);
-            }
-        });
+        localUser.removePatientId(currentPatient.getId());
+        updateUserInDatabase(localUser);
+        // remove this user as caregiver if necessary
+        if (currentPatient.getCaregiverIds().contains(localUser.getId())){
+            currentPatient.removeCaregiver(localUser.getId());
+        }
+        // remove this user as friend if necessary
+        if (currentPatient.getFriends().contains(localUser.getId())){
+            currentPatient.removeFriend(localUser.getId());
+        }
+        updatePatientInDatabase(currentPatient);
+
+//        db.collection(Constants.USERS_COLLECTION_FIELD).document(localUser.getId()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+//            @Override
+//            public void onSuccess(DocumentSnapshot documentSnapshot) {
+//                // remove patient from user's patients
+//                User user = documentSnapshot.toObject(User.class);
+//                if (user == null){
+//                    Log.d(Constants.NULL_USER_TAG, "onSuccess: got null user with id: " + localUser.getId());
+//                    return;
+//                }
+//                user.removePatientId(currentPatient.getId());
+//                updateUserInCollection(user);
+//                db.collection(Constants.USERS_COLLECTION_FIELD).document(user.getId()).set(user);
+//                // remove this user as caregiver if necessary
+//                if (currentPatient.getCaregiverIds().contains(user.getId())){
+//                    currentPatient.removeCaregiver(user.getId());
+//                }
+//                // remove this user as friend if necessary
+//                if (currentPatient.getFriends().contains(user.getId())){
+//                    currentPatient.removeFriend(user.getId());
+//                }
+//                updatePatientInCollection(currentPatient);
+//            }
+//        });
     }
 
-    public void updateAdminInUsersAndPatientCollection(final Patient patient, final String adminTz){
-//        updatePatientInCollection(patient);
-        db.collection(Constants.USERS_COLLECTION_FIELD).whereEqualTo("tz", adminTz).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+    public void initAdminForPatient(final Patient patient, final String adminTz, final Button addAdminButton, final DialogInterface dialog, final Context context){
+        db.collection(Constants.USERS_COLLECTION_FIELD).whereEqualTo(Constants.TZ_FIELD, adminTz).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                boolean userExists = false;
                 if (task.isSuccessful()){
                     for (QueryDocumentSnapshot doc : task.getResult()){
                         User user = doc.toObject(User.class);
-                        user.addPatientId(patient.getId());
-                        updateUserInCollection(user);
                         patient.addFriend(user.getId(), true);
-                        updatePatientInCollection(patient);
+                        updatePatientInDatabase(patient);
+                        userExists = true;
+                        String message = "added admin:\n" + adminTz;
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                        addAdminButton.setVisibility(View.INVISIBLE);
+                        dialog.dismiss();
                     }
+                }
+                if (!userExists){
+                    String message = "Couldn't find user with tz:\n" + adminTz;
+                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
     }
 
-    public void attemptAddPatient(final String patientTz, final Context context){
+    public void addPatientForLocalUser(final String patientTz, final Context context){
         // todo there is a pb when I delete a patient and try to add it with the same tz.
         // find patient with this tz
         db.collection(Constants.PATIENTS_COLLECTION_FIELD).whereEqualTo(Constants.TZ_FIELD, patientTz).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -479,13 +493,13 @@ public class Communicator {
                         if (patient.hasCaregiverWithId(localUser.getId()) && !localUser.getPatientIds().contains(patient.getId())){
                             Toast.makeText(context, context.getString(R.string.added_patient_as_caregiver_message), Toast.LENGTH_LONG).show();
                             localUser.addPatientId(patient.getId());
-                            updateUserInCollection(localUser);
+                            updateUserInDatabase(localUser);
                         }
                         // add as friend iff user is patient's friend
                         if (patient.hasFriendWithId(localUser.getId()) && !localUser.getPatientIds().contains(patient.getId())){
                             Toast.makeText(context, context.getString(R.string.added_patient_as_friend_message), Toast.LENGTH_LONG).show();
                             localUser.addPatientId(patient.getId());
-                            updateUserInCollection(localUser);
+                            updateUserInDatabase(localUser);
                         }
                         // display error message if user isn't treating/following this patient
                         else {
@@ -495,34 +509,6 @@ public class Communicator {
                             }
                             Toast.makeText(context, message, Toast.LENGTH_LONG).show();
                         }
-//
-//                        db.collection(Constants.USERS_COLLECTION_FIELD).whereEqualTo("id", firebaseUser.getUid())
-//                                .get()
-//                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//                                    @Override
-//                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                                        if (task.isSuccessful()) {
-//                                            for (QueryDocumentSnapshot doc : task.getResult()) {
-//                                                User user = doc.toObject(User.class);
-//                                                ArrayList<String> careGivers = patient.getCaregiverIds();
-//                                                if (!careGivers.contains(user.getId())) {
-//                                                    String message = "Another caregiver must add you\nin order to access this patient";
-//                                                    Snackbar.make(contextView, message, Snackbar.LENGTH_LONG).show();
-////                                                    careGivers.add(user.getId());
-////                                                    patient[0].setCaregiverIds(careGivers);
-////                                                    db.collection("Patients").document(patient[0].getId()).set(patient[0]);
-////                                                    ArrayList<String> patients = user.getPatientIds();
-////                                                    patients.add(patient[0].getId());
-////                                                    user.setPatientIds(patients);
-////                                                    db.collection("Users").document(user.getId()).set(user);
-//                                                } else {
-//                                                    String message = "Already your patient";
-//                                                    Snackbar.make(contextView, message, Snackbar.LENGTH_LONG).show();
-//                                                }
-//                                            }
-//                                        }
-//                                    }
-//                                });
                     }
                     if (!patientExists){
                         // caregivers can create new patients
@@ -552,22 +538,21 @@ public class Communicator {
     }
 
     public void addFriendAndUpdateCollections(final String newFriendTz, final Patient patient, final Context context, final  FriendsAdapter mAdapter){
-        final boolean[] flag = {false};
-
         db.collection(Constants.USERS_COLLECTION_FIELD).whereEqualTo(Constants.TZ_FIELD, newFriendTz).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                boolean userExists = false;
                 if (task.isSuccessful()){
                     for (QueryDocumentSnapshot doc : task.getResult()){
                         User friendAsUser = doc.toObject(User.class);
+                        userExists = true;
                         if (patient.hasFriendWithId(friendAsUser.getId())){
                             Toast.makeText(context, "Already his friend!",
                                     Toast.LENGTH_SHORT).show();
                             break;
                         }
-                        flag[0] = true;
                         patient.addFriend(friendAsUser.getId());
-                        updatePatientInCollection(patient);
+                        updatePatientInDatabase(patient);
                         Toast.makeText(context, "Friend added!",
                                 Toast.LENGTH_SHORT).show();
 //                        ArrayList<User> users = mAdapter.getmDataset();
@@ -576,7 +561,7 @@ public class Communicator {
 //                        mAdapter.notifyDataSetChanged();
                     }
                 }
-                if (!flag[0]){
+                if (!userExists){
                     Toast.makeText(context, "Not a valid User!",
                             Toast.LENGTH_SHORT).show();
                 }
@@ -626,37 +611,66 @@ public class Communicator {
         });
     }
 
-    public void updateanswerToQuestion(String answer, long edited, Question question, Patient patient) {
+//    public void updateAnswerForQuestion(String answer, long edited, final Question question, Patient patient) {
+//        question.answerQuestion(answer, localUser.getId());
+//        db.collection(Constants.PATIENTS_COLLECTION_FIELD).document(patient.getId()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+//            @Override
+//            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+//                if (task.isSuccessful()){
+//                    DocumentSnapshot documentSnapshot = task.getResult();
+//                    Patient patient = documentSnapshot.toObject(Patient.class);
+//                    patient.updateQuestion(question);
+//                    updatePatientInDatabase(patient);
+//                }
+//            }
+//        });
+//
+//
+//        ArrayList<Question> questionsPatient = patient.getQuestions();
+//        for(Question q : questionsPatient){
+//            //TODO how to check in a better way
+//
+//            if( q.getQuestionContent().equals(question.getQuestionContent()) && q.getAskerID().equals(question.getAskerID()) &&
+//                    q.getDateAsked() == question.getDateAsked()){
+//                questionsPatient.remove(q);
+//                q.setAnswerContent(answer);
+//                q.setmDateEdited(edited);
+//                q.setAnswered(true);
+//                questionsPatient.add(q);
+//                patient.setQuestions(questionsPatient);
+//                updatePatientInDatabase(patient);
+//                break;
+//            }
+//        }
+//
+//    }
 
-        ArrayList<Question> questionsPatient = patient.getQuestions();
-        for(Question q : questionsPatient){
-            //TODO how to check in a better way
-
-            if( q.getQuestion().equals(question.getQuestion()) && q.getAskerID().equals(question.getAskerID()) &&
-                    q.getDateAsked() == question.getDateAsked()){
-                questionsPatient.remove(q);
-                q.setAnswer(answer);
-                q.setmDateEdited(edited);
-                q.setAnswered(true);
-                questionsPatient.add(q);
-                patient.setQuestions(questionsPatient);
-                updatePatientInCollection(patient);
-                break;
+    public void updateQuestionForPatient(Patient patient, final Question question, final Context context){
+        db.collection(Constants.PATIENTS_COLLECTION_FIELD).document(patient.getId()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()){
+                    DocumentSnapshot documentSnapshot = task.getResult();
+                    Patient patient = documentSnapshot.toObject(Patient.class);
+                    patient.updateQuestion(question);
+                    updatePatientInDatabase(patient);
+                    Toast.makeText(context, context.getString(R.string.updated_question_message), Toast.LENGTH_LONG).show();
+                }
+                else {
+                    Toast.makeText(context, context.getString(R.string.unable_to_update_question_message), Toast.LENGTH_LONG).show();
+                }
             }
-        }
-
+        });
     }
 
-    public void updateAskerFullname(String askerID, final QuestionsAdapter.QuestionHolder holder) {
-        db.collection("Users").whereEqualTo("id", askerID).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+    public void updateUserFullname(String userID, final TextView textView) {
+        db.collection(Constants.USERS_COLLECTION_FIELD).document(userID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()){
-                    for (QueryDocumentSnapshot doc: task.getResult()){
-                        User user = doc.toObject(User.class);
-                        String fullName = "questioned by " + user.getFullName();
-                        holder.textViewIssuerQuestion.setText(fullName);
-                    }
+                    DocumentSnapshot doc = task.getResult();
+                    User user = doc.toObject(User.class);
+                    textView.setText(user.getFullName());
                 }
             }
         });
@@ -678,23 +692,23 @@ public class Communicator {
         });
     }
 
-    public void updateQuestionChange(String newUpdate, long edited, Question question, Patient mPatient) {
-
-        ArrayList<Question> questionsPatient = mPatient.getQuestions();
-        for(Question q : questionsPatient){
-            //TODO how to check in a better way
-
-            if( q.getQuestion().equals(question.getQuestion()) && q.getAskerID().equals(question.getAskerID()) &&
-                    q.getDateAsked() == question.getDateAsked()){
-                questionsPatient.remove(q);
-                q.setQuestion(newUpdate);
-                q.setmDateEdited(edited);
-                q.setAnswered(true);
-                questionsPatient.add(q);
-                mPatient.setQuestions(questionsPatient);
-                updatePatientInCollection(mPatient);
-                break;
-            }
-        }
-    }
+//    public void updateQuestionChange(String newUpdate, long edited, Question question, Patient mPatient) {
+//
+//        ArrayList<Question> questionsPatient = mPatient.getQuestions();
+//        for(Question q : questionsPatient){
+//            //TODO how to check in a better way
+//
+//            if( q.getQuestionContent().equals(question.getQuestionContent()) && q.getAskerID().equals(question.getAskerID()) &&
+//                    q.getDateAsked() == question.getDateAsked()){
+//                questionsPatient.remove(q);
+//                q.setQuestionContent(newUpdate);
+//                q.setmDateEdited(edited);
+//                q.setAnswered(true);
+//                questionsPatient.add(q);
+//                mPatient.setQuestions(questionsPatient);
+//                updatePatientInDatabase(mPatient);
+//                break;
+//            }
+//        }
+//    }
 }

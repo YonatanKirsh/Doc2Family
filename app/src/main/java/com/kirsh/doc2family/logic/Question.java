@@ -3,43 +3,40 @@ package com.kirsh.doc2family.logic;
 import java.util.Comparator;
 
 public class Question{
+    private String id;
     private String askerID;
-    private String question;
-    private String answer;
+    private String answererId;
+    private String questionContent;
+    private String answerContent;
     private long mDateAsked;
     private long mDateEdited;
     private boolean isAnswered = false;
 
     public Question(){}
 
-    public Question(String question, long dateAsked, long dateEdited, String askerID){
-        this.question = question;
-        this.answer = null;
+    public Question(String questionContent, long dateAsked, long dateEdited, String askerID){
+        this.questionContent = questionContent;
+        this.answerContent = null;
         mDateAsked = dateAsked;
         mDateEdited = dateEdited;
         this.askerID = askerID;
         isAnswered = false;
     }
 
-    public Question(String question, String askerID){
-        this.question = question;
-        this.askerID = askerID;
-        mDateAsked = System.currentTimeMillis();
+    public String getId(){
+        return id;
     }
 
-    public Question(String question, String answer, String askerID){
-        this(question, askerID);
-        this.answer = answer;
-        mDateAsked = System.currentTimeMillis();
-        isAnswered = true;
+    public void setId(String id){
+        this.id = id;
     }
 
-    public String getQuestion(){
-        return question;
+    public String getQuestionContent(){
+        return questionContent;
     }
 
-    public String getAnswer() {
-        return answer;
+    public String getAnswerContent() {
+        return answerContent;
     }
 
     public boolean isAnswered() {
@@ -50,13 +47,12 @@ public class Question{
         isAnswered = answered;
     }
 
-    public void setQuestion(String question) {
-        this.question = question;
+    public void setQuestionContent(String questionContent) {
+        this.questionContent = questionContent;
     }
 
-    public void setAnswer(String answer){
-        this.answer = answer;
-        isAnswered = true;
+    public void setAnswerContent(String answerContent){
+        this.answerContent = answerContent;
     }
 
     public String getAskerID() {
@@ -65,6 +61,14 @@ public class Question{
 
     public void setAskerID(String askerID) {
         this.askerID = askerID;
+    }
+
+    public String getAnswererId(){
+        return answererId;
+    }
+
+    public void setAnswererId(String userId){
+        answererId = userId;
     }
 
     public long getDateAsked(){
@@ -78,11 +82,16 @@ public class Question{
         return mDateAsked;
     }
 
-
     public void setmDateEdited(long mDateEdited) {
         this.mDateEdited = mDateEdited;
     }
 
+    public void answerQuestion(String answer, String answererId){
+        answerContent = answer;
+        this.answererId = answererId;
+        isAnswered = true;
+//        setmDateEdited(System.currentTimeMillis());
+    }
 
     public static class SortByLastEdited implements Comparator<Question>{
 

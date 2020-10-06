@@ -67,5 +67,7 @@
     <string name="already_following_patient_message">You are already following this patient!</string>
     <string name="caregiver_unable_to_add_patient_message">Another caregiver must add you\nin order to access this patient</string>
     <string name="friend_unable_to_add_patient_message">An admin must add you\nin order to follow this patient</string>
+    <string name="updated_question_message">Updated question!</string>
+    <string name="unable_to_update_question_message">Error updating question :(</string>
 
 </resources>

@@ -193,7 +193,7 @@ public class PatientInfoActivity extends AppCompatActivity {
                     mAdapter.notifyDataSetChanged();
 
                     // update the db
-                    communicator.updatePatientInCollection(mPatient);
+                    communicator.updatePatientInDatabase(mPatient);
                 }
                 String message = "added update:\n" + updateMess;
                 Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
@@ -230,13 +230,13 @@ public class PatientInfoActivity extends AppCompatActivity {
                 String adminTz = adminTzInput.getText().toString();
                 if (!adminTz.equals("")){
                     mPatient.addAdmin(adminTz);
-                    communicator.updateAdminInUsersAndPatientCollection(mPatient, adminTz);
+                    communicator.initAdminForPatient(mPatient, adminTz, addAdminButton, dialog, PatientInfoActivity.this);
                 }
-                String message = "added admin:\n" + adminTz;
-                Toast.makeText(PatientInfoActivity.this, message, Toast.LENGTH_SHORT).show();
-                addAdminButton.setVisibility(View.INVISIBLE);
-                adminTzInput.setText("");
-                dialog.dismiss();
+//                String message = "added admin:\n" + adminTz;
+//                Toast.makeText(PatientInfoActivity.this, message, Toast.LENGTH_SHORT).show();
+//                addAdminButton.setVisibility(View.INVISIBLE);
+//                adminTzInput.setText("");
+//                dialog.dismiss();
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -306,7 +306,7 @@ public class PatientInfoActivity extends AppCompatActivity {
                                 updates.remove(updateOld);
                                 updates.sort(new Update.UpdateSorter());
                                 mPatient.setUpdates(updates);
-                                communicator.updatePatientInCollection(mPatient);
+                                communicator.updatePatientInDatabase(mPatient);
                                 mAdapter.notifyDataSetChanged();
                                 dialog.dismiss();
                                 break;
@@ -339,7 +339,7 @@ public class PatientInfoActivity extends AppCompatActivity {
                                 updates.add(newUpdate);
                                 updates.sort(new Update.UpdateSorter());
                                 mPatient.setUpdates(updates);
-                                communicator.updatePatientInCollection(mPatient);
+                                communicator.updatePatientInDatabase(mPatient);
                                 mAdapter.notifyDataSetChanged();
                                 callingDialog.dismiss();
                                 break;
@@ -397,7 +397,7 @@ public class PatientInfoActivity extends AppCompatActivity {
                     case DialogInterface.BUTTON_POSITIVE:
                         //Yes button clicked - todo actually update diagnosis
                         mPatient.setDiagnosis(newDiagnosis);
-                        communicator.updatePatientInCollection(mPatient);
+                        communicator.updatePatientInDatabase(mPatient);
                         diagnosisTextView.setText(newDiagnosis);
                         callingDialog.dismiss();
                         break;
@@ -413,7 +413,11 @@ public class PatientInfoActivity extends AppCompatActivity {
     }
 
     public void onClickUpdate(final Update update) {
-        communicator.editUpdateIfCurrentUser(update, this);
+        User user = communicator.getLocalUser();
+        if (update.getIssuingCareGiverId().equals(user.getId())){
+            showEditUpdateDialog(update, user);
+        }
+//        communicator.editUpdateIfCurrentUser(update, this);
     }
 
     public void openActivityQuestions(){
