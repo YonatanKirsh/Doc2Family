@@ -36,6 +36,7 @@
     <string name="remove_caregiver_format">Remove %s?</string>
     <string name="remove">Remove</string>
     <string name="add_question">Add Question</string>
+    <string name="delete_update_title">Delete update?</string>
 
 
 <!--    hints-->
@@ -78,5 +79,9 @@
     <string name="updated_friend_message">Updated friend</string>
     <string name="removed_caregiver_message">Successfully removed caregiver</string>
     <string name="unable_to_remove_caregiver_message">Error removing caregiver :(</string>
+    <string name="added_update_message">Added update</string>
+    <string name="unable_to_add_update_message">Error adding update :(</string>
+    <string name="removed_update_message">Deleted update</string>
+    <string name="unable_to_remove_update_message">Error removing update :(</string>
 
 </resources>

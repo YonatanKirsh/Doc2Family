@@ -237,5 +237,19 @@ public class Patient{
         Log.w(Constants.UNEXPECTED_TAG, "updateQuestion: question does not exist for this patient");
     }
 
+    public void addUpdate(Update update){
+        updates.add(update);
+    }
+
+    public void removeUpdate(Update toRemove){
+        // could probably do this better
+        for (Update update : updates){
+            if (update.getIssuingCareGiverId().equals(toRemove.getIssuingCareGiverId()) &&
+                    update.getContent().equals(toRemove.getContent()) &&
+                    update.getDateCreated() == toRemove.getDateCreated()){
+                updates.remove(update);
+            }
+        }
+    }
 }
 
