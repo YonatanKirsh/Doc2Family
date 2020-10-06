@@ -24,6 +24,7 @@
     <string name="reset_password">Send</string>
     <string name="forgot_your_password_title">Forgot your password?</string>
     <string name="add_patient">Add Patient</string>
+    <string name="create_new_patient">Create New Patient</string>
     <string name="teudat_zehut">Teudat Zehut</string>
     <string name="my_patients">My Patients</string>
     <string name="add_caregiver">Add Caregiver</string>
@@ -34,6 +35,7 @@
     <string name="friends">Friends</string>
     <string name="remove_caregiver_format">Remove %s?</string>
     <string name="remove">Remove</string>
+    <string name="add_question">Add Question</string>
 
 
 <!--    hints-->
@@ -45,7 +47,7 @@
     <string name="password_hint">Password</string>
     <string name="confirm_password_hint">Confirm Password</string>
     <string name="friends_email_hint">Enter friend\'s tz</string>
-    <string name="caregiver_email_hint">Enter caregiver\'s email</string>
+    <string name="caregiver_tz_hint">Enter caregiver\'s tz</string>
 
 <!--    messages -->
     <string name="are_you_sure">Are you sure?</string>
@@ -69,5 +71,7 @@
     <string name="friend_unable_to_add_patient_message">An admin must add you\nin order to follow this patient</string>
     <string name="updated_question_message">Updated question!</string>
     <string name="unable_to_update_question_message">Error updating question :(</string>
+    <string name="added_caregiver_message">Successfully dded to caregivers</string>
+    <string name="unable_to_add_caregiver_message">Error adding caregiver :(</string>
 
 </resources>

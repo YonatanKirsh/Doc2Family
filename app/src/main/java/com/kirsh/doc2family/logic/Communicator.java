@@ -229,20 +229,6 @@ public class Communicator {
         });
     }
 
-    public void deleteQuestionForPatient(Patient patient, final Question question){
-        db.collection(Constants.PATIENTS_COLLECTION_FIELD).document(patient.getId()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()){
-                    DocumentSnapshot documentSnapshot = task.getResult();
-                    Patient patient = documentSnapshot.toObject(Patient.class);
-                    patient.deleteQuestion(question);
-                    updatePatientInDatabase(patient);
-                }
-            }
-        });
-    }
-
     //todo make private
     public void updatePatientInDatabase(final Patient patient){
         db.collection(Constants.PATIENTS_COLLECTION_FIELD).document(patient.getId()).set(patient);
@@ -569,15 +555,14 @@ public class Communicator {
         });
     }
 
-    public void updateUpdateAdapterFullname(final String userID, final UpdatesAdapter.UpdateHolder holder ){
+    public void updateUpdateAdapterFullname(final String userID, final UpdatesAdapter.UpdateHolder holder){
         db.collection("Users").whereEqualTo("id", userID).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()){
                     for (QueryDocumentSnapshot doc: task.getResult()){
                         User user = doc.toObject(User.class);
-                        String fullName = "by " + user.getFullName();
-                        holder.texViewIssuer.setText(fullName);
+                        holder.texViewIssuer.setText(user.getFullName());
                     }
                 }
             }
@@ -611,40 +596,6 @@ public class Communicator {
         });
     }
 
-//    public void updateAnswerForQuestion(String answer, long edited, final Question question, Patient patient) {
-//        question.answerQuestion(answer, localUser.getId());
-//        db.collection(Constants.PATIENTS_COLLECTION_FIELD).document(patient.getId()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//            @Override
-//            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                if (task.isSuccessful()){
-//                    DocumentSnapshot documentSnapshot = task.getResult();
-//                    Patient patient = documentSnapshot.toObject(Patient.class);
-//                    patient.updateQuestion(question);
-//                    updatePatientInDatabase(patient);
-//                }
-//            }
-//        });
-//
-//
-//        ArrayList<Question> questionsPatient = patient.getQuestions();
-//        for(Question q : questionsPatient){
-//            //TODO how to check in a better way
-//
-//            if( q.getQuestionContent().equals(question.getQuestionContent()) && q.getAskerID().equals(question.getAskerID()) &&
-//                    q.getDateAsked() == question.getDateAsked()){
-//                questionsPatient.remove(q);
-//                q.setAnswerContent(answer);
-//                q.setmDateEdited(edited);
-//                q.setAnswered(true);
-//                questionsPatient.add(q);
-//                patient.setQuestions(questionsPatient);
-//                updatePatientInDatabase(patient);
-//                break;
-//            }
-//        }
-//
-//    }
-
     public void updateQuestionForPatient(Patient patient, final Question question, final Context context){
         db.collection(Constants.PATIENTS_COLLECTION_FIELD).document(patient.getId()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -677,13 +628,12 @@ public class Communicator {
     }
 
     public void createLiveQueryUpdatesList(final Patient mPatient, final UpdatesAdapter mAdapter){
-        db.collection("Patients").whereEqualTo("id", mPatient.getId()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        db.collection(Constants.PATIENTS_COLLECTION_FIELD).whereEqualTo("id", mPatient.getId()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()){
                     for (QueryDocumentSnapshot doc: task.getResult()){
                         Patient patient = doc.toObject(Patient.class);
-                        //mPatient = patient; //todo maybe have to update the patient in PatientInfoActivity
                         mAdapter.setmDataset(patient.getUpdates());
                         mAdapter.notifyDataSetChanged();
                     }
@@ -692,23 +642,29 @@ public class Communicator {
         });
     }
 
-//    public void updateQuestionChange(String newUpdate, long edited, Question question, Patient mPatient) {
-//
-//        ArrayList<Question> questionsPatient = mPatient.getQuestions();
-//        for(Question q : questionsPatient){
-//            //TODO how to check in a better way
-//
-//            if( q.getQuestionContent().equals(question.getQuestionContent()) && q.getAskerID().equals(question.getAskerID()) &&
-//                    q.getDateAsked() == question.getDateAsked()){
-//                questionsPatient.remove(q);
-//                q.setQuestionContent(newUpdate);
-//                q.setmDateEdited(edited);
-//                q.setAnswered(true);
-//                questionsPatient.add(q);
-//                mPatient.setQuestions(questionsPatient);
-//                updatePatientInDatabase(mPatient);
-//                break;
-//            }
-//        }
-//    }
+    public void addCaregiverToPatient(final Patient patient, String tz, final Context context){
+        db.collection(Constants.USERS_COLLECTION_FIELD).whereEqualTo(Constants.TZ_FIELD, tz).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot doc : task.getResult()) {
+                        final User caregiver = doc.toObject(User.class);
+                        db.collection(Constants.PATIENTS_COLLECTION_FIELD).document(patient.getId()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                Patient dbPatient = documentSnapshot.toObject(Patient.class);
+                                if (dbPatient != null){
+                                    dbPatient.addCaregiver(caregiver.getId());
+                                    updatePatientInDatabase(dbPatient);
+                                    Toast.makeText(context, context.getString(R.string.added_caregiver_message), Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
+                    }
+                } else {
+                    Toast.makeText(context, context.getString(R.string.unable_to_add_caregiver_message), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
 }

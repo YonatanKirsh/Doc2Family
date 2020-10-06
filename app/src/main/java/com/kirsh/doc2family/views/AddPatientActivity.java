@@ -43,7 +43,7 @@ public class AddPatientActivity extends AppCompatActivity {
         }
 
         // add patient button
-        addPatientButton = findViewById(R.id.button_add_patient);
+        addPatientButton = findViewById(R.id.button_create_new_patient);
         setAddPatientButton();
     }
 

@@ -82,12 +82,15 @@
         app:layout_constraintTop_toBottomOf="@+id/edit_text_patients_last_name" />
 
     <Button
-        android:id="@+id/button_add_patient"
-        android:layout_width="wrap_content"
+        android:id="@+id/button_create_new_patient"
+        android:layout_width="310dp"
         android:layout_height="50dp"
-        android:layout_marginTop="40dp"
-        android:text="Add Patient"
+        android:layout_margin="40dp"
+        android:text="@string/create_new_patient"
+        android:background="@drawable/customized_button"
+        android:textColor="@color/white"
         app:layout_constraintTop_toBottomOf="@id/edit_text_patients_diagnosis"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"/>
 

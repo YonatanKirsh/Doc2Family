@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -58,14 +59,17 @@ public class CaregiversListActivity extends AppCompatActivity {
         caregiversRecycler.setLayoutManager(layoutManager);
         caregiversRecycler.setAdapter(mAdapter);
 
-        // add-caregiver button
-        //addCaregiverButton = findViewById(R.id.caregivers_list_button_goto_add_caregiver);
-        //addCaregiverButton.setOnClickListener(new View.OnClickListener() {
-          //  @Override
-           // public void onClick(View v) {
-            //    showAddCaregiverDialog();
-            //}
-        //});
+//         add-caregiver button
+        addCaregiverButton = findViewById(R.id.caregivers_list_button_goto_add_caregiver);
+        if (mPatient.hasCaregiverWithId(communicator.getLocalUser().getId())){
+            addCaregiverButton.setVisibility(View.VISIBLE);
+        }
+        addCaregiverButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showAddCaregiverDialog();
+            }
+        });
     }
 
     private void showAddCaregiverDialog(){
@@ -73,22 +77,22 @@ public class CaregiversListActivity extends AppCompatActivity {
         builder.setTitle(R.string.add_caregiver);
 
         // add edit text
-        final EditText emailInput = new EditText(CaregiversListActivity.this);
+        final EditText tzInput = new EditText(CaregiversListActivity.this);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
-        emailInput.setLayoutParams(lp);
-        emailInput.setHint(R.string.caregiver_email_hint);
-        builder.setView(emailInput);
+        tzInput.setLayoutParams(lp);
+        tzInput.setHint(R.string.caregiver_tz_hint);
+        builder.setView(tzInput);
 
         // Add the buttons
         builder.setPositiveButton(R.string.add, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked add button - todo add caregiver
-                String newCaregiver = emailInput.getText().toString();
-                String message = "added caregiver:\n" + newCaregiver;
+                String caregiverTz = tzInput.getText().toString();
+                String message = "added caregiver:\n" + caregiverTz;
                 Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
-                emailInput.setText("");
+                tzInput.setText("");
                 dialog.dismiss();
             }
         });
