@@ -20,6 +20,7 @@ public class Constants {
 
     // tags
     public static final String NULL_USER_TAG = "Null User";
+    public static final String UNEXPECTED_TAG = "Unexpected";
     public static final String UPDATE_FIREBASE_TAG = "Updated firebase";
 
     // validation functions

@@ -214,6 +214,40 @@ public class Communicator {
         updateUserInDatabase(localUser);
     }
 
+    public void removeFriendFromPatient(Patient patient, final String friendUserId, final Context context){
+        db.collection(Constants.PATIENTS_COLLECTION_FIELD).document(patient.getId()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                Patient dbPatient = documentSnapshot.toObject(Patient.class);
+                if (dbPatient != null){
+                    dbPatient.removeFriend(friendUserId);
+                    updatePatientInDatabase(dbPatient);
+                    Toast.makeText(context, context.getString(R.string.removed_friend_message), Toast.LENGTH_LONG).show();
+                }
+                else {
+                    Toast.makeText(context, context.getString(R.string.unable_to_remove_friend_message), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
+    public void updateFriendInPatient(Patient patient, final Friend friend, final Context context){
+        db.collection(Constants.PATIENTS_COLLECTION_FIELD).document(patient.getId()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                Patient dbPatient = documentSnapshot.toObject(Patient.class);
+                if (dbPatient != null){
+                    dbPatient.updateFriend(friend);
+                    updatePatientInDatabase(dbPatient);
+                    Toast.makeText(context, context.getString(R.string.updated_friend_message), Toast.LENGTH_LONG).show();
+                }
+                else {
+                    Toast.makeText(context, context.getString(R.string.unable_to_remove_friend_message), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
     public void addQuestionForPatient(Patient patient, final String questionInput){
         db.collection(Constants.PATIENTS_COLLECTION_FIELD).document(patient.getId()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -523,7 +557,7 @@ public class Communicator {
         });
     }
 
-    public void addFriendAndUpdateCollections(final String newFriendTz, final Patient patient, final Context context, final  FriendsAdapter mAdapter){
+    public void addFriendToPatient(final String newFriendTz, final Patient patient, final  boolean makeAdmin, final Context context){
         db.collection(Constants.USERS_COLLECTION_FIELD).whereEqualTo(Constants.TZ_FIELD, newFriendTz).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -533,18 +567,12 @@ public class Communicator {
                         User friendAsUser = doc.toObject(User.class);
                         userExists = true;
                         if (patient.hasFriendWithId(friendAsUser.getId())){
-                            Toast.makeText(context, "Already his friend!",
-                                    Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "Already his friend!", Toast.LENGTH_SHORT).show();
                             break;
                         }
-                        patient.addFriend(friendAsUser.getId());
+                        patient.addFriend(friendAsUser.getId(), makeAdmin);
                         updatePatientInDatabase(patient);
-                        Toast.makeText(context, "Friend added!",
-                                Toast.LENGTH_SHORT).show();
-//                        ArrayList<User> users = mAdapter.getmDataset();
-//                        users.add(friendAsUser);
-//                        mAdapter.setmDataset(users);
-//                        mAdapter.notifyDataSetChanged();
+                        Toast.makeText(context, "Friend added!", Toast.LENGTH_SHORT).show();
                     }
                 }
                 if (!userExists){

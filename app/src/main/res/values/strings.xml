@@ -71,7 +71,10 @@
     <string name="friend_unable_to_add_patient_message">An admin must add you\nin order to follow this patient</string>
     <string name="updated_question_message">Updated question!</string>
     <string name="unable_to_update_question_message">Error updating question :(</string>
-    <string name="added_caregiver_message">Successfully dded to caregivers</string>
+    <string name="added_caregiver_message">Successfully added to caregivers</string>
     <string name="unable_to_add_caregiver_message">Error adding caregiver :(</string>
+    <string name="removed_friend_message">Successfully removed friend</string>
+    <string name="unable_to_remove_friend_message">Error removing friend :(</string>
+    <string name="updated_friend_message">Updated friend</string>
 
 </resources>
