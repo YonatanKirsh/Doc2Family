@@ -26,7 +26,7 @@ public class CaregiversAdapter extends UsersAdapter<CaregiversAdapter.CaregiverH
     public CaregiverHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View caregiverItemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.solo_text_view, parent, false);
         final CaregiverHolder caregiverHolder = new CaregiverHolder(caregiverItemView);
-        caregiverItemView.setOnLongClickListener(new OnLongClickListener() {
+        caregiverItemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 User currentCaregiver = mDataset.get(caregiverHolder.getAbsoluteAdapterPosition());

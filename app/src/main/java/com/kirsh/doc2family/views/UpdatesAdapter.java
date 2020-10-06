@@ -37,13 +37,14 @@ public class UpdatesAdapter extends RecyclerView.Adapter<UpdatesAdapter.UpdateHo
     public UpdateHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View updateView = LayoutInflater.from(parent.getContext()).inflate(R.layout.update_item, parent, false);
         final UpdateHolder updateHolder = new UpdateHolder(updateView);
-        updateView.setOnClickListener(new View.OnClickListener() {
+        updateView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
-            public void onClick(View v) {
+            public boolean onLongClick(View v) {
                 Update currentUpdate = mDataset.get(updateHolder.getAbsoluteAdapterPosition());
                 if (mContext instanceof PatientInfoActivity){
-                    ((PatientInfoActivity)mContext).onClickUpdate(currentUpdate);
+                    ((PatientInfoActivity)mContext).onLongClickUpdate(currentUpdate);
                 }
+                return false;
             }
         });
         return updateHolder;
@@ -69,6 +70,7 @@ public class UpdatesAdapter extends RecyclerView.Adapter<UpdatesAdapter.UpdateHo
     }
 
     public void setmDataset(ArrayList<Update> mDataset) {
+        mDataset.sort(new Update.UpdateSorter());
         this.mDataset = mDataset;
     }
 

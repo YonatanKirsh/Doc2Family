@@ -19,7 +19,6 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -63,7 +62,7 @@ public class PatientInfoActivity extends AppCompatActivity {
         String patientString = getIntent().getStringExtra(Constants.PATIENT_AS_STRING_KEY);
         mPatient = gson.fromJson(patientString, Patient.class);
         initUpdatesAdapter();
-        communicator.createLiveQueryUpdatesList(mPatient, mAdapter);
+        communicator.createLiveQueryUpdatesAdapter(mPatient, mAdapter);
         initViews();
     }
 
@@ -175,30 +174,19 @@ public class PatientInfoActivity extends AppCompatActivity {
         builder.setView(updateInput);
 
         // Add the buttons
-        builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(getString(R.string.add), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 String updateMess = updateInput.getText().toString();
                 if (!updateMess.equals("")){
-                    FirebaseAuth auth = FirebaseAuth.getInstance();
-                    String careGiverID = auth.getCurrentUser().getUid();
                     long time = System.currentTimeMillis();
-                    Update newUpdate = new Update(careGiverID, updateMess, time);
-
-                    //update the list of updates of the patient locally
-                    ArrayList<Update> updates = mPatient.getUpdates();
-                    updates.add(newUpdate);
-                    updates.sort(new Update.UpdateSorter());
-                    mPatient.setUpdates(updates);
-                    mAdapter.setmDataset(updates);
-                    mAdapter.notifyDataSetChanged();
-
+                    Update update = new Update(communicator.getLocalUser().getId(), updateMess, time);
                     // update the db
-                    communicator.updatePatientInDatabase(mPatient);
+                    communicator.addUpdateForPatient(mPatient, update, PatientInfoActivity.this);
+                    dialog.dismiss();
                 }
-                String message = "added update:\n" + updateMess;
-                Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
-                updateInput.setText("");
-                dialog.dismiss();
+                else {
+                    Toast.makeText(PatientInfoActivity.this, getString(R.string.unable_to_add_update_message), Toast.LENGTH_LONG).show();
+                }
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -232,11 +220,6 @@ public class PatientInfoActivity extends AppCompatActivity {
                     mPatient.addAdmin(adminTz);
                     communicator.initAdminForPatient(mPatient, adminTz, addAdminButton, dialog, PatientInfoActivity.this);
                 }
-//                String message = "added admin:\n" + adminTz;
-//                Toast.makeText(PatientInfoActivity.this, message, Toast.LENGTH_SHORT).show();
-//                addAdminButton.setVisibility(View.INVISIBLE);
-//                adminTzInput.setText("");
-//                dialog.dismiss();
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -249,104 +232,16 @@ public class PatientInfoActivity extends AppCompatActivity {
         builder.show();
     }
 
-    public void showEditUpdateDialog(final Update update, User user){
-        final AlertDialog.Builder builder = new AlertDialog.Builder(PatientInfoActivity.this);
-        // set view
-        View view = getLayoutInflater().inflate(R.layout.update_dialog, null);
-        builder.setView(view);
-        // add update info
-        final TextView updateDate = view.findViewById(R.id.text_view_update_popup_date);
-        Date resultdate = new Date(update.getDateCreated());
-        updateDate.setText(sdf.format(resultdate));
-        final EditText updateContent = view.findViewById(R.id.edit_text_update_popup_content);
-        updateContent.setText(update.getContent());
-        final TextView updateIssuer = view.findViewById(R.id.text_view_update_popup_issuer);
-
-        String fullName =  user.getFullName();
-        updateIssuer.setText(fullName);
-        // Add the buttons
-        builder.setPositiveButton(R.string.update, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // User clicked update button - todo change the update's content
-                String newUpdate = updateContent.getText().toString();
-                confirmUpdateUpdate(update, newUpdate, dialog);
-//                updateContent.setText("");
-            }
-        });
-
-        builder.setNegativeButton(R.string.delete, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                deleteUpdate(update, dialog);
-            }
-        });
-
-        builder.setNeutralButton(R.string.cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.dismiss();
-            }
-        });
-
-        // Create the AlertDialog
-        AlertDialog updatesDialog = builder.create();
-        updatesDialog.show();
-        //builder.show();
-    }
-
-    private void deleteUpdate(final Update update, final DialogInterface callDialog) {
+    public void confirmDeleteUpdate(final Update update, final DialogInterface callingDialog) {
         DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 switch (which) {
                     case DialogInterface.BUTTON_POSITIVE:
-                        ArrayList<Update> updates = mPatient.getUpdates();
-                        for (Update updateOld : mPatient.getUpdates()){
-                            if (updateOld.getContent().equals(update.getContent()) && updateOld.getDateCreated() == update.getDateCreated()){
-                                updates.remove(updateOld);
-                                updates.sort(new Update.UpdateSorter());
-                                mPatient.setUpdates(updates);
-                                communicator.updatePatientInDatabase(mPatient);
-                                mAdapter.notifyDataSetChanged();
-                                dialog.dismiss();
-                                break;
-                            }
-                        }
-
-                    case DialogInterface.BUTTON_NEGATIVE:
-                        // No button clicked
+                        // confirmed delete
+                        communicator.removeUpdateForPatient(mPatient, update, PatientInfoActivity.this);
+                        callingDialog.dismiss();
                         break;
-                }
-            }
-        };
-        ConfirmDialog.show(this, dialogClickListener);
-
-
-    }
-
-    public void confirmUpdateUpdate(final Update update, final String nUpdateContent, final DialogInterface callingDialog) {
-        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
-                    case DialogInterface.BUTTON_POSITIVE:
-
-                        ArrayList<Update> updates = mPatient.getUpdates();
-                        for (Update updateOld : mPatient.getUpdates()){
-                            if (updateOld.getContent().equals(update.getContent()) && updateOld.getDateCreated() == update.getDateCreated()){
-                                updates.remove(updateOld);
-                                Update newUpdate = new Update(update.getIssuingCareGiverId(), nUpdateContent, System.currentTimeMillis());
-                                updates.add(newUpdate);
-                                updates.sort(new Update.UpdateSorter());
-                                mPatient.setUpdates(updates);
-                                communicator.updatePatientInDatabase(mPatient);
-                                mAdapter.notifyDataSetChanged();
-                                callingDialog.dismiss();
-                                break;
-                            }
-                        }
-
-
                     case DialogInterface.BUTTON_NEGATIVE:
                         // No button clicked
                         break;
@@ -395,7 +290,7 @@ public class PatientInfoActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 switch (which){
                     case DialogInterface.BUTTON_POSITIVE:
-                        //Yes button clicked - todo actually update diagnosis
+                        //Yes button clicked
                         mPatient.setDiagnosis(newDiagnosis);
                         communicator.updatePatientInDatabase(mPatient);
                         diagnosisTextView.setText(newDiagnosis);
@@ -412,13 +307,40 @@ public class PatientInfoActivity extends AppCompatActivity {
         ConfirmDialog.show(this, dialogClickListener, String.format("Update diagnosis to\n\"%s\"?", newDiagnosis));
     }
 
-    public void onClickUpdate(final Update update) {
-        User user = communicator.getLocalUser();
-        if (update.getIssuingCareGiverId().equals(user.getId())){
-            showEditUpdateDialog(update, user);
+    public void onLongClickUpdate(final Update update){
+        // only allow caregivers to remove other caregivers
+        if (!mPatient.hasCaregiverWithId(communicator.getLocalUser().getId())){
+            return;
         }
-//        communicator.editUpdateIfCurrentUser(update, this);
+        // init builder, get diagnosis
+        AlertDialog.Builder builder = new AlertDialog.Builder(PatientInfoActivity.this);
+        builder.setTitle(getString(R.string.delete_update_title));
+
+        // set cancel button
+        builder.setPositiveButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        // set remove caregiver button
+        builder.setNegativeButton(R.string.delete, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                confirmDeleteUpdate(update, dialog);
+            }
+        });
+        builder.show();
     }
+
+//    public void onClickUpdate(final Update update) {
+//        User user = communicator.getLocalUser();
+//        if (update.getIssuingCareGiverId().equals(user.getId())){
+//            showEditUpdateDialog(update, user);
+//        }
+////        communicator.editUpdateIfCurrentUser(update, this);
+//    }
 
     public void openActivityQuestions(){
         Intent intent = new Intent(this, QuestionsListActivity.class);
