@@ -76,5 +76,7 @@
     <string name="removed_friend_message">Successfully removed friend</string>
     <string name="unable_to_remove_friend_message">Error removing friend :(</string>
     <string name="updated_friend_message">Updated friend</string>
+    <string name="removed_caregiver_message">Successfully removed caregiver</string>
+    <string name="unable_to_remove_caregiver_message">Error removing caregiver :(</string>
 
 </resources>

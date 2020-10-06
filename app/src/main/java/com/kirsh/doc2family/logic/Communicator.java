@@ -429,7 +429,7 @@ public class Communicator {
         });
     }
 
-    public void removePatientFromUserAndUpdate(final Patient currentPatient){
+    public void removePatientFromUser(final Patient currentPatient){
         localUser.removePatientId(currentPatient.getId());
         updateUserInDatabase(localUser);
         // remove this user as caregiver if necessary
@@ -437,7 +437,7 @@ public class Communicator {
             currentPatient.removeCaregiver(localUser.getId());
         }
         // remove this user as friend if necessary
-        if (currentPatient.getFriends().contains(localUser.getId())){
+        if (currentPatient.hasFriendWithId(localUser.getId())){
             currentPatient.removeFriend(localUser.getId());
         }
         updatePatientInDatabase(currentPatient);
@@ -613,7 +613,7 @@ public class Communicator {
                         flag = true;
                     }
 
-                    if(flag){
+                    if(flag) {
                         dbCallBackTZ.isTZAlreadyInBD(true);
                     }
                     else{
@@ -656,18 +656,35 @@ public class Communicator {
     }
 
     public void createLiveQueryUpdatesList(final Patient mPatient, final UpdatesAdapter mAdapter){
-        db.collection(Constants.PATIENTS_COLLECTION_FIELD).whereEqualTo("id", mPatient.getId()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        db.collection(Constants.PATIENTS_COLLECTION_FIELD).document(mPatient.getId()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()){
-                    for (QueryDocumentSnapshot doc: task.getResult()){
-                        Patient patient = doc.toObject(Patient.class);
-                        mAdapter.setmDataset(patient.getUpdates());
-                        mAdapter.notifyDataSetChanged();
-                    }
+            public void onEvent(@Nullable DocumentSnapshot snapshot, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.d("FirestoreManager", "exception in snapshot :(" + e.getMessage());
+                    return;
+                }
+                if (snapshot != null && snapshot.exists() && snapshot.toObject(Patient.class) != null) {
+                    // if user updated - update it's patients
+                    Patient patient = snapshot.toObject(Patient.class);
+                    mAdapter.setmDataset(patient.getUpdates());
+                    mAdapter.notifyDataSetChanged();
+                } else {
+                    Log.d("ErrorDoc", "Error getting document with id:" + localUser.getId());
                 }
             }
         });
+
+//        db.collection(Constants.PATIENTS_COLLECTION_FIELD).document(mPatient.getId()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+//            @Override
+//            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+//                if (task.isSuccessful()){
+//                    DocumentSnapshot doc = task.getResult();
+//                    Patient patient = doc.toObject(Patient.class);
+//                    mAdapter.setmDataset(patient.getUpdates());
+//                    mAdapter.notifyDataSetChanged();
+//                }
+//            }
+//        });
     }
 
     public void addCaregiverToPatient(final Patient patient, String tz, final Context context){
@@ -691,6 +708,23 @@ public class Communicator {
                     }
                 } else {
                     Toast.makeText(context, context.getString(R.string.unable_to_add_caregiver_message), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
+    public void removeCaregiverFromPatient(final Patient patient, final String caregiverId, final Context context){
+        db.collection(Constants.PATIENTS_COLLECTION_FIELD).document(patient.getId()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                Patient dbPatient = documentSnapshot.toObject(Patient.class);
+                if (dbPatient != null){
+                    dbPatient.removeCaregiver(caregiverId);
+                    updatePatientInDatabase(dbPatient);
+                    Toast.makeText(context, context.getString(R.string.removed_caregiver_message), Toast.LENGTH_LONG).show();
+                }
+                else {
+                    Toast.makeText(context, context.getString(R.string.unable_to_remove_caregiver_message), Toast.LENGTH_LONG).show();
                 }
             }
         });

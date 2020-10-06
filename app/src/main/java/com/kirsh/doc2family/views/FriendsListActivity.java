@@ -75,16 +75,9 @@ public class FriendsListActivity extends AppCompatActivity {
     }
 
     private void showAddFriendDialog(){
+        // init builder
         AlertDialog.Builder builder = new AlertDialog.Builder(FriendsListActivity.this);
         builder.setTitle(R.string.add_friend);
-
-        // add edit text
-//        final EditText emailInput = new EditText(FriendsListActivity.this);
-//        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-//                LinearLayout.LayoutParams.MATCH_PARENT,
-//                LinearLayout.LayoutParams.MATCH_PARENT);
-//        emailInput.setLayoutParams(lp);
-//        emailInput.setHint(R.string.friends_email_hint);
         View view = getLayoutInflater().inflate(R.layout.add_friend_dialog, null);
         builder.setView(view);
         final EditText friendTzEditText = view.findViewById(R.id.add_friend_dialog_edit_text_friend_id);

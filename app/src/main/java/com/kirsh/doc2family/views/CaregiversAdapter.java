@@ -29,9 +29,9 @@ public class CaregiversAdapter extends UsersAdapter<CaregiversAdapter.CaregiverH
         caregiverItemView.setOnLongClickListener(new OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                User currentUser = mDataset.get(caregiverHolder.getAbsoluteAdapterPosition());
+                User currentCaregiver = mDataset.get(caregiverHolder.getAbsoluteAdapterPosition());
                 if (mContext instanceof CaregiversListActivity){
-                    ((CaregiversListActivity)mContext).onLongClickCaregiver(currentUser);
+                    ((CaregiversListActivity)mContext).onLongClickCaregiver(currentCaregiver);
                 }
                 return false;
             }
