@@ -35,11 +35,12 @@
 
     <Button
         android:id="@+id/button_submit_question"
-        android:layout_width="wrap_content"
+        android:layout_width="310dp"
         android:layout_height="50dp"
-        android:layout_margin="20dp"
-        android:text="Add Question"
-        android:visibility="invisible"
+        android:layout_margin="40dp"
+        android:text="@string/add_question"
+        android:background="@drawable/customized_button"
+        android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"/>

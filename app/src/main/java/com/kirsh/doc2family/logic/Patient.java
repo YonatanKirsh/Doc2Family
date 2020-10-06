@@ -161,6 +161,10 @@ public class Patient{
         addFriend(userId, false);
     }
 
+    public void addCaregiver(String userId){
+        caregiverIds.add(userId);
+    }
+
     private Friend getFriendWithId(String id){
         return friends.get(id);
     }
