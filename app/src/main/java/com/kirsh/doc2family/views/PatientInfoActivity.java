@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -40,6 +41,7 @@ public class PatientInfoActivity extends AppCompatActivity {
     private Patient mPatient;
     UpdatesAdapter mAdapter;
     TextView patientNameTextView;
+    TextView patientTzTextView;
     TextView diagnosisTextView;
     Button questionsButton;
     Button caregiversButton;
@@ -70,9 +72,9 @@ public class PatientInfoActivity extends AppCompatActivity {
     }
 
     public void initViews(){
-
+        String localUserId = communicator.getLocalUser().getId();
         // patient name view
-        patientNameTextView = findViewById(R.id.text_view_patient_info_title);
+        patientNameTextView = findViewById(R.id.activity_patient_info_text_view_title);
         if (mPatient != null){
             patientNameTextView.setText(mPatient.getFullName());
         }
@@ -80,20 +82,26 @@ public class PatientInfoActivity extends AppCompatActivity {
             patientNameTextView.setText(R.string.no_patient);
         }
 
+        // tz text view
+        patientTzTextView = findViewById(R.id.activity_patient_info_text_view_tz_content);
+        patientTzTextView.setText(mPatient.getTz());
+
         // diagnosis text view
-        diagnosisTextView = findViewById(R.id.text_view_patient_diagnosis);
+        diagnosisTextView = findViewById(R.id.activity_patient_info_text_view_patient_diagnosis);
         if (mPatient != null){
             diagnosisTextView.setText(mPatient.getDiagnosis());
         }
         else {
             diagnosisTextView.setText(R.string.no_patient);
         }
-        diagnosisTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showEditDiagnosisDialog();
-            }
-        });
+        if (mPatient.hasCaregiverWithId(localUserId)){
+            diagnosisTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showEditDiagnosisDialog();
+                }
+            });
+        }
 
         // updates adapter
         RecyclerView updatesRecycler = findViewById(R.id.recycler_updates);
@@ -128,37 +136,33 @@ public class PatientInfoActivity extends AppCompatActivity {
             }
         });
 
-        String localUserId = communicator.getLocalUser().getId();
+
         // add admin button
-        addAdminButton = findViewById(R.id.add_an_admin_button);
-        if (mPatient.userIsAdmin(localUserId) || mPatient.userIsCaregiver(localUserId)){
-            addAdminButton.setVisibility(View.VISIBLE);
-        }
-
-        //add update button
-        addUpdateButton = findViewById(R.id.add_an_update_button);
-        if (mPatient.userIsCaregiver(localUserId)){
-            addUpdateButton.setVisibility(View.VISIBLE);
-        }
-
+        addAdminButton = findViewById(R.id.activity_patient_info_button_add_admin);
         addAdminButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 addAdmin();
             }
         });
+        if (mPatient.hasCaregiverWithId(localUserId) && !mPatient.hasAdmin()){
+            addAdminButton.setVisibility(View.VISIBLE);
+        }
 
+        //add update button
+        addUpdateButton = findViewById(R.id.activity_patient_info_button_add_update);
         addUpdateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addUpdate();
+                attemptAddUpdate();
             }
         });
-
-
+        if (mPatient.hasCaregiverWithId(localUserId)){
+            addUpdateButton.setVisibility(View.VISIBLE);
+        }
     }
 
-    public void addUpdate(){
+    public void attemptAddUpdate(){
         AlertDialog.Builder builder = new AlertDialog.Builder(PatientInfoActivity.this);
         builder.setTitle("Add an update");
 
@@ -229,7 +233,7 @@ public class PatientInfoActivity extends AppCompatActivity {
                     communicator.updateAdminInUsersAndPatientCollection(mPatient, adminTz);
                 }
                 String message = "added admin:\n" + adminTz;
-                Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
+                Toast.makeText(PatientInfoActivity.this, message, Toast.LENGTH_SHORT).show();
                 addAdminButton.setVisibility(View.INVISIBLE);
                 adminTzInput.setText("");
                 dialog.dismiss();

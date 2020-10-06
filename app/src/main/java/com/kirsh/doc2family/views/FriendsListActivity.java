@@ -1,6 +1,5 @@
 package com.kirsh.doc2family.views;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -16,11 +15,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.gson.Gson;
 import com.kirsh.doc2family.R;
 import com.kirsh.doc2family.logic.Communicator;
@@ -52,19 +46,6 @@ public class FriendsListActivity extends AppCompatActivity {
     private void initPatient(){
         String patientString = getIntent().getStringExtra(Constants.PATIENT_AS_STRING_KEY);
         mPatient = gson.fromJson(patientString, Patient.class);
-
-//        FirebaseFirestore db = FirebaseFirestore.getInstance();
-//        db.collection("Patients").whereEqualTo("id", mPatient.getId()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//            @Override
-//            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                if (task.isSuccessful()){
-//                    for (QueryDocumentSnapshot doc: task.getResult()){
-//                        Patient patient = doc.toObject(Patient.class);
-//                        mPatient = patient;
-//                    }
-//                }
-//            }
-//        });
     }
 
     private void initFriendsadapter(){
@@ -77,7 +58,7 @@ public class FriendsListActivity extends AppCompatActivity {
     private void initViews(){
         // add friend button
         addFriendButton = findViewById(R.id.button_add_friend);
-        if (mPatient.userIsAdmin(communicator.getLocalUser().getId())){
+        if (mPatient.hasAdminWithId(communicator.getLocalUser().getId())){
             addFriendButton.setVisibility(View.VISIBLE);
         }
         addFriendButton.setOnClickListener(new View.OnClickListener() {
@@ -139,7 +120,7 @@ public class FriendsListActivity extends AppCompatActivity {
         final TextView friendEmailtextView = view.findViewById(R.id.friend_dialog_text_view_friend_email);
         friendEmailtextView.setText(friend.getEmail());
         final TextView isAdminTextView = view.findViewById(R.id.friend_dialog_text_view_is_admin);
-        if (mPatient.userIsAdmin(friend.getId())){
+        if (mPatient.hasAdminWithId(friend.getId())){
             isAdminTextView.setText(R.string.admin);
         }else {
             isAdminTextView.setText(R.string.not_admin);
@@ -162,7 +143,7 @@ public class FriendsListActivity extends AppCompatActivity {
         // add admin views
         final CheckBox makeAdminCheckBox = view.findViewById(R.id.friend_dialog_checkbox_make_admin);
         makeAdminCheckBox.setVisibility(View.VISIBLE);
-        if (mPatient.userIsAdmin(friend.getId())){
+        if (mPatient.hasAdminWithId(friend.getId())){
             makeAdminCheckBox.setChecked(true);
         } else {
             makeAdminCheckBox.setChecked(false);

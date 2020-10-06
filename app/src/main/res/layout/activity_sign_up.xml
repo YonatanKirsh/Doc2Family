@@ -128,7 +128,7 @@
                     app:startIconDrawable="@drawable/ic_tz">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/edit_text_tz"
+                        android:id="@+id/activity_add_patient_text_view_tz_content"
                         android:layout_width="293dp"
                         android:layout_height="wrap_content"
                         android:hint="@string/id_number"

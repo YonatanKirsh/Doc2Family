@@ -23,7 +23,8 @@
     <string name="login">Login</string>
     <string name="reset_password">Send</string>
     <string name="forgot_your_password_title">Forgot your password?</string>
-    <string name="new_patient">New Patient</string>
+    <string name="add_patient">Add Patient</string>
+    <string name="teudat_zehut">Teudat Zehut</string>
     <string name="my_patients">My Patients</string>
     <string name="add_caregiver">Add Caregiver</string>
     <string name="caregivers_title">Caregivers</string>
@@ -61,5 +62,10 @@
     <string name="add_update">Add an update</string>
     <string name="add_admin">Add admin</string>
     <string name="delete">DELETE</string>
+    <string name="added_patient_as_friend_message">Following patient</string>
+    <string name="added_patient_as_caregiver_message">Adding to your patients</string>
+    <string name="already_following_patient_message">You are already following this patient!</string>
+    <string name="caregiver_unable_to_add_patient_message">Another caregiver must add you\nin order to access this patient</string>
+    <string name="friend_unable_to_add_patient_message">An admin must add you\nin order to follow this patient</string>
 
 </resources>

@@ -146,7 +146,7 @@ public class Patient{
         return friends.get(id);
     }
 
-    public boolean userIsAdmin(String userId){
+    public boolean hasAdminWithId(String userId){
         Friend friend = getFriendWithId(userId);
         if (friend != null){
             return friend.isAdmin();
@@ -154,22 +154,25 @@ public class Patient{
         return false;
     }
 
-    public boolean userIsCaregiver(String userId){
+    public boolean hasCaregiverWithId(String userId){
         return caregiverIds.contains(userId);
+    }
+
+    public boolean hasFriendWithId(String userId){
+        return friends.containsKey(userId);
     }
 
     public void addAdmin(String userId){
         addFriend(userId, true);
     }
 
-    public ArrayList<String> getAdminIds(){
-        ArrayList<String> admins = new ArrayList<>();
+    public boolean hasAdmin(){
         for (Friend friend : friends.values()){
             if (friend.isAdmin()){
-                admins.add(friend.getUserId());
+                return true;
             }
         }
-        return admins;
+        return false;
     }
 }
 
