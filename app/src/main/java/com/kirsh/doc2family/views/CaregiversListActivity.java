@@ -88,10 +88,9 @@ public class CaregiversListActivity extends AppCompatActivity {
         // Add the buttons
         builder.setPositiveButton(R.string.add, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                // User clicked add button - todo add caregiver
+                // User clicked add button
                 String caregiverTz = tzInput.getText().toString();
-                String message = "added caregiver:\n" + caregiverTz;
-                Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
+                communicator.addCaregiverToPatient(mPatient, caregiverTz, CaregiversListActivity.this);
                 tzInput.setText("");
                 dialog.dismiss();
             }
@@ -107,30 +106,52 @@ public class CaregiversListActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    public void onLongClickCaregiver(final User currentUser) {
+    public void onLongClickCaregiver(final User caregiverAsUser) {
+        // only allow caregivers to remove other caregivers
+        if (!mPatient.hasCaregiverWithId(communicator.getLocalUser().getId())){
+            return;
+        }
         // init builder, get diagnosis
-        //AlertDialog.Builder builder = new AlertDialog.Builder(CaregiversListActivity.this);
-        //String titleToFormat = this.getString(R.string.remove_caregiver_format);
-        //final String nameToRemove = currentUser.getFullName();
-        //builder.setTitle(String.format(titleToFormat, nameToRemove));
+        AlertDialog.Builder builder = new AlertDialog.Builder(CaregiversListActivity.this);
+        String titleToFormat = this.getString(R.string.remove_caregiver_format);
+        final String nameToRemove = caregiverAsUser.getFullName();
+        builder.setTitle(String.format(titleToFormat, nameToRemove));
 
         // set cancel button
-        //builder.setPositiveButton(R.string.cancel, new DialogInterface.OnClickListener() {
-            //@Override
-          //  public void onClick(DialogInterface dialog, int which) {
-              //  dialog.dismiss();
-            //}
-        //});
+        builder.setPositiveButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
 
-        // set update button
-        //builder.setNegativeButton(R.string.remove, new DialogInterface.OnClickListener() {
-          //  @Override
-            //public void onClick(DialogInterface dialog, int which) {
-                // todo actually remove caregiver. leave at least one caregiver!
-              //  Toast.makeText(CaregiversListActivity.this, String.format("removed %s", nameToRemove), Toast.LENGTH_LONG).show();
-            //}
-        //});
+        // set remove caregiver button
+        builder.setNegativeButton(R.string.remove, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                confirmRemoveCaregiver(caregiverAsUser.getId(), dialog);
+            }
+        });
+        builder.show();
+    }
 
-        //builder.show();
+    private void confirmRemoveCaregiver(final String caregiverId, final DialogInterface callingDialog){
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        // confirm
+                        communicator.removeCaregiverFromPatient(mPatient, caregiverId, CaregiversListActivity.this);
+                        callingDialog.dismiss();
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        // regret
+                        break;
+                }
+            }
+        };
+        ConfirmDialog.show(this, dialogClickListener);
     }
 }

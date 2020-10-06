@@ -84,11 +84,11 @@ public class PatientsListActivity extends AppCompatActivity {
                 // remove the current patient from adapter
                 ArrayList<Patient> mDataset = mAdapter.getmDataset();
                 final Patient currentPatient = mDataset.get(viewHolder.getAbsoluteAdapterPosition());
-                mDataset.remove(currentPatient);
-                mAdapter.setmDataset(mDataset);
+//                mDataset.remove(currentPatient);
+//                mAdapter.setmDataset(mDataset);
 
-                // remove the current patient from the db
-                communicator.removePatientFromUserAndUpdate(currentPatient);
+                // remove the current patient from the db todo confirm remove
+                communicator.removePatientFromUser(currentPatient);
                 mAdapter.notifyDataSetChanged();
             }
 
