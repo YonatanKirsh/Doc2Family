@@ -7,7 +7,7 @@
     tools:context=".views.PatientInfoActivity">
 
     <TextView
-        android:id="@+id/text_view_patient_info_title"
+        android:id="@+id/activity_patient_info_text_view_title"
         android:textColor="@color/green"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -20,19 +20,52 @@
         />
 
     <TextView
-        android:id="@+id/text_view_patient_diagnosis"
-        android:layout_width="match_parent"
+        android:id="@+id/activity_patient_info_text_view_diagnosis_title"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
+        android:layout_margin="10dp"
         android:textSize="20sp"
-        app:layout_constraintTop_toBottomOf="@+id/text_view_patient_info_title"
+        android:text="@string/diagnosis"
+        android:textAppearance="@color/colorAccent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/activity_patient_info_text_view_title" />
+
+
+    <TextView
+        android:id="@+id/activity_patient_info_text_view_patient_diagnosis"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:textSize="20sp"
+        app:layout_constraintTop_toBottomOf="@+id/activity_patient_info_text_view_title"
+        app:layout_constraintLeft_toRightOf="@+id/activity_patient_info_text_view_diagnosis_title"
         />
+
+    <TextView
+        android:id="@+id/activity_patient_info_text_view_tz_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:textSize="20sp"
+        android:text="@string/teudat_zehut"
+        android:textAppearance="@color/colorAccent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/activity_patient_info_text_view_diagnosis_title" />
+
+    <TextView
+        android:id="@+id/activity_patient_info_text_view_tz_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:textSize="20sp"
+        app:layout_constraintLeft_toRightOf="@+id/activity_patient_info_text_view_tz_title"
+        app:layout_constraintTop_toBottomOf="@+id/activity_patient_info_text_view_diagnosis_title" />
+
+
 
 
     <Button
-        android:id="@+id/add_an_update_button"
+        android:id="@+id/activity_patient_info_button_add_update"
         android:background="@drawable/customized_button"
         android:textColor="@color/white"
         android:visibility="invisible"
@@ -45,11 +78,11 @@
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginEnd="20dp"
         app:layout_constraintBottom_toTopOf="@id/recycler_updates"
-        app:layout_constraintTop_toBottomOf="@id/text_view_patient_diagnosis"
+        app:layout_constraintTop_toBottomOf="@id/activity_patient_info_text_view_tz_title"
         />
 
     <Button
-        android:id="@+id/add_an_admin_button"
+        android:id="@+id/activity_patient_info_button_add_admin"
         android:background="@drawable/customized_button"
         android:textColor="@color/white"
         android:layout_width="wrap_content"
@@ -59,7 +92,7 @@
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/recycler_updates"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_view_patient_diagnosis" />
+        app:layout_constraintTop_toBottomOf="@id/activity_patient_info_text_view_tz_title" />
 
     <androidx.recyclerview.widget.RecyclerView
 
@@ -70,7 +103,7 @@
         android:scrollbars="vertical"
         tools:ignore="MissingConstraints"
         app:layout_constraintBottom_toTopOf="@+id/activity_patient_info_button_goto_caregivers"
-        app:layout_constraintTop_toBottomOf="@+id/add_an_update_button" />
+        app:layout_constraintTop_toBottomOf="@+id/activity_patient_info_button_add_update" />
 
     <Button
         android:id="@+id/activity_patient_info_button_goto_questions"

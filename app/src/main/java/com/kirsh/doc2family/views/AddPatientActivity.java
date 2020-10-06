@@ -7,17 +7,19 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kirsh.doc2family.R;
 import com.kirsh.doc2family.logic.Communicator;
+import com.kirsh.doc2family.logic.Constants;
 
 public class AddPatientActivity extends AppCompatActivity {
 
     Button addPatientButton;
     EditText firstNameEdit;
     EditText lastNameEdit;
-    EditText tzEdit;
+    TextView tzEdit;
     EditText diagnosisEdit;
     Communicator communicator;
 
@@ -26,14 +28,21 @@ public class AddPatientActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_patient);
         communicator = Communicator.getSingleton();
-        this.firstNameEdit = (EditText) findViewById(R.id.edit_text_patient_first_name);
-        this.lastNameEdit = (EditText) findViewById(R.id.edit_text_patients_last_name);
-        this.tzEdit =  (EditText) findViewById(R.id.edit_text_tz);
-        this.diagnosisEdit = (EditText) findViewById(R.id.edit_text_patients_diagnosis) ;
+        this.firstNameEdit = findViewById(R.id.edit_text_patient_first_name);
+        this.lastNameEdit = findViewById(R.id.edit_text_patients_last_name);
+        this.tzEdit =  findViewById(R.id.activity_add_patient_text_view_tz_content);
+        this.diagnosisEdit = findViewById(R.id.edit_text_patients_diagnosis) ;
         initViews();
     }
 
     private void initViews(){
+        // use tz if given
+        String tz = getIntent().getStringExtra(Constants.TZ_KEY);
+        if (tz != null){
+            tzEdit.setText(tz);
+        }
+
+        // add patient button
         addPatientButton = findViewById(R.id.button_add_patient);
         setAddPatientButton();
     }
@@ -75,7 +84,7 @@ public class AddPatientActivity extends AppCompatActivity {
 
         firstNameEdit.getText().clear();
         lastNameEdit.getText().clear();
-        tzEdit.getText().clear();
+//        tzEdit.getText().clear();
         diagnosisEdit.getText().clear();
         communicator.createNewPatient(firstName, lastName, tz, diagnosis, this);
     }

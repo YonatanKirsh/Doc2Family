@@ -10,11 +10,13 @@ public class Constants {
 
     // keys
     public static final String PATIENT_AS_STRING_KEY = "patient_id";
+    public static final String TZ_KEY = "tz";
 
     // fields
     public static final String PATIENTS_COLLECTION_FIELD = "Patients";
     public static final String USERS_COLLECTION_FIELD = "Users";
     public static final String PATIENT_IDS_FIELD = "patientIds";
+    public static final String TZ_FIELD = "tz";
 
     // tags
     public static final String NULL_USER_TAG = "Null User";

@@ -62,13 +62,11 @@ public class PatientsListActivity extends AppCompatActivity {
 
         // add-patient button if the user is CareGiver
         addPatientButton = findViewById(R.id.button_goto_add_patient);
-//        communicator.appearAddPatientIfCaregiver(addPatientButton);
-        if (communicator.localUserIsCaregiver()){
-            addPatientButton.setVisibility(View.VISIBLE);
-        }
+//        addPatientButton.setVisibility(View.VISIBLE);
         addPatientButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+//                openActivityAddPatient();
                 initEnterTzDialog();
             }
         });
@@ -120,7 +118,7 @@ public class PatientsListActivity extends AppCompatActivity {
 
     private void initEnterTzDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(PatientsListActivity.this);
-        builder.setTitle(" ENTER THE TZ'S PATIENT");
+        builder.setTitle("ENTER THE PATIENT'S TZ");
 
         // add edit text
         final EditText updateInput = new EditText(PatientsListActivity.this);
@@ -131,13 +129,11 @@ public class PatientsListActivity extends AppCompatActivity {
         builder.setView(updateInput);
 
         // Add the buttons
-        final boolean[] flag = {false};
-        final Patient[] patient = {null};
         builder.setPositiveButton("ENTER", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                String updateMess = updateInput.getText().toString();
-                if (!updateMess.equals("")) {
-                    communicator.checkNewPatientExistence(updateMess, flag, patient, PatientsListActivity.this, findViewById(android.R.id.content));
+                String tzInput = updateInput.getText().toString();
+                if (!tzInput.equals("")) {
+                    communicator.attemptAddPatient(tzInput, PatientsListActivity.this);
                     mAdapter.notifyDataSetChanged();
                 }
             }
@@ -165,8 +161,9 @@ public class PatientsListActivity extends AppCompatActivity {
         openActivityPatientInfo(patient);
     }
 
-    public void openActivityAddPatient() {
+    public void openActivityAddPatient(String tz) {
         Intent intent = new Intent(this, AddPatientActivity.class);
+        intent.putExtra(Constants.TZ_KEY, tz);
         startActivity(intent);
         mAdapter.notifyDataSetChanged();
     }

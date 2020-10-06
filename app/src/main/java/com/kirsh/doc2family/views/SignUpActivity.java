@@ -1,6 +1,5 @@
 package com.kirsh.doc2family.views;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
@@ -12,8 +11,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.kirsh.doc2family.logic.Communicator;
 import com.kirsh.doc2family.logic.Constants;
 import com.kirsh.doc2family.R;
@@ -91,7 +88,7 @@ public class SignUpActivity extends AppCompatActivity {
         addPopupOnClick((ImageButton) findViewById(R.id.image_button_last_name_info), this.getString(R.string.last_name_info_message));
 
         // tz EditText + info button
-        mTzEditText = findViewById(R.id.edit_text_tz);
+        mTzEditText = findViewById(R.id.activity_add_patient_text_view_tz_content);
         addPopupOnClick((ImageButton) findViewById(R.id.image_button_tz_info), this.getString(R.string.tz_info_message));
 
 
