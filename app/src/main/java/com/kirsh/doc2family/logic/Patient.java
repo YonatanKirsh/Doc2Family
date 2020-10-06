@@ -148,8 +148,26 @@ public class Patient{
         caregiverIds.remove(caregiverId);
     }
 
-    public void removeFriend(String friendId){
-        friends.remove(friendId);
+    public void removeFriend(String userId){
+        friends.remove(userId);
+    }
+
+    public void updateFriend(Friend friend){
+        if (friends.containsKey(friend.getUserId())){
+            friends.put(friend.getUserId(), friend);
+        }
+        else {
+            Log.w(Constants.UNEXPECTED_TAG, "updateFriend: patient does not have friend with id " + friend.getUserId());
+        }
+    }
+
+    public void makeFriendAdmin(String userId){
+        if (friends.containsKey(userId)){
+            friends.get(userId).setAdmin(true);
+        }
+        else {
+            Log.w(Constants.UNEXPECTED_TAG, "updateFriend: patient does not have friend with id " + userId);
+        }
     }
 
     public void addFriend(String userId, boolean isAdmin){
@@ -165,7 +183,7 @@ public class Patient{
         caregiverIds.add(userId);
     }
 
-    private Friend getFriendWithId(String id){
+    public Friend getFriendWithId(String id){
         return friends.get(id);
     }
 
@@ -198,7 +216,7 @@ public class Patient{
         return false;
     }
 
-    public boolean userIsAdmin(String userId){
+    public boolean userHasAdminPrivilege(String userId){
         // give admin rights to caregivers
         return hasAdminWithId(userId) || hasCaregiverWithId(userId);
     }
@@ -216,7 +234,7 @@ public class Patient{
         if (questions.containsKey(question.getId())){
             questions.put(question.getId(), question);
         }
-        Log.w("Unexpected", "updateQuestion: question does not exist for this patient");
+        Log.w(Constants.UNEXPECTED_TAG, "updateQuestion: question does not exist for this patient");
     }
 
 }
