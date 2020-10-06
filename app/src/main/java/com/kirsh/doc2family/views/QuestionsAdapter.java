@@ -26,7 +26,7 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.Ques
     public QuestionsAdapter(Context context, ArrayList<Question> dataset){
         //todo sort by unanswered first for doctor, answered first for friend?
         communicator = Communicator.getSingleton();
-        dataset.sort(new Question.SortByLastEdited());
+//        dataset.sort(new Question.SortByLastEdited());
         mDataset = dataset;
         mContext = context;
     }
@@ -59,11 +59,11 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.Ques
     @Override
     public void onBindViewHolder(@NonNull QuestionHolder holder, int position) {
         Question question = mDataset.get(position);
-        holder.textViewQuestion.setText(question.getQuestion());
-        communicator.updateAskerFullname(question.getAskerID(), holder);
+        holder.textViewQuestion.setText(question.getQuestionContent());
+        communicator.updateUserFullname(question.getAskerID(), holder.textViewQuestionIssuer);
         if (question.isAnswered()){
-            holder.textViewAnswer.setText(question.getAnswer());
-            //todo maybe want to add the name of the doctor that answers
+            holder.textViewAnswer.setText(question.getAnswerContent());
+            communicator.updateUserFullname(question.getAnswererId(), holder.textViewAnswerIssuer);
         }
     }
 
@@ -77,16 +77,16 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.Ques
 
         TextView textViewQuestion;
         TextView textViewAnswer;
-        public TextView textViewIssuerQuestion;
-        public TextView textViewIssuerAnswer;
+        public TextView textViewQuestionIssuer;
+        public TextView textViewAnswerIssuer;
 
 
         public QuestionHolder(@NonNull View itemView) {
             super(itemView);
             textViewQuestion = itemView.findViewById(R.id.text_view_question_content);
             textViewAnswer = itemView.findViewById(R.id.text_view_answer_content);
-            textViewIssuerQuestion = itemView.findViewById(R.id.text_view_question_issuer);
-            textViewIssuerAnswer = itemView.findViewById(R.id.text_view_answer_issuer);
+            textViewQuestionIssuer = itemView.findViewById(R.id.text_view_question_issuer);
+            textViewAnswerIssuer = itemView.findViewById(R.id.text_view_answer_issuer);
         }
     }
 }

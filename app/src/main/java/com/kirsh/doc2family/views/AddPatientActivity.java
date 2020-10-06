@@ -19,7 +19,7 @@ public class AddPatientActivity extends AppCompatActivity {
     Button addPatientButton;
     EditText firstNameEdit;
     EditText lastNameEdit;
-    TextView tzEdit;
+    TextView tzTextView;
     EditText diagnosisEdit;
     Communicator communicator;
 
@@ -30,7 +30,7 @@ public class AddPatientActivity extends AppCompatActivity {
         communicator = Communicator.getSingleton();
         this.firstNameEdit = findViewById(R.id.edit_text_patient_first_name);
         this.lastNameEdit = findViewById(R.id.edit_text_patients_last_name);
-        this.tzEdit =  findViewById(R.id.activity_add_patient_text_view_tz_content);
+        this.tzTextView =  findViewById(R.id.activity_add_patient_text_view_tz_content);
         this.diagnosisEdit = findViewById(R.id.edit_text_patients_diagnosis) ;
         initViews();
     }
@@ -39,7 +39,7 @@ public class AddPatientActivity extends AppCompatActivity {
         // use tz if given
         String tz = getIntent().getStringExtra(Constants.TZ_KEY);
         if (tz != null){
-            tzEdit.setText(tz);
+            tzTextView.setText(tz);
         }
 
         // add patient button
@@ -51,7 +51,6 @@ public class AddPatientActivity extends AppCompatActivity {
         addPatientButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Snackbar.make(findViewById(android.R.id.content), "Add patient attempt!", Snackbar.LENGTH_SHORT).show();
                 attemptAddPatient();
             }
         });
@@ -62,7 +61,7 @@ public class AddPatientActivity extends AppCompatActivity {
         String firstName = firstNameEdit.getText().toString();
         String lastName = lastNameEdit.getText().toString();
         String diagnosis = diagnosisEdit.getText().toString();
-        String tz = tzEdit.getText().toString();
+        String tz = tzTextView.getText().toString();
 
         if (firstName.isEmpty()){
             Toast.makeText(this, "Please enter valid first name", Toast.LENGTH_SHORT).show();
@@ -84,9 +83,9 @@ public class AddPatientActivity extends AppCompatActivity {
 
         firstNameEdit.getText().clear();
         lastNameEdit.getText().clear();
-//        tzEdit.getText().clear();
         diagnosisEdit.getText().clear();
         communicator.createNewPatient(firstName, lastName, tz, diagnosis, this);
+        openActivityPatientsList();
     }
 
     public void openActivityPatientsList(){

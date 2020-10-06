@@ -133,7 +133,7 @@ public class PatientsListActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int id) {
                 String tzInput = updateInput.getText().toString();
                 if (!tzInput.equals("")) {
-                    communicator.attemptAddPatient(tzInput, PatientsListActivity.this);
+                    communicator.addPatientForLocalUser(tzInput, PatientsListActivity.this);
                     mAdapter.notifyDataSetChanged();
                 }
             }

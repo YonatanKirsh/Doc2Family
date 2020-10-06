@@ -58,7 +58,7 @@ public class FriendsListActivity extends AppCompatActivity {
     private void initViews(){
         // add friend button
         addFriendButton = findViewById(R.id.button_add_friend);
-        if (mPatient.hasAdminWithId(communicator.getLocalUser().getId())){
+        if (mPatient.userIsAdmin(communicator.getLocalUser().getId())){
             addFriendButton.setVisibility(View.VISIBLE);
         }
         addFriendButton.setOnClickListener(new View.OnClickListener() {

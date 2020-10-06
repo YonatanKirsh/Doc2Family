@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -106,16 +107,12 @@ public class QuestionsListActivity extends AppCompatActivity {
                 // User clicked submit button - todo submit question
                 String newQuestion = questionInput.getText().toString();
                 if (!newQuestion.equals("")){
-
-                    //todo add to list of questions of the patients  ?
-
-                    communicator.cAddQuestionForPatient(mPatient, newQuestion, mAdapter);
+                    communicator.addQuestionForPatient(mPatient, newQuestion);
                     String message = "added question:\n" + newQuestion;
-                    Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
+                    Toast.makeText(QuestionsListActivity.this, message, Toast.LENGTH_LONG).show();
                     questionInput.setText("");
                     dialog.dismiss();
                     //mAdapter.notifyDataSetChanged();
-
                 }
 
             }
@@ -137,35 +134,23 @@ public class QuestionsListActivity extends AppCompatActivity {
         builder.setView(view);
         // add question info
         final EditText questionEditText = view.findViewById(R.id.question_dialog_edit_text_question_content);
-        questionEditText.setText(question.getQuestion());
+        questionEditText.setText(question.getQuestionContent());
         final TextView answerTexView = view.findViewById(R.id.question_dialog_text_view_answer_content);
         if (question.isAnswered()){
-            answerTexView.setText(question.getAnswer());
+            answerTexView.setText(question.getAnswerContent());
             return;
         }
         // Add the buttons
         builder.setPositiveButton("Update", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked update button - todo change the update's content
-                String newUpdate = questionEditText.getText().toString();
-                String message = "updated to:\n" + newUpdate;
-                Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
+                String newQuestionContent = questionEditText.getText().toString();
+                String message = "updated to:\n" + newQuestionContent;
+                question.setQuestionContent(newQuestionContent);
+                communicator.updateQuestionForPatient(mPatient, question, QuestionsListActivity.this);
                 questionEditText.setText("");
                 dialog.dismiss();
                 long edited = System.currentTimeMillis();
-
-                // update the question locally
-                question.setAnswered(true);
-                question.setAnswer(newUpdate);
-                question.setmDateEdited(edited);
-                mAdapter.notifyDataSetChanged();
-
-                // update the db
-                communicator.updateQuestionChange(newUpdate, edited, question, mPatient);
-
-                Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
-                questionEditText.setText("");
-                dialog.dismiss();
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -186,28 +171,18 @@ public class QuestionsListActivity extends AppCompatActivity {
         builder.setView(view);
         // add question info
         final TextView questionTexView = view.findViewById(R.id.question_dialog_text_view_question_content);
-        questionTexView.setText(question.getQuestion());
+        questionTexView.setText(question.getQuestionContent());
         final EditText answerEditText = view.findViewById(R.id.question_dialog_edit_text_answer_content);
         if (question.isAnswered()){
-            answerEditText.setText(question.getAnswer());
+            answerEditText.setText(question.getAnswerContent());
         }
         // Add the buttons
         builder.setPositiveButton("Update", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 String newAnswer = answerEditText.getText().toString();
-                String message = "updated to:\n" + newAnswer;
                 long edited = System.currentTimeMillis();
-
-                // update the question locally
-                question.setAnswered(true);
-                question.setAnswer(newAnswer);
-                question.setmDateEdited(edited);
-                mAdapter.notifyDataSetChanged();
-
-                // update the db
-                communicator.updateanswerToQuestion(newAnswer, edited, question, mPatient);
-
-                Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
+                question.answerQuestion(newAnswer, communicator.getLocalUser().getId());
+                communicator.updateQuestionForPatient(mPatient, question, QuestionsListActivity.this);
                 answerEditText.setText("");
                 dialog.dismiss();
             }
@@ -224,28 +199,11 @@ public class QuestionsListActivity extends AppCompatActivity {
     }
 
     public void onClickQuestion(final Question question) {
-//        if (communicator.isCareGiverOfPatient(mPatient)){
-//            showCaregiverEditQuestionDialog(question);
-//        }
-//        else{
-//            showFriendEditQuestionDialog(question);
-//        }
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        FirebaseAuth myAUth = FirebaseAuth.getInstance();
-        final FirebaseUser myUser = myAUth.getCurrentUser();
-        db.collection("Users").whereEqualTo("id", myUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()){
-                    if (mPatient.getCaregiverIds().contains(myUser.getUid())){
-                        showCaregiverEditQuestionDialog(question);
-                    }
-                    else{
-                        showFriendEditQuestionDialog(question);
-                    }
-
-                }
-            }
-        });
+        if (mPatient.hasCaregiverWithId(communicator.getLocalUser().getId())){
+            showCaregiverEditQuestionDialog(question);
+        }
+        else{
+            showFriendEditQuestionDialog(question);
+        }
     }
 }

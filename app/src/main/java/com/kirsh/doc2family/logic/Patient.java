@@ -1,6 +1,7 @@
 package com.kirsh.doc2family.logic;
 
 import android.util.ArrayMap;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,11 +13,12 @@ public class Patient{
     private String id;
     private String diagnosis;
     private ArrayList<Update> updates;
-    private ArrayList<Question> questions;
-//    private ArrayList<Friend> friends;
+//    private ArrayList<Question> questions;
+    private HashMap<String, Question> questions;
     private HashMap<String, Friend> friends;
     private ArrayList<String> caregiverIds;
     private String tz;
+    private int questionCounter;
 
     public Patient(){ }
 
@@ -26,11 +28,16 @@ public class Patient{
         this.id = id;
         this.diagnosis = diagnosis;
         updates = new ArrayList<Update>();
-        questions = new ArrayList<Question>();
+        questions = new HashMap<>();
         friends = new HashMap<>();
         caregiverIds = new ArrayList<String>();
         caregiverIds.add(caregiverId);
         this.tz = tz;
+        questionCounter = 0;
+    }
+
+    public int getQuestionCounter(){
+        return questionCounter;
     }
 
     public String getId() {
@@ -50,7 +57,11 @@ public class Patient{
     }
 
     public ArrayList<Question> getQuestions(){
-        return questions;
+        ArrayList<Question> toReturn = new ArrayList<>();
+        if (questions != null){
+            toReturn.addAll(questions.values());
+        }
+        return toReturn;
     }
 
     public ArrayList<Friend> getFriends(){
@@ -73,6 +84,10 @@ public class Patient{
         return caregiverIds;
     }
 
+    public void setQuestionCounter(int count){
+        questionCounter = count;
+    }
+
     public void setCaregiverIds(ArrayList<String> caregiverIds) {
         this.caregiverIds = caregiverIds;
     }
@@ -89,8 +104,12 @@ public class Patient{
         this.friends = updatedFriends;
     }
 
-    public void setQuestions(ArrayList<Question> questions) {
-        this.questions = questions;
+    public void setQuestions(ArrayList<Question> questionsList) {
+        HashMap<String, Question> updatedQuestions = new HashMap<>();
+        for (Question question : questionsList){
+            updatedQuestions.put(question.getId(), question);
+        }
+        this.questions = updatedQuestions;
     }
 
     public void setUpdates(ArrayList<Update> updates) {
@@ -174,5 +193,27 @@ public class Patient{
         }
         return false;
     }
+
+    public boolean userIsAdmin(String userId){
+        // give admin rights to caregivers
+        return hasAdminWithId(userId) || hasCaregiverWithId(userId);
+    }
+
+    public void addQuestion(Question question){
+        question.setId(String.valueOf(questionCounter++));
+        questions.put(question.getId(), question);
+    }
+
+    public void deleteQuestion(Question question){
+        questions.remove(question.getId());
+    }
+
+    public void updateQuestion(Question question){
+        if (questions.containsKey(question.getId())){
+            questions.put(question.getId(), question);
+        }
+        Log.w("Unexpected", "updateQuestion: question does not exist for this patient");
+    }
+
 }
 
