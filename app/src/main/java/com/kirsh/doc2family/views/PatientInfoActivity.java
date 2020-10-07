@@ -218,7 +218,9 @@ public class PatientInfoActivity extends AppCompatActivity {
                 String adminTz = adminTzInput.getText().toString();
                 if (!adminTz.equals("")){
                     mPatient.addAdmin(adminTz);
-                    communicator.initAdminForPatient(mPatient, adminTz, addAdminButton, dialog, PatientInfoActivity.this);
+                    communicator.addFriendToPatient(adminTz, mPatient, true, PatientInfoActivity.this);
+                    addAdminButton.setVisibility(View.INVISIBLE);
+                    dialog.dismiss();
                 }
             }
         });

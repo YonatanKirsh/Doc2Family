@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
@@ -53,6 +54,10 @@ public class CaregiversListActivity extends AppCompatActivity {
     }
 
     private void initViews() {
+        // set title
+        TextView title = findViewById(R.id.caregivers_list_text_view_title);
+        title.setText(String.format(getString(R.string.caregivers_list_title_format), mPatient.getFirstName()));
+
         // caregivers activity
         RecyclerView caregiversRecycler = findViewById(R.id.recycler_caregivers);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);

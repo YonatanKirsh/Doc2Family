@@ -37,6 +37,8 @@
     <string name="remove">Remove</string>
     <string name="add_question">Add Question</string>
     <string name="delete_update_title">Delete update?</string>
+    <string name="friends_list_title_format">%s\'s friends</string>
+    <string name="caregivers_list_title_format">%s\'s caregivers</string>
 
 
 <!--    hints-->
