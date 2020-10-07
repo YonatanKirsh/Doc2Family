@@ -375,7 +375,7 @@ public class Communicator {
                     return;
                 }
                 if (snapshot != null && snapshot.exists() && snapshot.toObject(Patient.class) != null) {
-                    // if patient updated - update it's caregivers
+                    // if patient updated - update it's friends
                     patientHolder[0] = snapshot.toObject(Patient.class);
                     updateUsersAdapter(adapter, patientHolder[0].getFriendIds());
                 } else {
@@ -424,36 +424,6 @@ public class Communicator {
         }
         updatePatientInDatabase(currentPatient);
     }
-
-//    public void initAdminForPatient(final Patient patient, final String adminTz, final Button addAdminButton, final DialogInterface dialog, final Context context){
-//        addFriendToPatient(adminTz, patient, true, context);
-//        addAdminButton.
-//
-//        db.collection(Constants.USERS_COLLECTION_FIELD).whereEqualTo(Constants.TZ_FIELD, adminTz).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//            @Override
-//            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                boolean userExists = false;
-//                if (task.isSuccessful()){
-//                    for (QueryDocumentSnapshot doc : task.getResult()){
-//                        User user = doc.toObject(User.class);
-//                        addFriendToPatient(adminTz, patient, true, context);
-//                        patient.addFriend(user.getId(), true);
-//                        updatePatientInDatabase(patient);
-//                        userExists = true;
-//                        String message = "added admin:\n" + adminTz;
-//                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-//                        addAdminButton.setVisibility(View.INVISIBLE);
-//                        dialog.dismiss();
-//                    }
-//                }
-//                if (!userExists){
-//                    String message = "Couldn't find user with tz:\n" + adminTz;
-//                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        });
-//
-//    }
 
     public void addPatientForLocalUser(final String patientTz, final Context context){
         // todo there is a pb when I delete a patient and try to add it with the same tz.
