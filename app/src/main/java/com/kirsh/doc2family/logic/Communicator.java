@@ -273,11 +273,15 @@ public class Communicator {
             patientsCollection.document(patientId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    // attempt to get patient
                     Patient patient = documentSnapshot.toObject(Patient.class);
                     if (patient == null){
                         return;
                     }
-                    localPatients.add(patient);
+                    // assert this patient allows local user to follow
+                    if (patient.hasCaregiverWithId(localUser.getId()) || patient.hasFriendWithId(localUser.getId())){
+                        localPatients.add(patient);
+                    }
                 }
             });
         }
@@ -371,7 +375,7 @@ public class Communicator {
                     return;
                 }
                 if (snapshot != null && snapshot.exists() && snapshot.toObject(Patient.class) != null) {
-                    // if patient updated - update it's caregivers
+                    // if patient updated - update it's friends
                     patientHolder[0] = snapshot.toObject(Patient.class);
                     updateUsersAdapter(adapter, patientHolder[0].getFriendIds());
                 } else {
@@ -419,32 +423,6 @@ public class Communicator {
             currentPatient.removeFriend(localUser.getId());
         }
         updatePatientInDatabase(currentPatient);
-    }
-
-    public void initAdminForPatient(final Patient patient, final String adminTz, final Button addAdminButton, final DialogInterface dialog, final Context context){
-        db.collection(Constants.USERS_COLLECTION_FIELD).whereEqualTo(Constants.TZ_FIELD, adminTz).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                boolean userExists = false;
-                if (task.isSuccessful()){
-                    for (QueryDocumentSnapshot doc : task.getResult()){
-                        User user = doc.toObject(User.class);
-                        patient.addFriend(user.getId(), true);
-                        updatePatientInDatabase(patient);
-                        userExists = true;
-                        String message = "added admin:\n" + adminTz;
-                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                        addAdminButton.setVisibility(View.INVISIBLE);
-                        dialog.dismiss();
-                    }
-                }
-                if (!userExists){
-                    String message = "Couldn't find user with tz:\n" + adminTz;
-                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
     }
 
     public void addPatientForLocalUser(final String patientTz, final Context context){
@@ -496,26 +474,37 @@ public class Communicator {
     }
 
     public void addFriendToPatient(final String newFriendTz, final Patient patient, final  boolean makeAdmin, final Context context){
+        // get new friend as user
         db.collection(Constants.USERS_COLLECTION_FIELD).whereEqualTo(Constants.TZ_FIELD, newFriendTz).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 boolean userExists = false;
                 if (task.isSuccessful()){
                     for (QueryDocumentSnapshot doc : task.getResult()){
-                        User friendAsUser = doc.toObject(User.class);
+                        final User friendAsUser = doc.toObject(User.class);
                         userExists = true;
-                        if (patient.hasFriendWithId(friendAsUser.getId())){
-                            Toast.makeText(context, "Already his friend!", Toast.LENGTH_SHORT).show();
-                            break;
-                        }
-                        patient.addFriend(friendAsUser.getId(), makeAdmin);
-                        updatePatientInDatabase(patient);
-                        Toast.makeText(context, "Friend added!", Toast.LENGTH_SHORT).show();
+                        // update patient from db
+                        db.collection(Constants.PATIENTS_COLLECTION_FIELD).document(patient.getId()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                Patient dbPatient = documentSnapshot.toObject(Patient.class);
+                                if (dbPatient == null){
+                                    Toast.makeText(context, "DB Error :(", Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
+                                if (dbPatient.hasFriendWithId(friendAsUser.getId())){
+                                    Toast.makeText(context, "Already his friend!", Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
+                                dbPatient.addFriend(friendAsUser.getId(), makeAdmin);
+                                updatePatientInDatabase(dbPatient);
+                                Toast.makeText(context, "Friend added!", Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     }
                 }
                 if (!userExists){
-                    Toast.makeText(context, "Not a valid User!",
-                            Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Not a valid User!", Toast.LENGTH_SHORT).show();
                 }
             }
         });

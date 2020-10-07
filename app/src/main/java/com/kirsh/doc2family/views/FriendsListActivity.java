@@ -55,8 +55,12 @@ public class FriendsListActivity extends AppCompatActivity {
     }
 
     private void initViews(){
+        // set title
+        TextView title = findViewById(R.id.activity_friends_list_text_view_title);
+        title.setText(String.format(getString(R.string.friends_list_title_format), mPatient.getFirstName()));
+
         // add friend button
-        addFriendButton = findViewById(R.id.button_add_friend);
+        addFriendButton = findViewById(R.id.activity_friends_list_button_add_friend);
         if (mPatient.userHasAdminPrivilege(communicator.getLocalUser().getId())){
             addFriendButton.setVisibility(View.VISIBLE);
         }
@@ -68,7 +72,7 @@ public class FriendsListActivity extends AppCompatActivity {
         });
 
         // friends adapter
-        RecyclerView friendsAdapter = findViewById(R.id.recycler_friends);
+        RecyclerView friendsAdapter = findViewById(R.id.activity_friends_list_recycler_friends);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         friendsAdapter.setLayoutManager(layoutManager);
         friendsAdapter.setAdapter(mAdapter);
