@@ -2,10 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".views.SignUpActivity">
+    android:layout_width="match_parent"
+    tools:context=".views.SignUpActivity" >
+
 
     <ScrollView
         android:layout_width="match_parent"
@@ -22,7 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="20dp"
-            android:layout_marginBottom="50dp"
+            android:layout_marginBottom="30dp"
             android:text="@string/sign_up"
             android:textColor="@color/navy"
             android:textSize="50dp"
@@ -45,7 +46,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/input_text_first_name_layout"
-                    android:layout_width="342dp"
+                    android:layout_width="310dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:paddingLeft="20dp"
@@ -71,6 +72,8 @@
                     android:layout_height="40dp"
                     android:layout_gravity="center_vertical"
                     android:background="@null"
+                    android:layout_marginEnd="10dp"
+
                     app:srcCompat="@drawable/ic_info" />
 
             </LinearLayout>
@@ -82,7 +85,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/input_text_last_name_layout"
-                    android:layout_width="342dp"
+                    android:layout_width="310dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:paddingLeft="20dp"
@@ -108,6 +111,7 @@
                     android:layout_height="40dp"
                     android:layout_gravity="center_vertical"
                     android:background="@null"
+                    android:layout_marginEnd="10dp"
                     app:srcCompat="@drawable/ic_info" />
 
             </LinearLayout>
@@ -119,7 +123,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/input_text_tz_layout"
-                    android:layout_width="342dp"
+                    android:layout_width="310dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:paddingLeft="20dp"
@@ -145,6 +149,7 @@
                     android:layout_height="40dp"
                     android:layout_gravity="center_vertical"
                     android:background="@null"
+                    android:layout_marginEnd="10dp"
                     app:srcCompat="@drawable/ic_info" />
 
             </LinearLayout>
@@ -156,7 +161,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/su_input_text_email_layout"
-                    android:layout_width="342dp"
+                    android:layout_width="310dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:paddingLeft="20dp"
@@ -181,6 +186,7 @@
                     android:layout_height="40dp"
                     android:layout_gravity="center_vertical"
                     android:background="@null"
+                    android:layout_marginEnd="10dp"
                     app:srcCompat="@drawable/ic_info" />
 
             </LinearLayout>
@@ -192,7 +198,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/su_input_text_password_layout"
-                    android:layout_width="342dp"
+                    android:layout_width="310dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     app:passwordToggleEnabled="true"
@@ -203,7 +209,7 @@
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/su_edit_text_password"
-                        android:layout_width="293dp"
+                        android:layout_width="282dp"
                         android:layout_height="wrap_content"
                         android:hint="@string/password_hint"
                         android:inputType="textPassword"
@@ -218,6 +224,7 @@
                     android:layout_height="40dp"
                     android:layout_gravity="center_vertical"
                     android:background="@null"
+                    android:layout_marginEnd="10dp"
                     app:srcCompat="@drawable/ic_info" />
 
             </LinearLayout>
@@ -229,7 +236,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/su_input_text_confirm_password_layout"
-                    android:layout_width="342dp"
+                    android:layout_width="310dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     app:passwordToggleEnabled="true"
@@ -240,7 +247,7 @@
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/su_edit_text_confirm_password"
-                        android:layout_width="293dp"
+                        android:layout_width="282dp"
                         android:layout_height="wrap_content"
                         android:hint="@string/confirm_password_hint"
                         android:inputType="textPassword"
@@ -254,6 +261,7 @@
                     android:layout_height="40dp"
                     android:layout_gravity="center_vertical"
                     android:background="@null"
+                    android:layout_marginEnd="10dp"
                     app:srcCompat="@drawable/ic_info" />
 
             </LinearLayout>
@@ -305,6 +313,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginBottom="10dp"
                 android:gravity="center">
 
                 <Button
