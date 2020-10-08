@@ -119,18 +119,18 @@ public class Communicator {
                             // send email verification
                             firebaseAuth.getCurrentUser().sendEmailVerification()
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                               @Override
-                                                               public void onComplete(@NonNull Task<Void> task) {
-                                                                   if (task.isSuccessful()) {
-                                                                       Toast.makeText(context, "Registration succeed!. Please check your email for verification.",
-                                                                               Toast.LENGTH_SHORT).show();
-                                                                       mEmailEditText.setText("");
-                                                                       mPasswordEditText.setText("");
-                                                                   } else {
-                                                                       Toast.makeText(context, task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                                                                   }
-                                                               }
-                                                           }
+                                           @Override
+                                           public void onComplete(@NonNull Task<Void> task) {
+                                               if (task.isSuccessful()) {
+                                                   Toast.makeText(context, "Registration succeed!. Please check your email for verification.",
+                                                           Toast.LENGTH_SHORT).show();
+                                                   mEmailEditText.setText("");
+                                                   mPasswordEditText.setText("");
+                                               } else {
+                                                   Toast.makeText(context, task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                                               }
+                                           }
+                                       }
                                     );
                             // add new User object to db
                             final User newUser = new User(firebaseUser.getEmail(), firstName, lastName, firebaseUser.getUid(), mIsDoctor, tz);
