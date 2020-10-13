@@ -1,6 +1,24 @@
 Project name:
     Doc2Family
+    
 Team:
     - Yonatan Kirshenbaum, 317049807, yonatan.kirshenbaum@mail.huji.ac.il
     - Maayann Affriat, 329920110, maayann.affriat@mail.huji.ac.il
     - Rebecca Benzaquen, 340938372, rebecca.benzaquen@mail.huji.ac.il
+
+Doc2Family:
+    Doc2Family is an app that connects patients to their loved ones. Doctors, nurses and other caregivers can post updates and answer questions about patients and their treatment.
+
+Releae:
+    The app will be soon on Google Play, wait for it to be release :)
+    
+Features:
+    - Firebase Firestore
+    - Firebase Analytics
+    - Firebase Authentification
+    
+Demo:
+    https://youtu.be/JFDEcC-UO1A
+    
+Logo:
+    We used https://www.designevo.com/logo-maker/ to design our logo
